@@ -1,6 +1,6 @@
 import groovy.json.JsonSlurper
 
-version = 2
+version = 3
 
 val sourceManifests = File(rootProject.projectDir, "sources").listFiles()
     ?.filter { it.isDirectory && it.name != "live" && !it.name.startsWith("_") && !it.name.startsWith(".") && File(it, "source.json").exists() }

@@ -390,63 +390,67 @@
         var targetYear = parseInt(year, 10) || 0;
         var pageUrl = null;
 
+        var pageHtml = "";
+
         try {
-            // 1. Exact Netflix redirect
+            // 1. Exact Netflix redirect (follows 301 to Simkl title page automatically)
             if (config.ott === "nf" && targetId) {
-                var redRes = await httpRequest("https://api.simkl.com/redirect?to=simkl&netflix=" + targetId, {
-                    redirect: "manual"
-                });
-                var loc = redRes.rawHeaders && redRes.rawHeaders.get ? redRes.rawHeaders.get("location") : null;
-                if (!loc && redRes.headers && redRes.headers["location"]) loc = redRes.headers["location"];
-                if (loc && (loc.indexOf("/tv/") !== -1 || loc.indexOf("/movies/") !== -1 || loc.indexOf("/anime/") !== -1)) {
-                    pageUrl = loc;
-                }
+                try {
+                    var redRes = await httpRequest("https://api.simkl.com/redirect?to=simkl&netflix=" + targetId, {
+                        headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }
+                    });
+                    if (redRes && redRes.body && redRes.body.length > 500) {
+                        pageHtml = redRes.body;
+                    }
+                } catch (_) {}
             }
 
             // 2. Search fallback for Prime, Hotstar, Disney+, or if redirect failed
-            if (!pageUrl && title) {
-                var searchBody = "s=" + encodeURIComponent(title) + "&type=all";
-                var searchRes = await httpRequest("https://simkl.com/ajax/full/search.php", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                        "X-Requested-With": "XMLHttpRequest",
-                        "Referer": "https://simkl.com/search/?q=" + encodeURIComponent(title),
-                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-                    },
-                    body: searchBody
-                });
-                var candidates = searchRes.json();
-                if (candidates && typeof candidates === "object") {
-                    for (var key in candidates) {
-                        var c = candidates[key];
-                        if (!c || !c.url) continue;
+            if (!pageHtml && title) {
+                try {
+                    var searchBody = "s=" + encodeURIComponent(title) + "&type=all";
+                    var searchRes = await httpRequest("https://simkl.com/ajax/full/search.php", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                            "X-Requested-With": "XMLHttpRequest",
+                            "Referer": "https://simkl.com/search/?q=" + encodeURIComponent(title),
+                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                        },
+                        body: searchBody
+                    });
+                    var candidates = searchRes.json();
+                    if (candidates && typeof candidates === "object") {
+                        for (var key in candidates) {
+                            var c = candidates[key];
+                            if (!c || !c.url) continue;
 
-                        var cTitle = cleanTitle(c.titles && c.titles.m ? c.titles.m : c.title);
-                        if (cTitle !== targetTitle && cTitle.indexOf(targetTitle) === -1 && targetTitle.indexOf(cTitle) === -1) {
-                            continue;
+                            var cTitle = cleanTitle(c.titles && c.titles.m ? c.titles.m : c.title);
+                            if (cTitle !== targetTitle && cTitle.indexOf(targetTitle) === -1 && targetTitle.indexOf(cTitle) === -1) {
+                                continue;
+                            }
+
+                            var cYear = parseInt(String(c.year || "").match(/\d{4}/), 10);
+                            if (targetYear && cYear && Math.abs(targetYear - cYear) > 1) {
+                                continue;
+                            }
+
+                            var pageRes = await httpRequest("https://simkl.com" + c.url, {
+                                headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }
+                            });
+                            if (pageRes && pageRes.body) {
+                                pageHtml = pageRes.body;
+                                break;
+                            }
                         }
-
-                        var cYear = parseInt(String(c.year || "").match(/\d{4}/), 10);
-                        if (targetYear && cYear && Math.abs(targetYear - cYear) > 1) {
-                            continue;
-                        }
-
-                        pageUrl = "https://simkl.com" + c.url;
-                        break;
                     }
-                }
+                } catch (_) {}
             }
 
-            // 3. Fetch matched Simkl page and extract all IDs
-            if (pageUrl) {
-                var pageRes = await httpRequest(pageUrl, {
-                    headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }
-                });
-                var html = pageRes.body || "";
-                var ids = extractSimklDetails(html);
-
-                var isAnime = (pageUrl.indexOf("/anime/") !== -1) ||
+            // 3. Extract all IDs from HTML
+            if (pageHtml) {
+                var ids = extractSimklDetails(pageHtml);
+                var isAnime = (pageHtml.indexOf("/anime/") !== -1) ||
                               (ids.anilistId != null || ids.malId != null || ids.kitsuId != null);
 
                 // 4. Fallback for anime via ani.zip
@@ -465,6 +469,7 @@
                             if (!ids.anidbId && am.anidb_id) ids.anidbId = String(am.anidb_id);
                             if (!ids.animePlanet && am.animeplanet_id) ids.animePlanet = String(am.animeplanet_id);
                             if (!ids.liveChartId && am.livechart_id) ids.liveChartId = String(am.livechart_id);
+                            isAnime = true;
                         }
                     } catch (_) {}
                 }
