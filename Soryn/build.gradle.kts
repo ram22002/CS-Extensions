@@ -19,6 +19,8 @@ cloudstream {
 
     tvTypes = listOf("Movie", "TvSeries", "Anime")
     language = "en"
+
+    iconUrl = "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/ott.png"
 }
 
 android {

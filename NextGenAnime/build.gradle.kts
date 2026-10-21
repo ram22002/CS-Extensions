@@ -15,7 +15,7 @@ cloudstream {
     tvTypes = listOf("Anime", "AnimeMovie", "OVA", "Movie", "TvSeries")
     language = "en"
 
-    iconUrl = "https://eclipsia.dpdns.org/logo_v2.png"
+    iconUrl = "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/anime.png"
 }
 
 android {

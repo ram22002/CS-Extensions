@@ -16,7 +16,7 @@
       "Movie",
       "TvSeries"
     ],
-    "iconUrl": "https://cs.eclipsia.dpdns.org/img/b96b89faf5437eb2.png",
+    "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/cinema.png",
     "apiVersion": 1,
     "fileHash": "sha256-c864fd453cea35ef4895fa70fac0528037babe9c585fd0f8b92e129458080b21",
     "filesize": 443996,
@@ -42,7 +42,7 @@
       "AnimeMovie",
       "OVA"
     ],
-    "iconUrl": "https://cs.eclipsia.dpdns.org/img/94999f14196f4f79.png",
+    "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/anime.png",
     "apiVersion": 1,
     "fileHash": "sha256-bc30799597f7a520a5560df883eca889e3fbfab7040fd67c68015a2c641db7bc",
     "filesize": 314937,
@@ -67,7 +67,7 @@
       "Movie",
       "TvSeries"
     ],
-    "iconUrl": "https://cs.eclipsia.dpdns.org/img/9338756188a56ac5.png",
+    "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/bdix.png",
     "apiVersion": 1,
     "fileHash": "sha256-40700a35332b54005b5f3310214a472fd48017e0e4ce0539120b3744832bcf5e",
     "filesize": 238109,
@@ -91,7 +91,7 @@
     "tvTypes": [
       "Live"
     ],
-    "iconUrl": "https://cs.eclipsia.dpdns.org/img/92bf4dcae66ee5a0.png",
+    "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/arena.png",
     "apiVersion": 1,
     "fileHash": "sha256-7ceb0aa80a2a92081306f93d8eeb431885d2ffc1e85299af3d10b1369456c840",
     "filesize": 2159527,
@@ -116,7 +116,7 @@
       "Movie",
       "TvSeries"
     ],
-    "iconUrl": "https://cs.eclipsia.dpdns.org/img/643b959031f7c9ca.png",
+    "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/ott.png",
     "apiVersion": 1,
     "fileHash": "sha256-d0bb7610cd417ba64ea5d900df1a2be21ef28031b286916979fe003bb3c3f4dd",
     "filesize": 90046,
