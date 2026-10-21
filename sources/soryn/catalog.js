@@ -339,6 +339,157 @@
         });
     }
 
+    function cleanTitle(str) {
+        return String(str || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
+
+    function extractSimklDetails(html) {
+        var linksMatch = html.match(/Links:[\s\S]*?<\/td>\s*<td[^>]*>([\s\S]*?)<\/td>/i);
+        var raw = linksMatch ? linksMatch[1] : html;
+
+        var anilist = raw.match(/anilist\.co\/anime\/(\d+)/i);
+        var mal = raw.match(/myanimelist\.net\/anime\/(\d+)/i);
+        var kitsu = raw.match(/kitsu\.(?:app|io)\/anime\/(\d+)/i);
+        var anidb = raw.match(/anidb\.net\/(?:anime\/|perl-bin\/animedb\.pl\?show=anime&aid=)(\d+)/i);
+        var animeplanet = raw.match(/anime-planet\.com\/anime\/([^"'/]+)/i);
+        var livechart = raw.match(/livechart\.me\/anime\/(\d+)/i);
+        var ann = raw.match(/animenewsnetwork\.com\/encyclopedia\/anime\.php\?id=(\d+)/i);
+        var crunchyroll = raw.match(/crunchyroll\.com\/series\/([^"'/?#]+)/i);
+
+        var imdb = raw.match(/imdb\.com\/title\/(tt\d+)/i);
+        var tmdb = raw.match(/themoviedb\.org\/(?:tv|movie)\/(\d+)/i);
+        var tvdb = raw.match(/thetvdb\.com\/(?:series|movies)\/([^"'/?#]+)/i);
+        var netflix = raw.match(/netflix\.com\/title\/(\d+)/i);
+        var prime = raw.match(/primevideo\.com\/detail\/([^"'/?#]+)/i);
+        var asin = raw.match(/(?:amazon\.com\/dp\/|pageTypeId=)([A-Z0-9]{10})/i);
+        var disney = raw.match(/disneyplus\.com\/(?:series|movies)\/[^"'/]+\/([^"'/?#]+)/i);
+
+        return {
+            anilistId: anilist ? anilist[1] : null,
+            malId: mal ? mal[1] : null,
+            kitsuId: kitsu ? kitsu[1] : null,
+            anidbId: anidb ? anidb[1] : null,
+            animePlanet: animeplanet ? animeplanet[1] : null,
+            liveChartId: livechart ? livechart[1] : null,
+            annId: ann ? ann[1] : null,
+            crunchyrollId: crunchyroll ? crunchyroll[1] : null,
+
+            imdbId: imdb ? imdb[1] : null,
+            tmdbId: tmdb ? tmdb[1] : null,
+            tvdbSlug: tvdb ? tvdb[1] : null,
+            netflixId: netflix ? netflix[1] : null,
+            primeVideoId: prime ? prime[1] : null,
+            amazonAsin: asin ? asin[1] : null,
+            disneyId: disney ? disney[1] : null
+        };
+    }
+
+    async function resolveSimklTrackers(config, mediaId, title, year, isSeries, castList) {
+        var targetId = String(mediaId || "").trim();
+        var targetTitle = cleanTitle(title);
+        var targetYear = parseInt(year, 10) || 0;
+        var pageUrl = null;
+
+        try {
+            // 1. Exact Netflix redirect
+            if (config.ott === "nf" && targetId) {
+                var redRes = await httpRequest("https://api.simkl.com/redirect?to=simkl&netflix=" + targetId, {
+                    redirect: "manual"
+                });
+                var loc = redRes.rawHeaders && redRes.rawHeaders.get ? redRes.rawHeaders.get("location") : null;
+                if (!loc && redRes.headers && redRes.headers["location"]) loc = redRes.headers["location"];
+                if (loc && (loc.indexOf("/tv/") !== -1 || loc.indexOf("/movies/") !== -1 || loc.indexOf("/anime/") !== -1)) {
+                    pageUrl = loc;
+                }
+            }
+
+            // 2. Search fallback for Prime, Hotstar, Disney+, or if redirect failed
+            if (!pageUrl && title) {
+                var searchBody = "s=" + encodeURIComponent(title) + "&type=all";
+                var searchRes = await httpRequest("https://simkl.com/ajax/full/search.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                        "X-Requested-With": "XMLHttpRequest",
+                        "Referer": "https://simkl.com/search/?q=" + encodeURIComponent(title),
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                    },
+                    body: searchBody
+                });
+                var candidates = searchRes.json();
+                if (candidates && typeof candidates === "object") {
+                    for (var key in candidates) {
+                        var c = candidates[key];
+                        if (!c || !c.url) continue;
+
+                        var cTitle = cleanTitle(c.titles && c.titles.m ? c.titles.m : c.title);
+                        if (cTitle !== targetTitle && cTitle.indexOf(targetTitle) === -1 && targetTitle.indexOf(cTitle) === -1) {
+                            continue;
+                        }
+
+                        var cYear = parseInt(String(c.year || "").match(/\d{4}/), 10);
+                        if (targetYear && cYear && Math.abs(targetYear - cYear) > 1) {
+                            continue;
+                        }
+
+                        pageUrl = "https://simkl.com" + c.url;
+                        break;
+                    }
+                }
+            }
+
+            // 3. Fetch matched Simkl page and extract all IDs
+            if (pageUrl) {
+                var pageRes = await httpRequest(pageUrl, {
+                    headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }
+                });
+                var html = pageRes.body || "";
+                var ids = extractSimklDetails(html);
+
+                var isAnime = (pageUrl.indexOf("/anime/") !== -1) ||
+                              (ids.anilistId != null || ids.malId != null || ids.kitsuId != null);
+
+                // 4. Fallback for anime via ani.zip
+                if (isAnime && (!ids.anilistId || !ids.malId || !ids.kitsuId) && (ids.imdbId || ids.tmdbId)) {
+                    var aniQuery = ids.imdbId ? ("imdb_id=" + ids.imdbId) : ("themoviedb_id=" + ids.tmdbId);
+                    try {
+                        var aniRes = await httpRequest("https://api.ani.zip/mappings?" + aniQuery, {
+                            headers: { "User-Agent": "Mozilla/5.0" }
+                        });
+                        var aniData = aniRes.json();
+                        if (aniData && aniData.mappings) {
+                            var am = aniData.mappings;
+                            if (!ids.anilistId && am.anilist_id) ids.anilistId = String(am.anilist_id);
+                            if (!ids.malId && am.mal_id) ids.malId = String(am.mal_id);
+                            if (!ids.kitsuId && am.kitsu_id) ids.kitsuId = String(am.kitsu_id);
+                            if (!ids.anidbId && am.anidb_id) ids.anidbId = String(am.anidb_id);
+                            if (!ids.animePlanet && am.animeplanet_id) ids.animePlanet = String(am.animeplanet_id);
+                            if (!ids.liveChartId && am.livechart_id) ids.liveChartId = String(am.livechart_id);
+                        }
+                    } catch (_) {}
+                }
+
+                return {
+                    imdbId: ids.imdbId,
+                    tmdbId: ids.tmdbId,
+                    tvdbSlug: ids.tvdbSlug,
+                    isAnime: isAnime,
+                    animeTrackers: isAnime ? {
+                        anilistId: ids.anilistId,
+                        malId: ids.malId,
+                        kitsuId: ids.kitsuId,
+                        anidbId: ids.anidbId,
+                        animePlanet: ids.animePlanet,
+                        liveChartId: ids.liveChartId,
+                        crunchyrollId: ids.crunchyrollId
+                    } : null
+                };
+            }
+        } catch (_) {}
+
+        return { imdbId: null, tmdbId: null, tvdbSlug: null, isAnime: false, animeTrackers: null };
+    }
+
     async function load(url, cb) {
         try {
             var media = parseMediaUrl(url);
@@ -444,6 +595,10 @@
                 }
             }
 
+            var trackers = await resolveSimklTrackers(config, id, title, year, isSeries, cast);
+            var isAnimeMedia = trackers.isAnime || (data.genre && String(data.genre).toLowerCase().indexOf("anime") !== -1);
+            var finalType = isAnimeMedia ? (isSeries ? "anime" : "animemovie") : (isSeries ? "series" : "movie");
+
             cb({
                 success: true,
                 data: new MultimediaItem({
@@ -452,7 +607,7 @@
                     posterUrl: config.poster(id),
                     bannerUrl: config.background(id),
                     description: synopsis || undefined,
-                    type: isSeries ? "series" : "movie",
+                    type: finalType,
                     year: year ? Number(year) : undefined,
                     score: rating ? Number(rating) : undefined,
                     duration: duration ? Number(duration) : undefined,
@@ -460,7 +615,10 @@
                     contentRating: data.ua ? String(data.ua).trim() : undefined,
                     cast: cast.length > 0 ? cast : undefined,
                     recommendations: recommendations.length > 0 ? recommendations : undefined,
-                    episodes: episodes
+                    episodes: episodes,
+                    imdbId: trackers.imdbId || undefined,
+                    tmdbId: trackers.tmdbId || undefined,
+                    animeTrackers: trackers.animeTrackers || undefined
                 })
             });
         } catch (e) {

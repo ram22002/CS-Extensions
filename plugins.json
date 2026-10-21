@@ -109,7 +109,7 @@
       "ram22002"
     ],
     "description": "Netflix, Prime Video, Disney+ & more",
-    "fileSize": 85006,
+    "fileSize": 85832,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -118,10 +118,10 @@
     ],
     "iconUrl": "https://cs.eclipsia.dpdns.org/img/643b959031f7c9ca.png",
     "apiVersion": 1,
-    "fileHash": "sha256-485569da43c2912edfc5122434aba75c50edee43c7c61eb74d13eacfcf503d42",
-    "filesize": 85006,
-    "hash": "485569da43c2912edfc5122434aba75c50edee43c7c61eb74d13eacfcf503d42",
-    "sha256": "485569da43c2912edfc5122434aba75c50edee43c7c61eb74d13eacfcf503d42",
+    "fileHash": "sha256-e65dec7b39d4490eaee46b1aa08ff7ebe7a807cc382de11e1b0d293b08c7ef72",
+    "filesize": 85832,
+    "hash": "e65dec7b39d4490eaee46b1aa08ff7ebe7a807cc382de11e1b0d293b08c7ef72",
+    "sha256": "e65dec7b39d4490eaee46b1aa08ff7ebe7a807cc382de11e1b0d293b08c7ef72",
     "requiresResources": false
   }
 ]

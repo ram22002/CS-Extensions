@@ -5,6 +5,7 @@ import com.lagradost.cloudstream3.Actor
 import com.lagradost.cloudstream3.HomePageList
 import com.lagradost.cloudstream3.HomePageResponse
 import com.lagradost.cloudstream3.LoadResponse
+import com.lagradost.cloudstream3.LoadResponse.Companion.addImdbId
 import com.lagradost.cloudstream3.MainAPI
 import com.lagradost.cloudstream3.MainPageRequest
 import com.lagradost.cloudstream3.SearchResponse
@@ -122,6 +123,42 @@ class JsProvider(
             contentRating = item.text("contentRating")
             actors = actorList
             recommendations = related
+
+            item.text("imdbId")?.takeIf { it.isNotBlank() }?.let {
+                addImdbId(it)
+                syncData["imdb"] = it
+            }
+            item.text("tmdbId")?.takeIf { it.isNotBlank() }?.let {
+                syncData["tmdb"] = it
+            }
+
+            val anime = item.optJSONObject("animeTrackers")
+            if (anime != null) {
+                anime.text("anilistId")?.takeIf { it.isNotBlank() }?.let {
+                    syncData["anilist"] = it
+                    syncData["aniList"] = it
+                }
+                anime.text("malId")?.takeIf { it.isNotBlank() }?.let {
+                    syncData["mal"] = it
+                    syncData["myanimelist"] = it
+                    syncData["myAnimeList"] = it
+                }
+                anime.text("kitsuId")?.takeIf { it.isNotBlank() }?.let {
+                    syncData["kitsu"] = it
+                }
+                anime.text("anidbId")?.takeIf { it.isNotBlank() }?.let {
+                    syncData["anidb"] = it
+                }
+                anime.text("animePlanet")?.takeIf { it.isNotBlank() }?.let {
+                    syncData["animeplanet"] = it
+                }
+                anime.text("liveChartId")?.takeIf { it.isNotBlank() }?.let {
+                    syncData["livechart"] = it
+                }
+                anime.text("crunchyrollId")?.takeIf { it.isNotBlank() }?.let {
+                    syncData["crunchyroll"] = it
+                }
+            }
         }
 
         return if (isSeries) {
