@@ -1,15 +1,15 @@
 [
     {
-        "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/eclipsia.cs3",
+        "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/nextgen.cs3",
         "status": 1,
         "version": 8,
         "name": "NextGen Cinema",
-        "internalName": "Eclipsia",
+        "internalName": "NextGen",
         "authors": [
             "ram22002"
         ],
         "description": "Movies & TV series",
-        "fileSize": 444535,
+        "fileSize": 444478,
         "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
         "language": "en",
         "tvTypes": [
@@ -18,19 +18,19 @@
         ],
         "iconUrl": "https://cs.eclipsia.dpdns.org/img/b96b89faf5437eb2.png",
         "apiVersion": 1,
-        "fileHash": "sha256-191e8abbf0e51f2539f5b88160696f9032c3dfce2283fee9995db620ebc0d6bf"
+        "fileHash": "sha256-c70013f314132fb4331f14057af77f7fc13d6c1fd0d346171145aa4c5354c633"
     },
     {
-        "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/eclipsiaanime.cs3",
+        "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/nextgenanime.cs3",
         "status": 1,
         "version": 7,
         "name": "NextGen Anime",
-        "internalName": "EclipsiaAnime",
+        "internalName": "NextGenAnime",
         "authors": [
             "ram22002"
         ],
         "description": "Anime, movies & OVAs",
-        "fileSize": 316193,
+        "fileSize": 315927,
         "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
         "language": "en",
         "tvTypes": [
@@ -40,19 +40,19 @@
         ],
         "iconUrl": "https://cs.eclipsia.dpdns.org/img/94999f14196f4f79.png",
         "apiVersion": 1,
-        "fileHash": "sha256-0dd87380c18d327600b9fdd5e68a416c25f2332d3c46239e1be6dac37070d25d"
+        "fileHash": "sha256-cfeb0aacedb7e7003f3d900583fd9f231089faeb859ba338296c15cfe51fd1f8"
     },
     {
-        "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/eclipsiabdix.cs3",
+        "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/nextgenbdix.cs3",
         "status": 1,
         "version": 5,
         "name": "NextGen BDIX",
-        "internalName": "EclipsiaBDIX",
+        "internalName": "NextGenBDIX",
         "authors": [
             "ram22002"
         ],
         "description": "Regional FTP sources",
-        "fileSize": 239082,
+        "fileSize": 239049,
         "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
         "language": "en",
         "tvTypes": [
@@ -61,7 +61,7 @@
         ],
         "iconUrl": "https://cs.eclipsia.dpdns.org/img/9338756188a56ac5.png",
         "apiVersion": 1,
-        "fileHash": "sha256-c0c09bba1c101bc8d117e4a5a68bb7045b7706a0ed5929ee3149962733a4a9d0"
+        "fileHash": "sha256-9059c0ccefd29b97e3c02ec7090c3b0748c79d9e066bed31824f326585c435ba"
     },
     {
         "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/live.cs3",
@@ -88,7 +88,7 @@
         "status": 1,
         "version": 6,
         "name": "NextGen OTT",
-        "internalName": "NetMirror",
+        "internalName": "NextGen OTT",
         "authors": [
             "ram22002"
         ],

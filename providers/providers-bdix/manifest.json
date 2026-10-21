@@ -1,5 +1,5 @@
 {
-  "name": "Eclipsia BDIX",
+  "name": "NextGen BDIX",
   "version": "1.0.0",
   "scrapers": [
     {
@@ -7,7 +7,7 @@
       "name": "Circle FTP.",
       "description": "Circle • 1080p • Mainstream • Regional",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -31,7 +31,7 @@
       "name": "DhakaFlix FTP.",
       "description": "DhakaFlix • Up-to 2160p • Mainstream • Regional",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -55,7 +55,7 @@
       "name": "FlixHub FTP.",
       "description": "FlixHub • 1080p • Mainstream • Regional",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"

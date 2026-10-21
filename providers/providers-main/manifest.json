@@ -1,5 +1,5 @@
 {
-  "name": "Eclipsia",
+  "name": "NextGen",
   "version": "11.8.0",
   "scrapers": [
     {
@@ -7,7 +7,7 @@
       "name": "Brellor.",
       "description": "Internet Archive • Classic/Vintage",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -27,7 +27,7 @@
       "name": "Durnel.",
       "description": "CTGMovies • 1080p • Mainstream • Regional",
       "version": "3.2.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -53,7 +53,7 @@
       "name": "Esvyl.",
       "description": "VidBolt • 1080p • Mainstream • Anime",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -74,7 +74,7 @@
       "name": "Evyrith.",
       "description": "Vidrock • 1080p • Mainstream",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -95,7 +95,7 @@
       "name": "Fastrion.",
       "description": "MultiMovies • 1080p • Mainstream",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -117,7 +117,7 @@
       "name": "Fendrix.",
       "description": "Cinejoy • 1080p • Mainstream",
       "version": "1.6.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -137,7 +137,7 @@
       "name": "Fjoral.",
       "description": "GramCinema • Up-to 4k • Requires Setup",
       "version": "1.2.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -161,7 +161,7 @@
       "name": "Fyron.",
       "description": "KissKH • K-Drama • Anime",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -185,7 +185,7 @@
       "name": "Haylox.",
       "description": "Vidlink • 1080p • Mainstream",
       "version": "2.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -205,7 +205,7 @@
       "name": "Hexion.",
       "description": "4kHdHub • Up-to 4k • Multi-lang",
       "version": "1.5.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -229,7 +229,7 @@
       "name": "Jhaeros.",
       "description": "SineWix • Turkish & English",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie"
       ],
@@ -250,7 +250,7 @@
       "name": "Jyniq.",
       "description": "Wikimedia • Classic/Vintage",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie"
       ],
@@ -270,7 +270,7 @@
       "name": "Karnis.",
       "description": "Castle • 1080p • Mainstream • Regional",
       "version": "1.6.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -295,7 +295,7 @@
       "name": "Kethrax.",
       "description": "VixSrc • Italian & English",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -317,7 +317,7 @@
       "name": "Kryxalia.",
       "description": "MoviesHunt • Up-to 4k • Mainstream • Regional",
       "version": "1.5.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie"
       ],
@@ -336,7 +336,7 @@
       "name": "Lyrin.",
       "description": "BanglaPlex • 1080p • Regional",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -359,7 +359,7 @@
       "name": "Maelith.",
       "description": "Mapple • Up-to 2160p • Mainstream",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -380,7 +380,7 @@
       "name": "Mavonyx.",
       "description": "MovieBox • Up-to 4k • Multi Dub",
       "version": "1.7.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -405,7 +405,7 @@
       "name": "Noctyx.",
       "description": "PlusHD • 1080p • Latino",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -428,7 +428,7 @@
       "name": "Nyxora.",
       "description": "VidFast • 1080p • Mainstream",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -452,7 +452,7 @@
       "name": "Phraxis.",
       "description": "HackStore • 1080p • Latino",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -475,7 +475,7 @@
       "name": "Pynvix.",
       "description": "ShowBox • Up-to 4k • Requires Setup",
       "version": "1.8.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -503,7 +503,7 @@
       "name": "Qorva.",
       "description": "KatWorld • 1080p • K-Drama",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -526,7 +526,7 @@
       "name": "Quinox.",
       "description": "VidLove • 1080p • Mainstream",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -547,7 +547,7 @@
       "name": "Qyrvaen.",
       "description": "Provider: HDHub4u | Multi-lang",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -570,7 +570,7 @@
       "name": "Rynara",
       "description": "Vidy • Up-to 4k • Mainstream",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -591,7 +591,7 @@
       "name": "Solunix.",
       "description": "VegaMovies (HC & VC) • Up-to 4k • Mainstream",
       "version": "1.4.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -615,7 +615,7 @@
       "name": "Soryn.",
       "description": "Netmirror • 1080p • Mainstream • Regional",
       "version": "3.4.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -638,7 +638,7 @@
       "name": "Svartok.",
       "description": "CinemaCity • Multi Dub • Mainstream",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -671,7 +671,7 @@
       "name": "Sylphera.",
       "description": "Dexter • Up-to 4K • Mainstream",
       "version": "1.3.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -693,7 +693,7 @@
       "name": "Tyvrel.",
       "description": "Nxsha • 1080p • Mainstream",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -715,7 +715,7 @@
       "name": "Vitrix.",
       "description": "CineCalidad • 1080p • Latino",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -738,7 +738,7 @@
       "name": "Vornix.",
       "description": "MoviesDrive • Up-to 4k • Mainstream • Regional",
       "version": "1.8.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -765,7 +765,7 @@
       "name": "Waelum.",
       "description": "BingeBang • Mainstream • Up-to 4k",
       "version": "1.3.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -788,7 +788,7 @@
       "name": "Wrenok.",
       "description": "Purstream • French & English",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -810,7 +810,7 @@
       "name": "Xandril.",
       "description": "FibWatch • 1080p • Regional",
       "version": "1.2.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv"
@@ -834,7 +834,7 @@
       "name": "Zevran.",
       "description": "VAplayer  • 1080p • Mainstream",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "NextGen",
       "supportedTypes": [
         "movie",
         "tv",
