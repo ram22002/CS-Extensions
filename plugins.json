@@ -23,14 +23,14 @@
     {
         "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/eclipsiaanime.cs3",
         "status": 1,
-        "version": 4,
+        "version": 5,
         "name": "NextGen Anime",
         "internalName": "EclipsiaAnime",
         "authors": [
             "ram22002"
         ],
         "description": "Anime, movies & OVAs",
-        "fileSize": 308438,
+        "fileSize": 309159,
         "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
         "language": "en",
         "tvTypes": [
@@ -40,7 +40,7 @@
         ],
         "iconUrl": "https://cs.eclipsia.dpdns.org/img/94999f14196f4f79.png",
         "apiVersion": 1,
-        "fileHash": "sha256-a367674cfcc61aa6d30d2b756e5effd22cfbcf54e93c49cd2e2c9ebf07d96d6b"
+        "fileHash": "sha256-289d130bd79c5360c27b507ee560c724b3323b0acb99a3a6c4e659d267178313"
     },
     {
         "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/eclipsiabdix.cs3",

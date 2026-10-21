@@ -86,7 +86,7 @@ internal object EclipsiaAnilistApi {
         val key = data.removePrefix(PREFIX)
         val gql = "query(\$p: Int) { Page(page: \$p, perPage: $PER_PAGE) { media(type: ANIME, isAdult: false, ${args(key)}) { ${EclipsiaAnilistMeta.fields()} } } }"
         val data = fetch(gql, JSONObject().put("p", page.coerceAtLeast(1)))
-            ?: throw ErrorLoadingException("AniList request failed ($lastError)")
+            ?: return newHomePageResponse(name, emptyList(), hasNext = false)
         val items = responses(api, data)
         return newHomePageResponse(name, items, hasNext = items.isNotEmpty())
     }

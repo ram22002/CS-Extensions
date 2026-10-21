@@ -76,6 +76,19 @@ internal object EclipsiaKitsuMeta {
         return list
     }
 
+    internal suspend fun malIdFor(kitsuId: String): Int? {
+        val json = get("anime/$kitsuId/mappings") ?: return null
+        val data = json.optJSONArray("data").objs()
+        for (m in data) {
+            val attr = m.optJSONObject("attributes") ?: continue
+            val site = attr.str("externalSite") ?: continue
+            if (site.contains("myanimelist", ignoreCase = true)) {
+                return attr.str("externalId")?.toIntOrNull()
+            }
+        }
+        return null
+    }
+
     suspend fun find(titles: List<String>, year: Int?, movie: Boolean): Entry? {
         val wanted = titles.map(::norm).filter { it.isNotEmpty() }.toSet()
         if (wanted.isEmpty()) return null
@@ -89,7 +102,13 @@ internal object EclipsiaKitsuMeta {
                 if (year != null && y != null && kotlin.math.abs(y - year) > 1) return@firstOrNull false
                 titlesOf(at).any { norm(it) in wanted }
             } ?: continue
-            return entryOf(hit)
+            val e = entryOf(hit) ?: continue
+            val mal = malIdFor(e.id)
+            return Entry(
+                e.id, e.synopsis, e.episodeCount, e.poster, e.cover,
+                malId = mal,
+                kitsuId = e.id,
+            )
         }
         return null
     }

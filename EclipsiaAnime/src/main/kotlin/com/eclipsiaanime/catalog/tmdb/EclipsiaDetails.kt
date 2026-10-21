@@ -138,7 +138,7 @@ internal object EclipsiaDetails {
             val anilistHit = anilistMetaJob.await()
             val kitsuHit = kitsuMetaJob.await()
             val aniId = anilistHit?.anilistId ?: anilistHit?.id?.toIntOrNull()
-            val malId = anilistHit?.malId
+            val malId = anilistHit?.malId ?: kitsuHit?.malId
             val kitsuId = kitsuHit?.kitsuId ?: kitsuHit?.id
 
             suspend fun LoadResponse.populateTrackers() {
