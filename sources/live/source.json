@@ -1,9 +1,9 @@
 {
   "id": "playz-live",
-  "name": "PlayZ Live",
+  "name": "NextGen Arena",
   "version": "1.0.0",
-  "description": "Live sports events & channels (cricket, football, motorsport and more)",
-  "authors": ["PlayZ Live"],
+  "description": "Live sports & sports TV",
+  "authors": ["ram22002"],
   "lang": "en",
   "types": ["live"],
   "baseUrl": "https://tourniquest.site",

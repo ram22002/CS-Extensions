@@ -7,7 +7,7 @@ version = run {
 }
 
 cloudstream {
-    description = "Curated collection of Providers"
+    description = "Movies & TV series"
     authors = listOf("ram22002")
 
     status = 1

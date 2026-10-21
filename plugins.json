@@ -3,12 +3,12 @@
         "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/eclipsia.cs3",
         "status": 1,
         "version": 5,
-        "name": "Eclipsia",
+        "name": "NextGen Cinema",
         "internalName": "Eclipsia",
         "authors": [
-            "Eclipsia"
+            "ram22002"
         ],
-        "description": "Curated collection of Providers",
+        "description": "Movies & TV series",
         "fileSize": 433721,
         "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
         "language": "en",
@@ -24,12 +24,12 @@
         "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/eclipsiaanime.cs3",
         "status": 1,
         "version": 3,
-        "name": "EclipsiaAnime",
+        "name": "NextGen Anime",
         "internalName": "EclipsiaAnime",
         "authors": [
-            "Eclipsia"
+            "ram22002"
         ],
-        "description": "AniList & Kitsu Catalog with Anime Providers",
+        "description": "Anime, movies & OVAs",
         "fileSize": 303947,
         "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
         "language": "en",
@@ -46,12 +46,12 @@
         "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/eclipsiabdix.cs3",
         "status": 1,
         "version": 2,
-        "name": "EclipsiaBDIX",
+        "name": "NextGen BDIX",
         "internalName": "EclipsiaBDIX",
         "authors": [
-            "Eclipsia"
+            "ram22002"
         ],
-        "description": "Bangladesh Only",
+        "description": "Regional FTP sources",
         "fileSize": 223157,
         "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
         "language": "en",
@@ -67,12 +67,12 @@
         "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/live.cs3",
         "status": 1,
         "version": 3,
-        "name": "LiveSports",
+        "name": "NextGen Arena",
         "internalName": "Live",
         "authors": [
-            "Eclipsia"
+            "ram22002"
         ],
-        "description": "Live Sports Events",
+        "description": "Live sports & sports TV",
         "fileSize": 2159527,
         "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
         "language": "en",
@@ -87,10 +87,10 @@
         "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/netmirror.cs3",
         "status": 1,
         "version": 5,
-        "name": "NetMirror",
+        "name": "NextGen OTT",
         "internalName": "NetMirror",
         "authors": [
-            "Eclipsia"
+            "ram22002"
         ],
         "description": "Netflix, Prime Video, Disney+ & more",
         "fileSize": 85013,

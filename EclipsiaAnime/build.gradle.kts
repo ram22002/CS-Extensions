@@ -7,7 +7,7 @@ version = run {
 }
 
 cloudstream {
-    description = "Anime catalogs (AniList, Kitsu) and anime stream providers"
+    description = "Anime, movies & OVAs"
     authors = listOf("ram22002")
 
     status = 1

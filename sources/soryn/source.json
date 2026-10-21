@@ -1,8 +1,9 @@
 {
   "id": "netmirror",
-  "name": "NetMirror",
+  "name": "NextGen OTT",
   "version": "1.0.0",
-  "description": "NetMirror catalog + HLS streams",
+  "description": "Netflix, Prime Video, Disney+ & more",
+  "authors": ["ram22002"],
   "lang": "en",
   "types": ["movie", "series"],
   "baseUrl": "https://net52.cc",

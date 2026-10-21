@@ -7,7 +7,7 @@ version = run {
 }
 
 cloudstream {
-    description = "BDIX providers (Circle FTP, DhakaFlix, FlixHub) with TMDb catalog. Only accessible from Bangladesh"
+    description = "Regional FTP sources"
     authors = listOf("ram22002")
 
     status = 1
