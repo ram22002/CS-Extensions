@@ -2,6 +2,7 @@ import hashlib
 import json
 import pathlib
 import shutil
+import zipfile
 
 root = pathlib.Path(".")
 pairs = [
@@ -11,8 +12,17 @@ pairs = [
 ]
 
 for src, dst in pairs:
-    shutil.copy2(src, dst)
-    print(f"Copied {src} to {dst}")
+    if src.exists():
+        shutil.copy2(src, dst)
+        print(f"Copied {src} to {dst}")
+
+# Backwards compatibility for any clients referencing older filenames
+if (root / "nextgen.cs3").exists():
+    shutil.copy2(root / "nextgen.cs3", root / "eclipsia.cs3")
+if (root / "nextgenanime.cs3").exists():
+    shutil.copy2(root / "nextgenanime.cs3", root / "eclipsiaanime.cs3")
+if (root / "nextgenbdix.cs3").exists():
+    shutil.copy2(root / "nextgenbdix.cs3", root / "eclipsiabdix.cs3")
 
 pj = root / "plugins.json"
 data = json.loads(pj.read_text(encoding="utf-8"))
@@ -26,9 +36,22 @@ for item in data:
         h = hashlib.sha256(content).hexdigest()
         item["filesize"] = len(content)
         item["fileSize"] = len(content)
+        item["fileHash"] = f"sha256-{h}"
         item["hash"] = h
         item["sha256"] = h
-        print(f"{fn}: size={len(content)}, hash={h}")
+
+        try:
+            with zipfile.ZipFile(fp) as z:
+                if "manifest.json" in z.namelist():
+                    mf = json.loads(z.read("manifest.json").decode("utf-8"))
+                    if "version" in mf:
+                        item["version"] = mf["version"]
+                    if "requiresResources" in mf:
+                        item["requiresResources"] = mf["requiresResources"]
+        except Exception as e:
+            print(f"Could not read manifest from {fn}: {e}")
+
+        print(f"{fn}: size={len(content)}, version={item.get('version')}, fileHash={item['fileHash']}")
 
 pj.write_text(json.dumps(data, indent=2), encoding="utf-8")
 print("Updated plugins.json successfully")
