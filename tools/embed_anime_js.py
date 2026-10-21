@@ -1,7 +1,7 @@
 import base64, pathlib, textwrap
 
 root = pathlib.Path(__file__).resolve().parent.parent
-out = root / "EclipsiaAnime/src/main/kotlin/com/eclipsiaanime/runtime/JsAssets.kt"
+out = root / "NextGenAnime/src/main/kotlin/com/nextgenanime/runtime/JsAssets.kt"
 CHUNK = 20000
 
 def chunks(path):
@@ -12,7 +12,7 @@ def kotlin_list(name, parts):
     body = ",\n".join(f'        "{p}"' for p in parts)
     return f"    private val {name} = listOf(\n{body}\n    )\n"
 
-src = f'''package com.eclipsiaanime
+src = f'''package com.nextgenanime
 
 import android.util.Base64
 

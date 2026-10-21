@@ -93,7 +93,9 @@ object NextGenRuntime {
             try {
                 withTimeout(TIMEOUT_MS) {
                     val wv = createWebView(bridge, holder)
-                    withContext(Dispatchers.Main) { wv.evaluateJavascript("__eclipsia_start('$mode')", null) }
+                    withContext(Dispatchers.Main) {
+                        wv.evaluateJavascript("(window.__nextgen_start || window.__eclipsia_start)('$mode')", null)
+                    }
                     result.await()
                 }
             } catch (e: TimeoutCancellationException) {
@@ -111,6 +113,7 @@ object NextGenRuntime {
                         runCatching {
                             wv.stopLoading()
                             wv.removeJavascriptInterface("NextGenNative")
+                            wv.removeJavascriptInterface("EclipsiaNative")
                             wv.loadUrl("about:blank")
                             wv.destroy()
                         }
@@ -145,6 +148,7 @@ object NextGenRuntime {
                     cacheMode = WebSettings.LOAD_NO_CACHE
                 }
                 wv.addJavascriptInterface(bridge, "NextGenNative")
+                wv.addJavascriptInterface(bridge, "EclipsiaNative")
                 wv.webChromeClient = object : WebChromeClient() {
                     override fun onConsoleMessage(m: ConsoleMessage): Boolean {
                         return true
@@ -219,7 +223,7 @@ object NextGenRuntime {
                 main.post {
                     val wv = holder.view
                     if (!holder.closed && wv != null) {
-                        wv.evaluateJavascript("window.__eclipsia_onFetch($id,$literal)", null)
+                        wv.evaluateJavascript("(window.__nextgen_onFetch || window.__eclipsia_onFetch)($id,$literal)", null)
                     }
                 }
             }

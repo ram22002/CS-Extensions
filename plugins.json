@@ -1,107 +1,122 @@
 [
-    {
-        "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/nextgen.cs3",
-        "status": 1,
-        "version": 8,
-        "name": "NextGen Cinema",
-        "internalName": "NextGen",
-        "authors": [
-            "ram22002"
-        ],
-        "description": "Movies & TV series",
-        "fileSize": 444478,
-        "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
-        "language": "en",
-        "tvTypes": [
-            "Movie",
-            "TvSeries"
-        ],
-        "iconUrl": "https://cs.eclipsia.dpdns.org/img/b96b89faf5437eb2.png",
-        "apiVersion": 1,
-        "fileHash": "sha256-c70013f314132fb4331f14057af77f7fc13d6c1fd0d346171145aa4c5354c633"
-    },
-    {
-        "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/nextgenanime.cs3",
-        "status": 1,
-        "version": 7,
-        "name": "NextGen Anime",
-        "internalName": "NextGenAnime",
-        "authors": [
-            "ram22002"
-        ],
-        "description": "Anime, movies & OVAs",
-        "fileSize": 315927,
-        "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
-        "language": "en",
-        "tvTypes": [
-            "Anime",
-            "AnimeMovie",
-            "OVA"
-        ],
-        "iconUrl": "https://cs.eclipsia.dpdns.org/img/94999f14196f4f79.png",
-        "apiVersion": 1,
-        "fileHash": "sha256-cfeb0aacedb7e7003f3d900583fd9f231089faeb859ba338296c15cfe51fd1f8"
-    },
-    {
-        "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/nextgenbdix.cs3",
-        "status": 1,
-        "version": 5,
-        "name": "NextGen BDIX",
-        "internalName": "NextGenBDIX",
-        "authors": [
-            "ram22002"
-        ],
-        "description": "Regional FTP sources",
-        "fileSize": 239049,
-        "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
-        "language": "en",
-        "tvTypes": [
-            "Movie",
-            "TvSeries"
-        ],
-        "iconUrl": "https://cs.eclipsia.dpdns.org/img/9338756188a56ac5.png",
-        "apiVersion": 1,
-        "fileHash": "sha256-9059c0ccefd29b97e3c02ec7090c3b0748c79d9e066bed31824f326585c435ba"
-    },
-    {
-        "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/live.cs3",
-        "status": 1,
-        "version": 4,
-        "name": "NextGen Arena",
-        "internalName": "Live",
-        "authors": [
-            "ram22002"
-        ],
-        "description": "Live sports & sports TV",
-        "fileSize": 2159527,
-        "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
-        "language": "en",
-        "tvTypes": [
-            "Live"
-        ],
-        "iconUrl": "https://cs.eclipsia.dpdns.org/img/92bf4dcae66ee5a0.png",
-        "apiVersion": 1,
-        "fileHash": "sha256-7ceb0aa80a2a92081306f93d8eeb431885d2ffc1e85299af3d10b1369456c840"
-    },
-    {
-        "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/netmirror.cs3",
-        "status": 1,
-        "version": 6,
-        "name": "NextGen OTT",
-        "internalName": "NextGen OTT",
-        "authors": [
-            "ram22002"
-        ],
-        "description": "Netflix, Prime Video, Disney+ & more",
-        "fileSize": 85006,
-        "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
-        "language": "en",
-        "tvTypes": [
-            "Movie",
-            "TvSeries"
-        ],
-        "iconUrl": "https://cs.eclipsia.dpdns.org/img/643b959031f7c9ca.png",
-        "apiVersion": 1,
-        "fileHash": "sha256-485569da43c2912edfc5122434aba75c50edee43c7c61eb74d13eacfcf503d42"
-    }
+  {
+    "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/nextgen.cs3",
+    "status": 1,
+    "version": 8,
+    "name": "NextGen Cinema",
+    "internalName": "NextGen",
+    "authors": [
+      "ram22002"
+    ],
+    "description": "Movies & TV series",
+    "fileSize": 443996,
+    "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
+    "language": "en",
+    "tvTypes": [
+      "Movie",
+      "TvSeries"
+    ],
+    "iconUrl": "https://cs.eclipsia.dpdns.org/img/b96b89faf5437eb2.png",
+    "apiVersion": 1,
+    "fileHash": "sha256-c70013f314132fb4331f14057af77f7fc13d6c1fd0d346171145aa4c5354c633",
+    "filesize": 443996,
+    "hash": "c864fd453cea35ef4895fa70fac0528037babe9c585fd0f8b92e129458080b21",
+    "sha256": "c864fd453cea35ef4895fa70fac0528037babe9c585fd0f8b92e129458080b21"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/nextgenanime.cs3",
+    "status": 1,
+    "version": 7,
+    "name": "NextGen Anime",
+    "internalName": "NextGenAnime",
+    "authors": [
+      "ram22002"
+    ],
+    "description": "Anime, movies & OVAs",
+    "fileSize": 314937,
+    "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
+    "language": "en",
+    "tvTypes": [
+      "Anime",
+      "AnimeMovie",
+      "OVA"
+    ],
+    "iconUrl": "https://cs.eclipsia.dpdns.org/img/94999f14196f4f79.png",
+    "apiVersion": 1,
+    "fileHash": "sha256-cfeb0aacedb7e7003f3d900583fd9f231089faeb859ba338296c15cfe51fd1f8",
+    "filesize": 314937,
+    "hash": "bc30799597f7a520a5560df883eca889e3fbfab7040fd67c68015a2c641db7bc",
+    "sha256": "bc30799597f7a520a5560df883eca889e3fbfab7040fd67c68015a2c641db7bc"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/nextgenbdix.cs3",
+    "status": 1,
+    "version": 5,
+    "name": "NextGen BDIX",
+    "internalName": "NextGenBDIX",
+    "authors": [
+      "ram22002"
+    ],
+    "description": "Regional FTP sources",
+    "fileSize": 238109,
+    "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
+    "language": "en",
+    "tvTypes": [
+      "Movie",
+      "TvSeries"
+    ],
+    "iconUrl": "https://cs.eclipsia.dpdns.org/img/9338756188a56ac5.png",
+    "apiVersion": 1,
+    "fileHash": "sha256-9059c0ccefd29b97e3c02ec7090c3b0748c79d9e066bed31824f326585c435ba",
+    "filesize": 238109,
+    "hash": "40700a35332b54005b5f3310214a472fd48017e0e4ce0539120b3744832bcf5e",
+    "sha256": "40700a35332b54005b5f3310214a472fd48017e0e4ce0539120b3744832bcf5e"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/live.cs3",
+    "status": 1,
+    "version": 4,
+    "name": "NextGen Arena",
+    "internalName": "Live",
+    "authors": [
+      "ram22002"
+    ],
+    "description": "Live sports & sports TV",
+    "fileSize": 2159527,
+    "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
+    "language": "en",
+    "tvTypes": [
+      "Live"
+    ],
+    "iconUrl": "https://cs.eclipsia.dpdns.org/img/92bf4dcae66ee5a0.png",
+    "apiVersion": 1,
+    "fileHash": "sha256-7ceb0aa80a2a92081306f93d8eeb431885d2ffc1e85299af3d10b1369456c840",
+    "filesize": 2159527,
+    "hash": "7ceb0aa80a2a92081306f93d8eeb431885d2ffc1e85299af3d10b1369456c840",
+    "sha256": "7ceb0aa80a2a92081306f93d8eeb431885d2ffc1e85299af3d10b1369456c840"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/netmirror.cs3",
+    "status": 1,
+    "version": 6,
+    "name": "NextGen OTT",
+    "internalName": "NextGen OTT",
+    "authors": [
+      "ram22002"
+    ],
+    "description": "Netflix, Prime Video, Disney+ & more",
+    "fileSize": 85006,
+    "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
+    "language": "en",
+    "tvTypes": [
+      "Movie",
+      "TvSeries"
+    ],
+    "iconUrl": "https://cs.eclipsia.dpdns.org/img/643b959031f7c9ca.png",
+    "apiVersion": 1,
+    "fileHash": "sha256-485569da43c2912edfc5122434aba75c50edee43c7c61eb74d13eacfcf503d42",
+    "filesize": 85006,
+    "hash": "485569da43c2912edfc5122434aba75c50edee43c7c61eb74d13eacfcf503d42",
+    "sha256": "485569da43c2912edfc5122434aba75c50edee43c7c61eb74d13eacfcf503d42"
+  }
 ]

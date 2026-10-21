@@ -1,7 +1,7 @@
 import base64, json, pathlib, re
 
 root = pathlib.Path(__file__).resolve().parent.parent
-out = root / "EclipsiaAnime/src/main/kotlin/com/eclipsiaanime/runtime/BundledProviders.kt"
+out = root / "NextGenAnime/src/main/kotlin/com/nextgenanime/runtime/BundledProviders.kt"
 CHUNK = 20000
 all_files = sorted((root / "providers" / "providers-anime").glob("*.js"))
 manifest = {m["id"]: m for m in json.loads((root / "providers/providers-anime/manifest.json").read_text())["scrapers"]}
@@ -51,7 +51,7 @@ for f in files:
         f'{str(has_settings).lower()}, setOf({", ".join(kt(t) for t in types)}), '
         f'{str(enabled).lower()}, listOf(\n{parts}\n    ))')
 
-out.write_text(f'''package com.eclipsiaanime
+out.write_text(f'''package com.nextgenanime
 
 import android.util.Base64
 

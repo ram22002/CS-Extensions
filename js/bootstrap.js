@@ -2,7 +2,7 @@
   'use strict';
 
   var g = globalThis;
-  var N = g.EclipsiaNative;
+  var N = g.NextGenNative || g.EclipsiaNative;
 
   g.global = g;
   g.self = g;
@@ -18,7 +18,7 @@
   var pending = {};
   var nextId = 1;
 
-  g.__eclipsia_onFetch = function (id, json) {
+  g.__nextgen_onFetch = g.__eclipsia_onFetch = function (id, json) {
     var cb = pending[id];
     if (!cb) return;
     delete pending[id];
@@ -432,7 +432,7 @@
     }
   };
 
-  g.__eclipsia_load = function () {
+  g.__nextgen_load = g.__eclipsia_load = function () {
     var code = N.getPluginCode();
     try {
       (0, eval)('var module = { exports: {} };\nvar exports = module.exports;\n(function() {\n' + code + '\n})();');
@@ -442,7 +442,7 @@
     }
   };
 
-  g.__eclipsia_run = async function () {
+  g.__nextgen_run = g.__eclipsia_run = async function () {
     try {
       var getStreams = (g.module && g.module.exports && g.module.exports.getStreams) || g.getStreams;
       if (!getStreams) {
@@ -459,7 +459,7 @@
     }
   };
 
-  g.__eclipsia_settings = async function () {
+  g.__nextgen_settings = g.__eclipsia_settings = async function () {
     try {
       var onSettings = (g.module && g.module.exports && g.module.exports.onSettings) || g.onSettings;
       if (typeof onSettings === 'function') {
@@ -473,8 +473,8 @@
     }
   };
 
-  g.__eclipsia_start = function (mode) {
-    if (!g.__eclipsia_load()) { N.capture('[]'); return; }
-    if (mode === 'settings') g.__eclipsia_settings(); else g.__eclipsia_run();
+  g.__nextgen_start = g.__eclipsia_start = function (mode) {
+    if (!g.__nextgen_load()) { N.capture('[]'); return; }
+    if (mode === 'settings') g.__nextgen_settings(); else g.__nextgen_run();
   };
 })();

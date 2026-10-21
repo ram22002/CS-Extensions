@@ -1,8 +1,8 @@
 import base64, json, pathlib, re
 
 root = pathlib.Path(__file__).resolve().parent.parent
-out = root / "EclipsiaBDIX/src/main/kotlin/com/eclipsiabdix/runtime/BundledProviders.kt"
-cfg_out = root / "EclipsiaBDIX/src/main/kotlin/com/eclipsiabdix/runtime/ProviderConfigData.kt"
+out = root / "NextGenBDIX/src/main/kotlin/com/nextgenbdix/runtime/BundledProviders.kt"
+cfg_out = root / "NextGenBDIX/src/main/kotlin/com/nextgenbdix/runtime/ProviderConfigData.kt"
 CHUNK = 20000
 all_files = sorted((root / "providers" / "providers-bdix").glob("*.js"))
 manifest = {m["id"]: m for m in json.loads((root / "providers/providers-bdix/manifest.json").read_text())["scrapers"]}
@@ -77,7 +77,7 @@ for f in files:
         f'{str(has_settings).lower()}, setOf({", ".join(kt(t) for t in types)}), '
         f'{str(enabled).lower()}, {kt(category_of.get(f.stem, ""))}, listOf(\n{parts}\n    ))')
 
-out.write_text(f'''package com.eclipsiabdix
+out.write_text(f'''package com.nextgenbdix
 
 import android.util.Base64
 
@@ -100,7 +100,7 @@ def compact(data):
     return json.dumps(data, ensure_ascii=False, separators=(",", ":"))
 
 categories = [{k: v for k, v in c.items() if k != "providerIds"} for c in categories]
-cfg_out.write_text(f'''package com.eclipsiabdix
+cfg_out.write_text(f'''package com.nextgenbdix
 
 internal object ProviderConfigData {{
     const val PRESETS = {kt(compact(presets))}
