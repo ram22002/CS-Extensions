@@ -9,6 +9,8 @@ pairs = [
     (root / "NextGen/build/NextGen.cs3", root / "nextgen.cs3"),
     (root / "NextGenAnime/build/NextGenAnime.cs3", root / "nextgenanime.cs3"),
     (root / "NextGenBDIX/build/NextGenBDIX.cs3", root / "nextgenbdix.cs3"),
+    (root / "Live/build/Live.cs3", root / "live.cs3"),
+    (root / "Soryn/build/NextGen OTT.cs3", root / "netmirror.cs3"),
 ]
 
 for src, dst in pairs:
