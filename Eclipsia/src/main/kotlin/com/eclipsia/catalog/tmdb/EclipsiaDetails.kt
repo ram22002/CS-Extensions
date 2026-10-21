@@ -165,7 +165,7 @@ internal object EclipsiaDetails {
             val aniId = animeIds?.first
             val malId = animeIds?.second
 
-            fun LoadResponse.populateTrackers() {
+            suspend fun LoadResponse.populateTrackers() {
                 addTrailer(trailers(detail))
                 addImdbId(imdb)
                 imdb?.let { syncData["imdb"] = it }
@@ -192,8 +192,7 @@ internal object EclipsiaDetails {
                     score = rating
                     recommendations = related
                     actors = cast(detail)
-                    populateTrackers()
-                }
+                }.also { it.populateTrackers() }
             }
 
             val seasonNumbers = detail.optJSONArray("seasons").objects()
@@ -231,8 +230,7 @@ internal object EclipsiaDetails {
                 showStatus = if (detail.optString("status") == "Returning Series") ShowStatus.Ongoing else ShowStatus.Completed
                 recommendations = related
                 actors = cast(detail)
-                populateTrackers()
-            }
+            }.also { it.populateTrackers() }
         }
     }
 }

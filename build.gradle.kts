@@ -8,13 +8,17 @@ buildscript {
         google()
         mavenCentral()
 
-        maven("https://jitpack.io")
+        maven("https://jitpack.io") {
+            metadataSources {
+                artifact()
+            }
+        }
     }
 
     dependencies {
         classpath("com.android.tools.build:gradle:9.1.1")
 
-        classpath("com.github.recloudstream.gradle:com.lagradost.cloudstream3.gradle.gradle.plugin:${property("cloudstreamGradlePluginVersion")}")
+        classpath("com.github.recloudstream.gradle:gradle:${property("cloudstreamGradlePluginVersion")}")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.0")
     }
 }
@@ -23,7 +27,11 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven("https://jitpack.io")
+        maven("https://jitpack.io") {
+            metadataSources {
+                artifact()
+            }
+        }
     }
 }
 
@@ -73,6 +81,7 @@ subprojects {
         add("implementation", kotlin("stdlib"))
         add("implementation", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
         add("implementation", "com.github.Blatzar:NiceHttp:0.4.11")
+        add("compileOnly", "com.squareup.okhttp3:okhttp:4.12.0")
         add("implementation", "org.jsoup:jsoup:1.18.3")
         add("implementation", "com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
     }
