@@ -1,7 +1,7 @@
 const BASE_URL = 'http://new.circleftp.net';
 const BASE_URL_P = 'http://new.circleftp.net:5000';
 const TMDB_API = 'https://api.themoviedb.org/3';
-const FLBCK_URL = 'http://15.1.1.50:5000';
+const FALLBACK_URL = 'http://15.1.1.50:5000';
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36';
 const HEADERS = {
     'User-Agent': USER_AGENT,
@@ -32,7 +32,21 @@ async function fetchJson(url, headers) {
 
 async function circleGet(path) {
     const p = path.startsWith('/') ? path : '/' + path;
-    return (await fetchText(BASE_URL_P + p)) ?? (await fetchText(FALLBACK_URL + p));
+    const candidates = [
+        BASE_URL_P + p,
+        FALLBACK_URL + p,
+        'http://circleftp.net:5000' + p,
+        'http://15.1.1.3:5000' + p,
+        'http://15.1.1.4:5000' + p,
+        'http://hd.circleftp.net:5000' + p,
+    ];
+    for (const u of candidates) {
+        try {
+            const res = await fetchText(u);
+            if (res) return res;
+        } catch {}
+    }
+    return null;
 }
 
 function normalize(title) {
