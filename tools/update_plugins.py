@@ -16,13 +16,11 @@ for src, dst in pairs:
         shutil.copy2(src, dst)
         print(f"Copied {src} to {dst}")
 
-# Backwards compatibility for any clients referencing older filenames
-if (root / "nextgen.cs3").exists():
-    shutil.copy2(root / "nextgen.cs3", root / "eclipsia.cs3")
-if (root / "nextgenanime.cs3").exists():
-    shutil.copy2(root / "nextgenanime.cs3", root / "eclipsiaanime.cs3")
-if (root / "nextgenbdix.cs3").exists():
-    shutil.copy2(root / "nextgenbdix.cs3", root / "eclipsiabdix.cs3")
+for old_name in ["eclipsia.cs3", "eclipsiaanime.cs3", "eclipsiabdix.cs3"]:
+    old_file = root / old_name
+    if old_file.exists():
+        old_file.unlink()
+        print(f"Removed {old_name}")
 
 pj = root / "plugins.json"
 data = json.loads(pj.read_text(encoding="utf-8"))
