@@ -1,0 +1,11 @@
+{
+  "id": "playz-live",
+  "name": "PlayZ Live",
+  "version": "1.0.0",
+  "description": "Live sports events & channels (cricket, football, motorsport and more)",
+  "authors": ["PlayZ Live"],
+  "lang": "en",
+  "types": ["live"],
+  "baseUrl": "https://tourniquest.site",
+  "config": {}
+}

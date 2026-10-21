@@ -1,0 +1,21 @@
+[
+    {
+        "id": "latino",
+        "label": "Latino",
+        "bannerText": "Espa\u00f1ol [Latino] providers",
+        "providerIds": [
+            "noctyx",
+            "phraxis",
+            "vitrix"
+        ]
+    },
+    {
+        "id": "misc",
+        "label": "Misc.",
+        "bannerText": "Miscellaneous Providers",
+        "providerIds": [
+            "brellor",
+            "jyniq"
+        ]
+    }
+]

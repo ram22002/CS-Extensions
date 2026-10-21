@@ -1,0 +1,19 @@
+{
+  "id": "netmirror",
+  "name": "NetMirror",
+  "version": "1.0.0",
+  "description": "NetMirror catalog + HLS streams",
+  "lang": "en",
+  "types": ["movie", "series"],
+  "baseUrl": "https://net52.cc",
+  "config": {},
+  "variants": [
+    { "id": "netflix",  "name": "NetMirror Netflix", "shortName": "Netflix",     "config": { "providerId": "netflix" } },
+    { "id": "prime",    "name": "NetMirror Prime Video", "shortName": "Prime Video", "home": false, "config": { "providerId": "prime" } },
+    { "id": "hotstar",  "name": "NetMirror Hotstar", "shortName": "Hotstar",     "config": { "providerId": "hotstar" } },
+    { "id": "disney",   "name": "NetMirror Disney", "shortName": "Disney+",      "config": { "providerId": "disney" } },
+    { "id": "marvel",   "name": "NetMirror Marvel", "shortName": "Marvel",      "config": { "providerId": "marvel" } },
+    { "id": "starwars", "name": "NetMirror Star Wars", "shortName": "Star Wars",   "config": { "providerId": "starwars" } },
+    { "id": "pixar",    "name": "NetMirror Pixar", "shortName": "Pixar",       "config": { "providerId": "pixar" } }
+  ]
+}

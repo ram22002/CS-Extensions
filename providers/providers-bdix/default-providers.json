@@ -1,0 +1,7 @@
+{
+  "enabled": [
+    "bdix-cf",
+    "bdix-df",
+    "bdix-fh"
+  ]
+}

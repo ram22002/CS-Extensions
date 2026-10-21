@@ -1,0 +1,10 @@
+{
+    "name": "Eclipsia (Ram)",
+    "iconUrl": "https://cs.eclipsia.dpdns.org/img/b7054ad474af1254.png",
+    "description": "Curated Collection of Providers with Multi-Tracker Support",
+    "manifestVersion": 1,
+    "pluginLists": [
+        "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/plugins.json"
+    ]
+}
+

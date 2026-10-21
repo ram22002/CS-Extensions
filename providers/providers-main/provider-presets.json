@@ -1,0 +1,47 @@
+[
+    {
+        "label": "4k [2160p]",
+        "providerIds": [
+            "fastrion",
+            "hexion",
+            "kryxalia",
+            "maelith",
+            "mavonyx",
+            "pynvix",
+            "solunix",
+            "vornix",
+            "qyrvaen"
+        ]
+    },
+    {
+        "label": "Fast",
+        "providerIds": [
+            "durnel",
+            "esvyl",
+            "fendrix",
+            "fyron",
+            "haylox",
+            "jhaeros",
+            "karnis",
+            "kethrax",
+            "mavonyx",
+            "sylphera",
+            "soryn",
+            "waelum",
+            "wrenok",
+            "zevran"
+        ]
+    },
+    {
+        "label": "Regional",
+        "providerIds": [
+            "durnel",
+            "karnis",
+            "kryxalia",
+            "lyrin",
+            "soryn",
+            "vornix",
+            "xandril"
+        ]
+    }
+]
