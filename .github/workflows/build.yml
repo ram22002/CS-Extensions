@@ -31,9 +31,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
@@ -45,7 +42,7 @@ jobs:
       - name: Commit and Push Updated Plugins
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Auto-build .cs3 extensions and update repository"
+          commit_message: "Auto-build .cs3 extensions and update repository [skip ci]"
           file_pattern: "*.cs3 plugins.json"
           commit_user_name: "ram22002"
           commit_user_email: "ramlakhanregar1+github@gmail.com"
