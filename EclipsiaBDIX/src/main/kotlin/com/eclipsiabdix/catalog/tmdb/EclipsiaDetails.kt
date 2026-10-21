@@ -7,6 +7,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -14,6 +16,98 @@ internal object EclipsiaDetails {
     private const val BASE = "https://api.themoviedb.org/3"
     private const val IMAGE = "https://image.tmdb.org/t/p"
     private val LINK_PATTERN = Regex("""themoviedb\.org/(movie|tv)/(\d+)""")
+
+    private suspend fun queryAnilist(titles: List<String>, year: Int?, movie: Boolean): Pair<Int?, Int?> {
+        val q = "query(\$s: String) { Page(page: 1, perPage: 10) { media(search: \$s, type: ANIME, sort: SEARCH_MATCH) { id idMal format status seasonYear startDate { year } title { romaji english native } synonyms } } }"
+        val wanted = titles.map { it.lowercase().filter { c -> c.isLetterOrDigit() } }.filter { it.isNotEmpty() }.toSet()
+        if (wanted.isEmpty()) return null to null
+        for (title in titles.take(3)) {
+            val body = JSONObject().put("query", q).put("variables", JSONObject().put("s", title)).toString()
+            val text = try {
+                app.post(
+                    "https://graphql.anilist.co",
+                    headers = mapOf("Accept" to "application/json", "Content-Type" to "application/json"),
+                    requestBody = body.toRequestBody("application/json".toMediaTypeOrNull()),
+                    timeout = 8_000L
+                ).text
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                null
+            } ?: continue
+            val media = runCatching { JSONObject(text) }.getOrNull()
+                ?.optJSONObject("data")?.optJSONObject("Page")?.optJSONArray("media").objects()
+            val hit = media.firstOrNull { o ->
+                val isMovie = o.optString("format", "").equals("MOVIE", true)
+                if (isMovie != movie) return@firstOrNull false
+                val y = o.optInt("seasonYear", 0).takeIf { it > 0 } ?: o.optJSONObject("startDate")?.optInt("year", 0)
+                if (year != null && y != null && kotlin.math.abs(y - year) > 1) return@firstOrNull false
+                val t = o.optJSONObject("title")
+                val tList = listOfNotNull(t?.optString("english"), t?.optString("romaji"), t?.optString("native"))
+                tList.map { it.lowercase().filter { c -> c.isLetterOrDigit() } }.any { it in wanted }
+            } ?: continue
+            val aniId = hit.optInt("id", 0).takeIf { it > 0 }
+            val malId = hit.optInt("idMal", 0).takeIf { it > 0 }
+            if (aniId != null || malId != null) return aniId to malId
+        }
+        return null to null
+    }
+
+    private suspend fun queryKitsu(titles: List<String>, year: Int?, movie: Boolean): Pair<Int?, Int?> {
+        val wanted = titles.map { it.lowercase().filter { c -> c.isLetterOrDigit() } }.filter { it.isNotEmpty() }.toSet()
+        if (wanted.isEmpty()) return null to null
+        for (title in titles.take(3)) {
+            val encoded = java.net.URLEncoder.encode(title, "UTF-8")
+            val text = try {
+                app.get(
+                    "https://kitsu.io/api/edge/anime?filter%5Btext%5D=$encoded&page%5Blimit%5D=10",
+                    headers = mapOf("Accept" to "application/vnd.api+json"),
+                    timeout = 8_000L
+                ).text
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                null
+            } ?: continue
+            val data = runCatching { JSONObject(text) }.getOrNull()?.optJSONArray("data").objects()
+            val hit = data.firstOrNull { o ->
+                val at = o.optJSONObject("attributes") ?: return@firstOrNull false
+                val isMovie = at.optString("subtype").equals("movie", true)
+                if (isMovie != movie) return@firstOrNull false
+                val y = at.optString("startDate").take(4).toIntOrNull()
+                if (year != null && y != null && kotlin.math.abs(y - year) > 1) return@firstOrNull false
+                val t = at.optJSONObject("titles")
+                val tList = listOfNotNull(t?.optString("en_us"), t?.optString("en"), t?.optString("en_jp"), at.optString("canonicalTitle"))
+                tList.map { it.lowercase().filter { c -> c.isLetterOrDigit() } }.any { it in wanted }
+            } ?: continue
+            val kitsuId = hit.optString("id")
+            val mapText = try {
+                app.get(
+                    "https://kitsu.io/api/edge/anime/$kitsuId/mappings",
+                    headers = mapOf("Accept" to "application/vnd.api+json"),
+                    timeout = 8_000L
+                ).text
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                null
+            }
+            var mal: Int? = null
+            var anilist: Int? = null
+            val mapData = runCatching { JSONObject(mapText ?: "") }.getOrNull()?.optJSONArray("data").objects()
+            for (m in mapData) {
+                val attr = m.optJSONObject("attributes") ?: continue
+                val site = attr.optString("externalSite", "")
+                if (site.contains("myanimelist", ignoreCase = true)) {
+                    mal = attr.optString("externalId").toIntOrNull()
+                } else if (site.contains("anilist", ignoreCase = true)) {
+                    anilist = attr.optString("externalId").toIntOrNull()
+                }
+            }
+            if (anilist != null || mal != null) return anilist to mal
+        }
+        return null to null
+    }
 
     private class Ref(val isTv: Boolean, val id: Int)
 
@@ -118,12 +212,26 @@ internal object EclipsiaDetails {
                 this@loadDetails, detail.optJSONObject("recommendations")?.optJSONArray("results"), kind
             )
             val logo = logoJob.await()
+            val isAnime = (detail.optString("original_language") == "ja" || detail.optJSONArray("origin_country").objects().any { it.optString("iso_3166_1", "") == "JP" })
+                && genreNames.any { it.equals("Animation", ignoreCase = true) }
+            val animeIds = if (isAnime) {
+                val names = listOfNotNull(detail.text("name"), detail.text("original_name"), detail.text("title"), detail.text("original_title")).distinct()
+                val ids = queryAnilist(names, releaseYear, !ref.isTv)
+                if (ids.first != null || ids.second != null) ids else queryKitsu(names, releaseYear, !ref.isTv)
+            } else null
+            val aniId = animeIds?.first
+            val malId = animeIds?.second
 
             suspend fun LoadResponse.populateTrackers() {
                 addTrailer(trailers(detail))
                 addImdbId(imdb)
                 imdb?.let { syncData["imdb"] = it }
                 syncData["tmdb"] = ref.id.toString()
+                aniId?.let { syncData["anilist"] = it.toString() }
+                malId?.let {
+                    syncData["myanimelist"] = it.toString()
+                    syncData["mal"] = it.toString()
+                }
             }
 
             if (!ref.isTv) {

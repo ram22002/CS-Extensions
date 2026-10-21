@@ -76,17 +76,23 @@ internal object EclipsiaKitsuMeta {
         return list
     }
 
-    internal suspend fun malIdFor(kitsuId: String): Int? {
-        val json = get("anime/$kitsuId/mappings") ?: return null
+    data class Mappings(val malId: Int? = null, val anilistId: Int? = null)
+
+    internal suspend fun mappingsFor(kitsuId: String): Mappings {
+        val json = get("anime/$kitsuId/mappings") ?: return Mappings()
         val data = json.optJSONArray("data").objs()
+        var mal: Int? = null
+        var anilist: Int? = null
         for (m in data) {
             val attr = m.optJSONObject("attributes") ?: continue
             val site = attr.str("externalSite") ?: continue
             if (site.contains("myanimelist", ignoreCase = true)) {
-                return attr.str("externalId")?.toIntOrNull()
+                mal = attr.str("externalId")?.toIntOrNull()
+            } else if (site.contains("anilist", ignoreCase = true)) {
+                anilist = attr.str("externalId")?.toIntOrNull()
             }
         }
-        return null
+        return Mappings(mal, anilist)
     }
 
     suspend fun find(titles: List<String>, year: Int?, movie: Boolean): Entry? {
@@ -103,10 +109,11 @@ internal object EclipsiaKitsuMeta {
                 titlesOf(at).any { norm(it) in wanted }
             } ?: continue
             val e = entryOf(hit) ?: continue
-            val mal = malIdFor(e.id)
+            val maps = mappingsFor(e.id)
             return Entry(
                 e.id, e.synopsis, e.episodeCount, e.poster, e.cover,
-                malId = mal,
+                malId = maps.malId,
+                anilistId = maps.anilistId,
                 kitsuId = e.id,
             )
         }

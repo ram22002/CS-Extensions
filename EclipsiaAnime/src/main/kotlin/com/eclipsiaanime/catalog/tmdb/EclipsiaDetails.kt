@@ -137,7 +137,7 @@ internal object EclipsiaDetails {
             val logo = logoJob.await()
             val anilistHit = anilistMetaJob.await()
             val kitsuHit = kitsuMetaJob.await()
-            val aniId = anilistHit?.anilistId ?: anilistHit?.id?.toIntOrNull()
+            val aniId = anilistHit?.anilistId ?: anilistHit?.id?.toIntOrNull() ?: kitsuHit?.anilistId
             val malId = anilistHit?.malId ?: kitsuHit?.malId
             val kitsuId = kitsuHit?.kitsuId ?: kitsuHit?.id
 

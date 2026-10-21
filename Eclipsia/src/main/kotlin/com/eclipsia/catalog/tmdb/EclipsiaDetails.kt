@@ -53,6 +53,62 @@ internal object EclipsiaDetails {
         return null to null
     }
 
+    private suspend fun queryKitsu(titles: List<String>, year: Int?, movie: Boolean): Pair<Int?, Int?> {
+        val wanted = titles.map { it.lowercase().filter { c -> c.isLetterOrDigit() } }.filter { it.isNotEmpty() }.toSet()
+        if (wanted.isEmpty()) return null to null
+        for (title in titles.take(3)) {
+            val encoded = java.net.URLEncoder.encode(title, "UTF-8")
+            val text = try {
+                app.get(
+                    "https://kitsu.io/api/edge/anime?filter%5Btext%5D=$encoded&page%5Blimit%5D=10",
+                    headers = mapOf("Accept" to "application/vnd.api+json"),
+                    timeout = 8_000L
+                ).text
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                null
+            } ?: continue
+            val data = runCatching { JSONObject(text) }.getOrNull()?.optJSONArray("data").objects()
+            val hit = data.firstOrNull { o ->
+                val at = o.optJSONObject("attributes") ?: return@firstOrNull false
+                val isMovie = at.optString("subtype").equals("movie", true)
+                if (isMovie != movie) return@firstOrNull false
+                val y = at.optString("startDate").take(4).toIntOrNull()
+                if (year != null && y != null && kotlin.math.abs(y - year) > 1) return@firstOrNull false
+                val t = at.optJSONObject("titles")
+                val tList = listOfNotNull(t?.optString("en_us"), t?.optString("en"), t?.optString("en_jp"), at.optString("canonicalTitle"))
+                tList.map { it.lowercase().filter { c -> c.isLetterOrDigit() } }.any { it in wanted }
+            } ?: continue
+            val kitsuId = hit.optString("id")
+            val mapText = try {
+                app.get(
+                    "https://kitsu.io/api/edge/anime/$kitsuId/mappings",
+                    headers = mapOf("Accept" to "application/vnd.api+json"),
+                    timeout = 8_000L
+                ).text
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                null
+            }
+            var mal: Int? = null
+            var anilist: Int? = null
+            val mapData = runCatching { JSONObject(mapText ?: "") }.getOrNull()?.optJSONArray("data").objects()
+            for (m in mapData) {
+                val attr = m.optJSONObject("attributes") ?: continue
+                val site = attr.optString("externalSite", "")
+                if (site.contains("myanimelist", ignoreCase = true)) {
+                    mal = attr.optString("externalId").toIntOrNull()
+                } else if (site.contains("anilist", ignoreCase = true)) {
+                    anilist = attr.optString("externalId").toIntOrNull()
+                }
+            }
+            if (anilist != null || mal != null) return anilist to mal
+        }
+        return null to null
+    }
+
     private class Ref(val isTv: Boolean, val id: Int)
 
     private fun refOf(url: String): Ref? {
@@ -160,7 +216,8 @@ internal object EclipsiaDetails {
                 && genreNames.any { it.equals("Animation", ignoreCase = true) }
             val animeIds = if (isAnime) {
                 val names = listOfNotNull(detail.text("name"), detail.text("original_name"), detail.text("title"), detail.text("original_title")).distinct()
-                queryAnilist(names, releaseYear, !ref.isTv)
+                val ids = queryAnilist(names, releaseYear, !ref.isTv)
+                if (ids.first != null || ids.second != null) ids else queryKitsu(names, releaseYear, !ref.isTv)
             } else null
             val aniId = animeIds?.first
             val malId = animeIds?.second
