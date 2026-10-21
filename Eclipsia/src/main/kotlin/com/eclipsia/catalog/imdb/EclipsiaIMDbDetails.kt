@@ -80,6 +80,40 @@ internal object EclipsiaIMDbDetails {
         val rating = meta.imdbText("imdbRating")?.toDoubleOrNull()?.let { Score.from10(it) }
         val cast = castOf(kind, id)
 
+        val aniZip = EclipsiaAniZip.resolve(imdbId = id)
+        val tmdbId = aniZip?.tmdbId ?: run {
+            val text = EclipsiaTmdb.get("find/$id?external_source=imdb_id", ttlMs = 24 * 60 * 60 * 1000L)
+            text?.let {
+                val obj = JSONObject(it)
+                val results = if (kind == "movie") obj.optJSONArray("movie_results") else obj.optJSONArray("tv_results")
+                val hit = results?.optJSONObject(0) ?: obj.optJSONArray("tv_results")?.optJSONObject(0) ?: obj.optJSONArray("movie_results")?.optJSONObject(0)
+                hit?.optInt("id", 0)?.takeIf { v -> v > 0 }?.toString()
+            }
+        }
+        val aniId = aniZip?.anilistId
+        val malId = aniZip?.malId
+        val kitsuId = aniZip?.kitsuId?.toString()
+
+        fun LoadResponse.populateTrackers() {
+            addImdbId(id)
+            syncData["imdb"] = id
+            tmdbId?.let { syncData["tmdb"] = it }
+            aniId?.let {
+                val s = it.toString()
+                syncData["anilist"] = s
+                syncData["aniList"] = s
+            }
+            malId?.let {
+                val s = it.toString()
+                syncData["myanimelist"] = s
+                syncData["myAnimeList"] = s
+                syncData["mal"] = s
+            }
+            kitsuId?.let {
+                syncData["kitsu"] = it
+            }
+        }
+
         if (kind == "movie") {
             return newMovieLoadResponse(title, url, TvType.Movie, payload(id, null, null, title)) {
                 posterUrl = cover
@@ -91,9 +125,7 @@ internal object EclipsiaIMDbDetails {
                 score = rating
                 contentRating = "IMDB"
                 actors = cast
-                addImdbId(id)
-                syncData["imdb"] = id
-            }
+            }.also { it.populateTrackers() }
         }
 
         val episodes = meta.optJSONArray("videos").imdbObjects().mapNotNull { v ->
@@ -121,8 +153,6 @@ internal object EclipsiaIMDbDetails {
             score = rating
             contentRating = "IMDB"
             actors = cast
-            addImdbId(id)
-            syncData["imdb"] = id
-        }
+        }.also { it.populateTrackers() }
     }
 }

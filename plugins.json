@@ -2,14 +2,14 @@
     {
         "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/eclipsia.cs3",
         "status": 1,
-        "version": 7,
+        "version": 8,
         "name": "NextGen Cinema",
         "internalName": "Eclipsia",
         "authors": [
             "ram22002"
         ],
         "description": "Movies & TV series",
-        "fileSize": 437697,
+        "fileSize": 444535,
         "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
         "language": "en",
         "tvTypes": [
@@ -18,19 +18,19 @@
         ],
         "iconUrl": "https://cs.eclipsia.dpdns.org/img/b96b89faf5437eb2.png",
         "apiVersion": 1,
-        "fileHash": "sha256-7ea97f585f3d9fc9140123e08e0c28b81d64efbe59e5916cc77a0cd066d7c05f"
+        "fileHash": "sha256-191e8abbf0e51f2539f5b88160696f9032c3dfce2283fee9995db620ebc0d6bf"
     },
     {
         "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/eclipsiaanime.cs3",
         "status": 1,
-        "version": 6,
+        "version": 7,
         "name": "NextGen Anime",
         "internalName": "EclipsiaAnime",
         "authors": [
             "ram22002"
         ],
         "description": "Anime, movies & OVAs",
-        "fileSize": 309800,
+        "fileSize": 316193,
         "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
         "language": "en",
         "tvTypes": [
@@ -40,19 +40,19 @@
         ],
         "iconUrl": "https://cs.eclipsia.dpdns.org/img/94999f14196f4f79.png",
         "apiVersion": 1,
-        "fileHash": "sha256-20f7e75ce94187f462ab4d890ec7650b20f7af293921ef20223d1a360bfed476"
+        "fileHash": "sha256-0dd87380c18d327600b9fdd5e68a416c25f2332d3c46239e1be6dac37070d25d"
     },
     {
         "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/eclipsiabdix.cs3",
         "status": 1,
-        "version": 4,
+        "version": 5,
         "name": "NextGen BDIX",
         "internalName": "EclipsiaBDIX",
         "authors": [
             "ram22002"
         ],
         "description": "Regional FTP sources",
-        "fileSize": 234324,
+        "fileSize": 239082,
         "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
         "language": "en",
         "tvTypes": [
@@ -61,7 +61,7 @@
         ],
         "iconUrl": "https://cs.eclipsia.dpdns.org/img/9338756188a56ac5.png",
         "apiVersion": 1,
-        "fileHash": "sha256-50aee4cdabd3de1985780cf3c49edf2265a14a0c1a5292c7240f468bf52643ba"
+        "fileHash": "sha256-c0c09bba1c101bc8d117e4a5a68bb7045b7706a0ed5929ee3149962733a4a9d0"
     },
     {
         "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/live.cs3",

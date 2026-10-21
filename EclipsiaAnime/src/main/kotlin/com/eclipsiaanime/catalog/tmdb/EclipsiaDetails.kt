@@ -137,19 +137,32 @@ internal object EclipsiaDetails {
             val logo = logoJob.await()
             val anilistHit = anilistMetaJob.await()
             val kitsuHit = kitsuMetaJob.await()
-            val aniId = anilistHit?.anilistId ?: anilistHit?.id?.toIntOrNull() ?: kitsuHit?.anilistId
-            val malId = anilistHit?.malId ?: kitsuHit?.malId
-            val kitsuId = kitsuHit?.kitsuId ?: kitsuHit?.id
+            val aniZip = EclipsiaAniZip.resolve(
+                tmdbId = ref.id.toString(),
+                imdbId = imdb,
+                anilistId = anilistHit?.anilistId?.toString() ?: anilistHit?.id,
+                kitsuId = kitsuHit?.kitsuId ?: kitsuHit?.id
+            )
+            val aniId = aniZip?.anilistId ?: anilistHit?.anilistId ?: anilistHit?.id?.toIntOrNull() ?: kitsuHit?.anilistId
+            val malId = aniZip?.malId ?: anilistHit?.malId ?: kitsuHit?.malId
+            val kitsuId = aniZip?.kitsuId?.toString() ?: kitsuHit?.kitsuId ?: kitsuHit?.id
+            val resolvedImdb = aniZip?.imdbId ?: imdb
 
             suspend fun LoadResponse.populateTrackers() {
                 addTrailer(trailers(detail))
-                addImdbId(imdb)
-                imdb?.let { syncData["imdb"] = it }
+                addImdbId(resolvedImdb)
+                resolvedImdb?.let { syncData["imdb"] = it }
                 syncData["tmdb"] = ref.id.toString()
-                aniId?.let { syncData["anilist"] = it.toString() }
+                aniId?.let {
+                    val s = it.toString()
+                    syncData["anilist"] = s
+                    syncData["aniList"] = s
+                }
                 malId?.let {
-                    syncData["myanimelist"] = it.toString()
-                    syncData["mal"] = it.toString()
+                    val s = it.toString()
+                    syncData["myanimelist"] = s
+                    syncData["myAnimeList"] = s
+                    syncData["mal"] = s
                 }
                 kitsuId?.let { syncData["kitsu"] = it }
             }

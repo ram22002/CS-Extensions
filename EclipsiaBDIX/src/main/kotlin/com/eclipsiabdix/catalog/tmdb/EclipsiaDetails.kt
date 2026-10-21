@@ -214,23 +214,38 @@ internal object EclipsiaDetails {
             val logo = logoJob.await()
             val isAnime = (detail.optString("original_language") == "ja" || detail.optJSONArray("origin_country").objects().any { it.optString("iso_3166_1", "") == "JP" })
                 && genreNames.any { it.equals("Animation", ignoreCase = true) }
-            val animeIds = if (isAnime) {
+            val aniZip = EclipsiaAniZip.resolve(tmdbId = ref.id.toString(), imdbId = imdb)
+            val animeIds = if (aniZip != null) {
+                Triple(aniZip.anilistId, aniZip.malId, aniZip.kitsuId?.toString())
+            } else if (isAnime) {
                 val names = listOfNotNull(detail.text("name"), detail.text("original_name"), detail.text("title"), detail.text("original_title")).distinct()
                 val ids = queryAnilist(names, releaseYear, !ref.isTv)
-                if (ids.first != null || ids.second != null) ids else queryKitsu(names, releaseYear, !ref.isTv)
+                val fallback = if (ids.first != null || ids.second != null) ids else queryKitsu(names, releaseYear, !ref.isTv)
+                Triple(fallback.first, fallback.second, null)
             } else null
             val aniId = animeIds?.first
             val malId = animeIds?.second
+            val kitsuId = animeIds?.third
+            val resolvedImdb = aniZip?.imdbId ?: imdb
 
             suspend fun LoadResponse.populateTrackers() {
                 addTrailer(trailers(detail))
-                addImdbId(imdb)
-                imdb?.let { syncData["imdb"] = it }
+                addImdbId(resolvedImdb)
+                resolvedImdb?.let { syncData["imdb"] = it }
                 syncData["tmdb"] = ref.id.toString()
-                aniId?.let { syncData["anilist"] = it.toString() }
+                aniId?.let {
+                    val s = it.toString()
+                    syncData["anilist"] = s
+                    syncData["aniList"] = s
+                }
                 malId?.let {
-                    syncData["myanimelist"] = it.toString()
-                    syncData["mal"] = it.toString()
+                    val s = it.toString()
+                    syncData["myanimelist"] = s
+                    syncData["myAnimeList"] = s
+                    syncData["mal"] = s
+                }
+                kitsuId?.let {
+                    syncData["kitsu"] = it
                 }
             }
 

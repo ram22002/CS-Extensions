@@ -76,10 +76,19 @@ internal object EclipsiaKitsuMeta {
         return list
     }
 
-    data class Mappings(val malId: Int? = null, val anilistId: Int? = null)
+    data class Mappings(val malId: Int? = null, val anilistId: Int? = null, val tmdbId: String? = null, val imdbId: String? = null)
 
     internal suspend fun mappingsFor(kitsuId: String): Mappings {
-        val json = get("anime/$kitsuId/mappings") ?: return Mappings()
+        val aniZip = EclipsiaAniZip.resolve(kitsuId = kitsuId)
+        if (aniZip != null && (aniZip.anilistId != null || aniZip.malId != null)) {
+            return Mappings(
+                malId = aniZip.malId,
+                anilistId = aniZip.anilistId,
+                tmdbId = aniZip.tmdbId,
+                imdbId = aniZip.imdbId
+            )
+        }
+        val json = get("anime/$kitsuId/mappings?page%5Blimit%5D=20") ?: return Mappings()
         val data = json.optJSONArray("data").objs()
         var mal: Int? = null
         var anilist: Int? = null
@@ -91,6 +100,10 @@ internal object EclipsiaKitsuMeta {
             } else if (site.contains("anilist", ignoreCase = true)) {
                 anilist = attr.str("externalId")?.toIntOrNull()
             }
+        }
+        if (anilist == null && mal != null) {
+            val fallback = EclipsiaAniZip.resolve(malId = mal.toString())
+            anilist = fallback?.anilistId
         }
         return Mappings(mal, anilist)
     }
