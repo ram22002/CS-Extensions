@@ -34,7 +34,7 @@
       "ram22002"
     ],
     "description": "Anime, movies & OVAs",
-    "fileSize": 320028,
+    "fileSize": 323124,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -44,10 +44,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/anime.png",
     "apiVersion": 1,
-    "fileHash": "sha256-55790e35975284366851cd2cd5b5d8b8c6b057e95ee510f74cecc8a52d4255c4",
-    "filesize": 320028,
-    "hash": "55790e35975284366851cd2cd5b5d8b8c6b057e95ee510f74cecc8a52d4255c4",
-    "sha256": "55790e35975284366851cd2cd5b5d8b8c6b057e95ee510f74cecc8a52d4255c4",
+    "fileHash": "sha256-688b727152a3932ba39f722df8376229b92a4a645fc1ee1c3582cdcd732bb75c",
+    "filesize": 323124,
+    "hash": "688b727152a3932ba39f722df8376229b92a4a645fc1ee1c3582cdcd732bb75c",
+    "sha256": "688b727152a3932ba39f722df8376229b92a4a645fc1ee1c3582cdcd732bb75c",
     "requiresResources": false
   },
   {

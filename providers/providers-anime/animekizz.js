@@ -2,6 +2,7 @@ const PROVIDER = "Animekizz";
 const BASE_URL = "https://animekizz.live";
 const TMDB_API = "https://api.themoviedb.org/3";
 const ANIZIP_API = "https://api.ani.zip/mappings";
+const API_KEY = (typeof TMDB_API_KEY !== "undefined" && TMDB_API_KEY) ? TMDB_API_KEY : (typeof globalThis !== "undefined" && globalThis.TMDB_API_KEY) ? globalThis.TMDB_API_KEY : "307b7b8ef035c6aa336900aef4e203bd";
 
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
@@ -38,22 +39,27 @@ async function resolveMetadata(tmdbId, mediaType, season) {
     let title = "";
     let anilistId = null;
 
-    // 1. Check AniZip first for direct anilist_id mapping
+    // 1. Check AniZip first for direct anilist_id and anime title
     try {
         const aniData = await httpJson(`${ANIZIP_API}?themoviedb_id=${tmdbId}`);
         if (aniData?.mappings) {
             anilistId = aniData.mappings.anilist_id;
         }
-    } catch { }
-
-    // 2. Query TMDb for anime title
-    try {
-        const endpoint = mediaType === "tv" ? "tv" : "movie";
-        const tmdbData = await httpJson(`${TMDB_API}/${endpoint}/${tmdbId}?api_key=${TMDB_API_KEY}`);
-        if (tmdbData) {
-            title = (tmdbData.name || tmdbData.title || tmdbData.original_name || tmdbData.original_title || "").trim();
+        if (aniData?.titles) {
+            title = (aniData.titles.en || aniData.titles['x-jat'] || aniData.titles.ja || "").trim();
         }
     } catch { }
+
+    // 2. Query TMDb for anime title if still missing
+    if (!title) {
+        try {
+            const endpoint = mediaType === "tv" ? "tv" : "movie";
+            const tmdbData = await httpJson(`${TMDB_API}/${endpoint}/${tmdbId}?api_key=${API_KEY}`);
+            if (tmdbData) {
+                title = (tmdbData.name || tmdbData.title || tmdbData.original_name || tmdbData.original_title || "").trim();
+            }
+        } catch { }
+    }
 
     // 3. Fallback: query AniList directly by title if anilistId missing
     if (!anilistId && title) {

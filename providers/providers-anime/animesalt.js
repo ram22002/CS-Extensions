@@ -2,6 +2,7 @@ const PROVIDER = "AnimeSalt";
 const BASE_URL = "https://animesalt.cx";
 const ALT_URL = "https://animesalt.ac";
 const TMDB_API = "https://api.themoviedb.org/3";
+const API_KEY = (typeof TMDB_API_KEY !== "undefined" && TMDB_API_KEY) ? TMDB_API_KEY : (typeof globalThis !== "undefined" && globalThis.TMDB_API_KEY) ? globalThis.TMDB_API_KEY : "307b7b8ef035c6aa336900aef4e203bd";
 
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
@@ -27,9 +28,10 @@ function slugify(text) {
         .replace(/\s+/g, "-");
 }
 
-async function httpText(url, headers = HEADERS) {
+async function httpText(url, headers = HEADERS, timeoutMs = 5000) {
     try {
-        const res = await fetch(url, { headers });
+        const signal = AbortSignal.timeout ? AbortSignal.timeout(timeoutMs) : undefined;
+        const res = await fetch(url, { headers, signal });
         if (!res.ok) return "";
         return await res.text();
     } catch {
@@ -37,10 +39,12 @@ async function httpText(url, headers = HEADERS) {
     }
 }
 
-async function httpJson(url, options = {}) {
+async function httpJson(url, options = {}, timeoutMs = 5000) {
     try {
+        const signal = AbortSignal.timeout ? AbortSignal.timeout(timeoutMs) : undefined;
         const res = await fetch(url, {
             ...options,
+            signal,
             headers: { ...HEADERS, ...(options.headers || {}) }
         });
         if (!res.ok) return null;
@@ -50,15 +54,25 @@ async function httpJson(url, options = {}) {
     }
 }
 
+const ANIZIP_API = "https://api.ani.zip/mappings";
+
 async function getTmdbTitle(tmdbId, mediaType) {
+    // 1. AniZip mapping (fast, universally accessible, never geo-blocked)
+    try {
+        const aniData = await httpJson(`${ANIZIP_API}?themoviedb_id=${tmdbId}`);
+        const aniTitle = aniData?.titles?.en || aniData?.titles?.['x-jat'] || aniData?.titles?.ja;
+        if (aniTitle) return aniTitle.trim();
+    } catch { }
+
+    // 2. Direct TMDb fallback
     try {
         const endpoint = mediaType === "tv" ? "tv" : "movie";
-        const data = await httpJson(`${TMDB_API}/${endpoint}/${tmdbId}?api_key=${TMDB_API_KEY}`);
-        if (!data) return "";
-        return (data.name || data.title || data.original_name || data.original_title || "").trim();
-    } catch {
-        return "";
-    }
+        const data = await httpJson(`${TMDB_API}/${endpoint}/${tmdbId}?api_key=${API_KEY}`);
+        if (data) {
+            return (data.name || data.title || data.original_name || data.original_title || "").trim();
+        }
+    } catch { }
+    return "";
 }
 
 async function getStreams(tmdbId, mediaType, season, episode) {
@@ -67,13 +81,18 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const title = await getTmdbTitle(tmdbId, mediaType);
         if (!title) return [];
 
-        const slug = slugify(title);
         const s = season || 1;
         const ep = episode || 1;
 
+        const cleanTitle = title.split(/[:\-]/)[0].trim();
+        const fullSlug = slugify(title);
+        const shortSlug = slugify(cleanTitle);
+
         const candidateUrls = [
-            isTv ? `${BASE_URL}/episode/${slug}-${s}x${ep}/` : `${BASE_URL}/movies/${slug}/`,
-            isTv ? `${ALT_URL}/episode/${slug}-${s}x${ep}/` : `${ALT_URL}/movies/${slug}/`
+            isTv ? `${BASE_URL}/episode/${shortSlug}-${s}x${ep}/` : `${BASE_URL}/movies/${shortSlug}/`,
+            isTv ? `${BASE_URL}/episode/${fullSlug}-${s}x${ep}/` : `${BASE_URL}/movies/${fullSlug}/`,
+            isTv ? `${ALT_URL}/episode/${shortSlug}-${s}x${ep}/` : `${ALT_URL}/movies/${shortSlug}/`,
+            isTv ? `${ALT_URL}/episode/${fullSlug}-${s}x${ep}/` : `${ALT_URL}/movies/${fullSlug}/`
         ];
 
         let html = "";
@@ -81,26 +100,39 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
         for (const u of candidateUrls) {
             html = await httpText(u);
-            if (html && html.includes("as-cdn")) {
+            if (html && (html.includes("ravok.buzz") || html.includes("as-cdn"))) {
                 usedBase = u.startsWith(ALT_URL) ? ALT_URL : BASE_URL;
                 break;
             }
         }
 
-        // If direct slug failed, search by title
-        if (!html || !html.includes("as-cdn")) {
-            const searchHtml = await httpText(`${BASE_URL}/?s=${encodeURIComponent(title)}`);
+        // If direct candidate failed, search by title
+        if (!html || (!html.includes("ravok.buzz") && !html.includes("as-cdn"))) {
+            const searchHtml = await httpText(`${BASE_URL}/?s=${encodeURIComponent(cleanTitle || title)}`);
             if (searchHtml) {
-                const epMatch = searchHtml.match(new RegExp(`href=["'](https?://[^"']*(?:episode|movies)/[^"']*)["']`, "i"));
-                if (epMatch) {
-                    html = await httpText(epMatch[1]);
+                if (isTv) {
+                    const seriesMatches = [...searchHtml.matchAll(/href=["'](https?:\/\/animesalt\.(?:cx|ac)\/series\/[^"'\/]+\/)["']/gi)];
+                    if (seriesMatches.length > 0) {
+                        const seriesHtml = await httpText(seriesMatches[0][1]);
+                        const epRegex = new RegExp(`href=["'](https?:\\/\\/animesalt\\.(?:cx|ac)\\/episode\\/[^"']*${s}x${ep}\\/?)["']`, "i");
+                        const epMatch = seriesHtml.match(epRegex);
+                        if (epMatch) {
+                            html = await httpText(epMatch[1]);
+                        }
+                    }
+                } else {
+                    const movieMatch = searchHtml.match(/href=["'](https?:\/\/animesalt\.(?:cx|ac)\/movies\/[^"'\/]+\/)["']/i);
+                    if (movieMatch) {
+                        html = await httpText(movieMatch[1]);
+                    }
                 }
             }
         }
 
         if (!html) return [];
 
-        const iframeMatch = html.match(/src=["'](https?:\/\/as-cdn\d+\.top\/video\/([a-f0-9]+))["']/i);
+        // Match ravok.buzz or as-cdn player
+        const iframeMatch = html.match(/(https?:\/\/(?:ravok\.buzz|as-cdn\d+\.top)\/video\/([a-f0-9]+))/i);
         if (!iframeMatch) return [];
 
         const playerUrl = iframeMatch[1];
@@ -123,7 +155,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         });
 
         const streamUrl = videoData?.videoSource || videoData?.securedLink;
-        if (!streamUrl) return [];
+        if (!streamUrl || !streamUrl.includes(".m3u8")) return [];
 
         const tag = createSortTag(21);
         const name = `${tag}${PROVIDER} • Fast [Multi]`;
