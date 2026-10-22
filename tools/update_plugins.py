@@ -11,6 +11,7 @@ pairs = [
     (root / "NextGenBDIX/build/NextGenBDIX.cs3", root / "nextgenbdix.cs3"),
     (root / "Live/build/Live.cs3", root / "live.cs3"),
     (root / "Soryn/build/NextGen OTT.cs3", root / "netmirror.cs3"),
+    (root / "NextGenStory/build/NextGenStory.cs3", root / "nextgenstory.cs3"),
 ]
 
 for src, dst in pairs:

@@ -3,7 +3,7 @@ import groovy.json.JsonSlurper
 version = 3
 
 val sourceManifests = File(rootProject.projectDir, "sources").listFiles()
-    ?.filter { it.isDirectory && it.name != "live" && !it.name.startsWith("_") && !it.name.startsWith(".") && File(it, "source.json").exists() }
+    ?.filter { it.isDirectory && it.name != "live" && it.name != "story" && !it.name.startsWith("_") && !it.name.startsWith(".") && File(it, "source.json").exists() }
     ?.sortedBy { it.name }
     ?.mapNotNull { JsonSlurper().parse(File(it, "source.json")) as? Map<*, *> }
     .orEmpty()

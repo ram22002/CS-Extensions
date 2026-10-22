@@ -26,7 +26,7 @@ def exports(src: str, fn: str) -> bool:
     return any(re.search(p, src, re.M | re.S) for p in pats)
 
 errors, sources = [], []
-for d in sorted(p for p in (root / "sources").iterdir() if p.is_dir() and p.name != "live" and not p.name.startswith(("_", "."))):
+for d in sorted(p for p in (root / "sources").iterdir() if p.is_dir() and p.name not in ("live", "story") and not p.name.startswith(("_", "."))):
     tag = f"sources/{d.name}"
     mf = d / "source.json"
     if not mf.exists():

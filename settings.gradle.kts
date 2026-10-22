@@ -1,7 +1,7 @@
 import groovy.json.JsonSlurper
 
 val sorynNames = File(rootDir, "sources").listFiles()
-    ?.filter { it.isDirectory && it.name != "live" && !it.name.startsWith("_") && !it.name.startsWith(".") && File(it, "source.json").exists() }
+    ?.filter { it.isDirectory && it.name != "live" && it.name != "story" && !it.name.startsWith("_") && !it.name.startsWith(".") && File(it, "source.json").exists() }
     ?.sortedBy { it.name }
     ?.mapNotNull { (JsonSlurper().parse(File(it, "source.json")) as? Map<*, *>)?.get("name") as? String }
     .orEmpty()
