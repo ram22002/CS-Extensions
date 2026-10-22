@@ -2,14 +2,14 @@
   {
     "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/nextgen.cs3",
     "status": 1,
-    "version": 110800,
+    "version": 110900,
     "name": "NextGen Cinema",
     "internalName": "NextGen",
     "authors": [
       "ram22002"
     ],
     "description": "Movies & TV series",
-    "fileSize": 443996,
+    "fileSize": 457330,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -18,10 +18,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/cinema.png",
     "apiVersion": 1,
-    "fileHash": "sha256-c864fd453cea35ef4895fa70fac0528037babe9c585fd0f8b92e129458080b21",
-    "filesize": 443996,
-    "hash": "c864fd453cea35ef4895fa70fac0528037babe9c585fd0f8b92e129458080b21",
-    "sha256": "c864fd453cea35ef4895fa70fac0528037babe9c585fd0f8b92e129458080b21",
+    "fileHash": "sha256-375ccd594082dce6eee54fa8cc41a8b13d75f3d9a535d791fd878da0076bd3a9",
+    "filesize": 457330,
+    "hash": "375ccd594082dce6eee54fa8cc41a8b13d75f3d9a535d791fd878da0076bd3a9",
+    "sha256": "375ccd594082dce6eee54fa8cc41a8b13d75f3d9a535d791fd878da0076bd3a9",
     "requiresResources": false
   },
   {

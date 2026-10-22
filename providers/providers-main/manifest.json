@@ -1,6 +1,6 @@
 {
   "name": "NextGen",
-  "version": "11.8.0",
+  "version": "11.9.0",
   "scrapers": [
     {
       "id": "brellor",
@@ -846,6 +846,47 @@
         "mp4",
         "mkv",
         "m3u8"
+      ],
+      "logo": "",
+      "contentLanguage": [
+        "en"
+      ]
+    },
+    {
+      "id": "yts",
+      "name": "Yts.",
+      "description": "YTS / YIFY • 720p • 1080p • 4K [Torrent]",
+      "version": "1.0.0",
+      "author": "NextGen",
+      "supportedTypes": [
+        "movie"
+      ],
+      "filename": "providers/providers-main/yts.js",
+      "enabled": true,
+      "formats": [
+        "mp4",
+        "mkv"
+      ],
+      "logo": "",
+      "contentLanguage": [
+        "en"
+      ]
+    },
+    {
+      "id": "eztv",
+      "name": "Eztv.",
+      "description": "EZTV • TV Shows & Episodes [Torrent]",
+      "version": "1.0.0",
+      "author": "NextGen",
+      "supportedTypes": [
+        "tv",
+        "series"
+      ],
+      "filename": "providers/providers-main/eztv.js",
+      "enabled": true,
+      "formats": [
+        "mp4",
+        "mkv"
       ],
       "logo": "",
       "contentLanguage": [
