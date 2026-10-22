@@ -33,7 +33,7 @@ class StoryProvider(
     override var mainUrl = source.baseUrl
     override var lang = source.lang
     override val hasMainPage = variant.hasHome
-    override val supportedTypes: Set<TvType> = setOf(TvType.TvSeries, TvType.Others)
+    override val supportedTypes: Set<TvType> = setOf(TvType.TvSeries, TvType.Movie, TvType.Others)
     override val mainPage = mainPageOf("home" to "Home")
 
     private suspend fun callCatalog(fn: String, arg: String?): JSONObject? {

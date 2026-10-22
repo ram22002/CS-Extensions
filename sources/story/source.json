@@ -5,7 +5,7 @@
   "description": "Short dramas, mini-series & vertical reels",
   "authors": ["ram22002"],
   "lang": "en",
-  "types": ["series"],
+  "types": ["series", "movie"],
   "baseUrl": "https://api.storytv.asia",
   "hasSettings": true,
   "config": {
@@ -15,8 +15,8 @@
   "variants": [
     {
       "id": "storytv",
-      "name": "NextGen Story Reels",
-      "shortName": "Story Reels",
+      "name": "NextGen Story",
+      "shortName": "Story",
       "config": {},
       "home": true
     }

@@ -138,6 +138,7 @@
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
+      "Movie",
       "TvSeries",
       "Others"
     ],
