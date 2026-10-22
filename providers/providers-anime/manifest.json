@@ -1,6 +1,6 @@
 {
   "name": "NextGen Anime",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "scrapers": [
     {
       "id": "gravix",
@@ -289,6 +289,49 @@
       "enabled": true,
       "formats": [
         "m3u8"
+      ],
+      "logo": "",
+      "contentLanguage": [
+        "en",
+        "ja"
+      ]
+    },
+    {
+      "id": "anineko",
+      "name": "Anineko.",
+      "description": "AniNeko • Sub & Dub • Direct HLS",
+      "version": "1.0.0",
+      "author": "NextGen",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
+      "filename": "providers/providers-anime/anineko.js",
+      "enabled": true,
+      "formats": [
+        "m3u8"
+      ],
+      "logo": "",
+      "contentLanguage": [
+        "en",
+        "ja"
+      ]
+    },
+    {
+      "id": "animetosho",
+      "name": "AnimeTosho.",
+      "description": "AnimeTosho • 1080p & 4K • Direct Nyaa Mirror",
+      "version": "1.0.0",
+      "author": "NextGen",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
+      "filename": "providers/providers-anime/animetosho.js",
+      "enabled": true,
+      "formats": [
+        "mkv",
+        "mp4"
       ],
       "logo": "",
       "contentLanguage": [

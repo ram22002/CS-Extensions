@@ -11,3 +11,4 @@
 local.properties
 .vscode
 .git_sha256_backup
+/scratch
