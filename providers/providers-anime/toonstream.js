@@ -215,9 +215,11 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             const searchHtml = await httpText(`${BASE_URL}/s?q=${encodeURIComponent(cleanTitle || title)}`);
             if (searchHtml) {
                 if (isTv) {
-                    const seriesMatches = [...searchHtml.matchAll(/href=["'](\/series\/[^"'\/]+)\/?["']/gi)];
+                    const seriesMatches = [...searchHtml.matchAll(/href=["'](\/series\/[^"'\/]+)\/?["']/gi)].map(m => m[1]);
                     if (seriesMatches.length > 0) {
-                        const seriesHtml = await httpText(`${BASE_URL}${seriesMatches[0][1]}/`);
+                        const targetSlug = shortSlug || fullSlug;
+                        const matchedSeries = seriesMatches.find(s => s.includes(targetSlug) || s.includes(shortSlug)) || seriesMatches[0];
+                        const seriesHtml = await httpText(`${BASE_URL}${matchedSeries}/`);
                         const epRegex = new RegExp(`href=["'](\\/episode\\/[^"']*${s}x${ep}\\/?)["']`, "i");
                         const epMatch = seriesHtml.match(epRegex);
                         if (epMatch) {
