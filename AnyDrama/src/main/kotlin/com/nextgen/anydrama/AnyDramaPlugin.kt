@@ -3,27 +3,24 @@ package com.nextgen.anydrama
 import android.content.Context
 import com.lagradost.cloudstream3.plugins.CloudstreamPlugin
 import com.lagradost.cloudstream3.plugins.Plugin
+import com.nextgen.anydrama.ui.AnyDramaSettingsUi
+import com.nextgen.anydrama.ui.AnyDramaStore
 
 @CloudstreamPlugin
 class AnyDramaPlugin : Plugin() {
     override fun load(context: Context) {
-        // 1. Master all-in-one provider
+        AnyDramaStore.init(context)
+
+        // 1. Master all-in-one provider (always available)
         registerMainAPI(AnyDramaProvider(null, "AnyDrama"))
 
-        // 2. Individual short drama platforms (like OTT providers in one extension)
-        registerMainAPI(AnyDramaProvider("dramabox", "DramaBox"))
-        registerMainAPI(AnyDramaProvider("reelshort", "ReelShort"))
-        registerMainAPI(AnyDramaProvider("shortmax", "ShortMax"))
-        registerMainAPI(AnyDramaProvider("goodshort", "GoodShort"))
-        registerMainAPI(AnyDramaProvider("moboreels", "MoboReels"))
-        registerMainAPI(AnyDramaProvider("freereels", "FreeReels"))
-        registerMainAPI(AnyDramaProvider("kalostv", "Kalos TV"))
-        registerMainAPI(AnyDramaProvider("netshort", "NetShort"))
-        registerMainAPI(AnyDramaProvider("joyreels", "JoyReels"))
-        registerMainAPI(AnyDramaProvider("flickreels", "FlickReels"))
-        registerMainAPI(AnyDramaProvider("happyshort", "HappyShort"))
-        registerMainAPI(AnyDramaProvider("sereal", "Sereal+"))
-        registerMainAPI(AnyDramaProvider("flextv", "FlexTV"))
-        registerMainAPI(AnyDramaProvider("dramawave", "DramaWave"))
+        // 2. Individual short drama platforms (registered if toggled on)
+        for (item in AnyDramaStore.PLATFORMS) {
+            if (AnyDramaStore.isEnabled(item.slug)) {
+                registerMainAPI(AnyDramaProvider(item.slug, item.name))
+            }
+        }
+
+        openSettings = { ctx -> AnyDramaSettingsUi.show(ctx) }
     }
 }

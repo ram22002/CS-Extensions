@@ -60,20 +60,26 @@ open class AnyDramaProvider(
         if (providerSlug == null) {
             // Master aggregated provider
             val sections = listOf(
-                "🔥 Trending Now" to "$API_BASE/api/catalog/dramas?sort=popular&limit=24",
-                "✨ Latest Releases" to "$API_BASE/api/catalog/dramas?sort=updated&limit=24",
-                "👑 DramaBox Hits" to "$API_BASE/api/catalog/dramas?provider=dramabox&sort=popular&limit=20",
-                "🎬 ReelShort Hits" to "$API_BASE/api/catalog/dramas?provider=reelshort&sort=popular&limit=20",
-                "⚡ ShortMax Hits" to "$API_BASE/api/catalog/dramas?provider=shortmax&sort=popular&limit=20",
-                "💎 GoodShort Hits" to "$API_BASE/api/catalog/dramas?provider=goodshort&sort=popular&limit=20",
-                "📱 MoboReels Hits" to "$API_BASE/api/catalog/dramas?provider=moboreels&sort=popular&limit=20",
-                "💰 Billionaire & CEO" to "$API_BASE/api/catalog/dramas?genre=billionaire&limit=20",
-                "❤️ Romance & Love" to "$API_BASE/api/catalog/dramas?genre=romance&limit=20",
-                "⚔️ Revenge & Karma" to "$API_BASE/api/catalog/dramas?genre=revenge&limit=20",
-                "🐺 Werewolf & Lycan" to "$API_BASE/api/catalog/dramas?genre=werewolf&limit=20"
+                null to ("🔥 Trending Now" to "$API_BASE/api/catalog/dramas?sort=popular&limit=24"),
+                null to ("✨ Latest Releases" to "$API_BASE/api/catalog/dramas?sort=updated&limit=24"),
+                "dramabox" to ("👑 DramaBox Hits" to "$API_BASE/api/catalog/dramas?provider=dramabox&sort=popular&limit=20"),
+                "reelshort" to ("🎬 ReelShort Hits" to "$API_BASE/api/catalog/dramas?provider=reelshort&sort=popular&limit=20"),
+                "shortmax" to ("⚡ ShortMax Hits" to "$API_BASE/api/catalog/dramas?provider=shortmax&sort=popular&limit=20"),
+                "goodshort" to ("💎 GoodShort Hits" to "$API_BASE/api/catalog/dramas?provider=goodshort&sort=popular&limit=20"),
+                "moboreels" to ("📱 MoboReels Hits" to "$API_BASE/api/catalog/dramas?provider=moboreels&sort=popular&limit=20"),
+                "freereels" to ("🌟 FreeReels Hits" to "$API_BASE/api/catalog/dramas?provider=freereels&sort=popular&limit=20"),
+                "kalostv" to ("🍿 Kalos TV Hits" to "$API_BASE/api/catalog/dramas?provider=kalostv&sort=popular&limit=20"),
+                "netshort" to ("📽️ NetShort Hits" to "$API_BASE/api/catalog/dramas?provider=netshort&sort=popular&limit=20"),
+                "joyreels" to ("🎭 JoyReels Hits" to "$API_BASE/api/catalog/dramas?provider=joyreels&sort=popular&limit=20"),
+                null to ("💰 Billionaire & CEO" to "$API_BASE/api/catalog/dramas?genre=billionaire&limit=20"),
+                null to ("❤️ Romance & Love" to "$API_BASE/api/catalog/dramas?genre=romance&limit=20"),
+                null to ("⚔️ Revenge & Karma" to "$API_BASE/api/catalog/dramas?genre=revenge&limit=20"),
+                null to ("🐺 Werewolf & Lycan" to "$API_BASE/api/catalog/dramas?genre=werewolf&limit=20")
             )
 
-            for ((title, url) in sections) {
+            for ((platform, pair) in sections) {
+                if (platform != null && !com.nextgen.anydrama.ui.AnyDramaStore.isEnabled(platform)) continue
+                val (title, url) = pair
                 val items = fetchDramas(url)
                 if (items.isNotEmpty()) {
                     lists.add(HomePageList(title, items))
