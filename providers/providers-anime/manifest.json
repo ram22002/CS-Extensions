@@ -1,6 +1,6 @@
 {
   "name": "NextGen Anime",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "scrapers": [
     {
       "id": "gravix",
@@ -256,7 +256,7 @@
       "id": "toonstream",
       "name": "Toonstream.",
       "description": "Toonstream • Multi Dub • Anime & Cartoon",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": "NextGen",
       "supportedTypes": [
         "movie",
@@ -279,7 +279,7 @@
       "id": "animesalt",
       "name": "AnimeSalt.",
       "description": "AnimeSalt • Multi Dub • Anime",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": "NextGen",
       "supportedTypes": [
         "movie",
