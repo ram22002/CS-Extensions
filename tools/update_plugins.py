@@ -12,6 +12,7 @@ pairs = [
     (root / "Live/build/Live.cs3", root / "live.cs3"),
     (root / "Soryn/build/NextGen OTT.cs3", root / "netmirror.cs3"),
     (root / "NextGenStory/build/NextGenStory.cs3", root / "nextgenstory.cs3"),
+    (root / "AnyDrama/build/AnyDrama.cs3", root / "anydrama.cs3"),
 ]
 
 for src, dst in pairs:
