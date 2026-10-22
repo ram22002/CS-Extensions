@@ -56,15 +56,16 @@ jobs:
           cp *.cs3 $GITHUB_WORKSPACE/builds/
           cp plugins.json $GITHUB_WORKSPACE/builds/
           cp repo.json $GITHUB_WORKSPACE/builds/
+          cp -r icons $GITHUB_WORKSPACE/builds/
 
       - name: Push to builds branch
         run: |
           cd $GITHUB_WORKSPACE/builds
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
-          git add *.cs3 plugins.json repo.json
+          git config --local user.email "ramlakhanregar1+github@gmail.com"
+          git config --local user.name "ram22002"
+          git add *.cs3 plugins.json repo.json icons/
           if [[ -n $(git status -s) ]]; then
-            git commit -m "Auto-build plugins for $GITHUB_SHA [skip ci]"
+            git commit --author="ram22002 <ramlakhanregar1+github@gmail.com>" -m "Auto-build plugins for $GITHUB_SHA [skip ci]"
             git push origin builds
           else
             echo "No changes in builds"
