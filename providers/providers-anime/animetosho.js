@@ -119,12 +119,12 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                 quality = "480p";
             }
 
-            // Stream display label
             const displayTitle = `${title.length > 55 ? title.substring(0, 52) + "..." : title} [${sizeMb}MB • ${seeders} seeds]`;
+            const streamName = `${PROVIDER} • ${displayTitle}`;
 
             streams.push({
-                name: PROVIDER,
-                title: displayTitle,
+                name: streamName,
+                title: streamName,
                 url: item.magnet_uri,
                 quality: quality,
                 isTorrent: true,

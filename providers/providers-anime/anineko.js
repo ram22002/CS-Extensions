@@ -282,9 +282,13 @@ async function extractStreamFromServer(server) {
             }));
 
         const isDub = server.type === "dub";
+        const audioTag = isDub ? "[DUB]" : "[SUB]";
+        const displayName = `${PROVIDER} • ${server.serverName} ${audioTag}`;
         return {
-            name: PROVIDER,
-            title: `${server.serverName} (${isDub ? "DUB" : "SUB"})`,
+            name: displayName,
+            title: displayName,
+            language: isDub ? "English" : "Japanese",
+            audio: isDub ? "dub" : "sub",
             url: masterUrl,
             quality: "auto",
             isM3U8: true,
