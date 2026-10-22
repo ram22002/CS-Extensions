@@ -77,8 +77,7 @@ open class AnyDramaProvider(
                 null to ("🐺 Werewolf & Lycan" to "$API_BASE/api/catalog/dramas?genre=werewolf&limit=20")
             )
 
-            for ((platform, pair) in sections) {
-                if (platform != null && !com.nextgen.anydrama.ui.AnyDramaStore.isEnabled(platform)) continue
+            for ((_, pair) in sections) {
                 val (title, url) = pair
                 val items = fetchDramas(url)
                 if (items.isNotEmpty()) {

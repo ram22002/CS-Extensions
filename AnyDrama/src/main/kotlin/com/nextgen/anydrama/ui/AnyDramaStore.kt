@@ -48,7 +48,7 @@ object AnyDramaStore {
     }
 
     fun isEnabled(slug: String): Boolean {
-        return sp?.getBoolean("$KEY_PREFIX$slug", true) ?: true
+        return sp?.getBoolean("$KEY_PREFIX$slug", false) ?: false
     }
 
     fun setEnabled(slug: String, on: Boolean) {

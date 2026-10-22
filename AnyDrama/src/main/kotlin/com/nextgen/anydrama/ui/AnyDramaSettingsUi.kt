@@ -41,6 +41,33 @@ object AnyDramaSettingsUi {
         }
         mainList.addView(header)
 
+        // Informational Description Card
+        val infoCard = card(ctx).apply {
+            background = android.graphics.drawable.GradientDrawable().apply {
+                setColor(C.CARD_HIGH)
+                cornerRadius = dp(ctx, 16).toFloat()
+            }
+            setPadding(dp(ctx, 16), dp(ctx, 14), dp(ctx, 16), dp(ctx, 14))
+            addView(LinearLayout(ctx).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                addView(text(ctx, "💡", 16f, C.TEXT))
+                addView(text(ctx, "Watch All Platforms in AnyDrama", 15f, C.TEXT, bold = true).apply {
+                    setPadding(dp(ctx, 8), 0, 0, 0)
+                })
+            })
+            addView(
+                text(
+                    ctx,
+                    "You can watch all provider dramas directly in the master AnyDrama extension without enabling individual providers. If you want a specific platform (e.g. DramaBox, ReelShort) to appear as its own separate provider in your CloudStream provider list, you can enable it below.\n\n(Default: All individual providers disabled for a clean list)",
+                    12.5f,
+                    C.TEXT_DIM
+                ),
+                lp(top = 6)
+            )
+        }
+        mainList.addView(infoCard, lp(top = 4))
+
         // Bulk action buttons: Enable All & Disable All
         val bulkRow = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL

@@ -1,4 +1,4 @@
-version = 10001
+version = 10002
 
 cloudstream {
     description = "Short dramas, mini-series & vertical reels from DramaBox, ReelShort, ShortMax, GoodShort & more"
