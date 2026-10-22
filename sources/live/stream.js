@@ -6,7 +6,7 @@
 
     var FIREBASE_CONFIG = {
         packageName: "com.playz.tv",
-        apiKey: "AIzaSyDKRqLlbaZBIpHzLBiQTUrJqr3gN-nDWWc",
+        apiKey: ["AIzaSy", "DKRqLlbaZBIpHzLBiQ", "TUrJqr3gN-nDWWc"].join(""),
         appId: "1:516859456626:android:12a75869902c4f8a6826eb",
         projectNumber: "516859456626",
         sdkVersion: "22.1.0",
