@@ -4,6 +4,6 @@
     "description": "NextGen Streaming Extensions with Multi-Tracker Support",
     "manifestVersion": 1,
     "pluginLists": [
-        "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/plugins.json"
+        "https://raw.githubusercontent.com/ram22002/CS-Extensions/builds/plugins.json"
     ]
 }

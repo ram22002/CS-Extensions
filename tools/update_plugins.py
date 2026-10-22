@@ -28,6 +28,8 @@ pj = root / "plugins.json"
 data = json.loads(pj.read_text(encoding="utf-8"))
 
 for item in data:
+    if "url" in item and "/main/" in item["url"]:
+        item["url"] = item["url"].replace("/main/", "/builds/")
     url = item.get("url", "")
     fn = url.rsplit("/", 1)[-1]
     fp = root / fn

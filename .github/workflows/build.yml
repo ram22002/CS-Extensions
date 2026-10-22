@@ -1,38 +1,44 @@
 name: Build CloudStream Plugins
 
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
     paths-ignore:
       - '*.md'
       - '.gitignore'
-  workflow_dispatch:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
-      - name: Checkout Repository
+      - name: Checkout Source (main)
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          path: "src"
+
+      - name: Checkout Builds Branch
+        uses: actions/checkout@v4
+        with:
+          ref: "builds"
+          path: "builds"
+
+      - name: Clean old builds
+        run: rm -f $GITHUB_WORKSPACE/builds/*.cs3
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -41,15 +47,25 @@ jobs:
 
       - name: Build Plugins
         run: |
+          cd $GITHUB_WORKSPACE/src
           chmod +x gradlew
           ./gradlew make --no-daemon
           python tools/update_plugins.py
 
-      - name: Commit and Push Updated Plugins
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Auto-build .cs3 extensions and update repository [skip ci]"
-          file_pattern: "*.cs3 plugins.json"
-          commit_user_name: "ram22002"
-          commit_user_email: "ramlakhanregar1+github@gmail.com"
-          commit_author: "ram22002 <ramlakhanregar1+github@gmail.com>"
+          # Copy outputs to builds branch
+          cp *.cs3 $GITHUB_WORKSPACE/builds/
+          cp plugins.json $GITHUB_WORKSPACE/builds/
+          cp repo.json $GITHUB_WORKSPACE/builds/
+
+      - name: Push to builds branch
+        run: |
+          cd $GITHUB_WORKSPACE/builds
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add *.cs3 plugins.json repo.json
+          if [[ -n $(git status -s) ]]; then
+            git commit -m "Auto-build plugins for $GITHUB_SHA [skip ci]"
+            git push origin builds
+          else
+            echo "No changes in builds"
+          fi
