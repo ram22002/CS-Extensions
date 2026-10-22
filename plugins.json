@@ -134,19 +134,20 @@
       "ram22002"
     ],
     "description": "Short dramas, mini-series & vertical reels",
-    "fileSize": 64630,
+    "fileSize": 64647,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
+      "Movie",
       "TvSeries",
       "Others"
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/story.png",
     "apiVersion": 1,
-    "fileHash": "sha256-2910b6a32ad616ad0b5dce489b713642ac999eba2aa321ec1e8b752d04fe0198",
-    "filesize": 64630,
-    "hash": "2910b6a32ad616ad0b5dce489b713642ac999eba2aa321ec1e8b752d04fe0198",
-    "sha256": "2910b6a32ad616ad0b5dce489b713642ac999eba2aa321ec1e8b752d04fe0198",
+    "fileHash": "sha256-e52590f33ea852ac49817bc4431521e3080fd045d884d8dcd31c4ef044679b8a",
+    "filesize": 64647,
+    "hash": "e52590f33ea852ac49817bc4431521e3080fd045d884d8dcd31c4ef044679b8a",
+    "sha256": "e52590f33ea852ac49817bc4431521e3080fd045d884d8dcd31c4ef044679b8a",
     "requiresResources": false
   }
 ]
