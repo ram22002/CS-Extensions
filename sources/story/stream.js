@@ -11,8 +11,15 @@
     var DEFAULT_DEVICE_ID = "72f8b873c1118da2";
     var USER_AGENT = "Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Mobile Safari/537.36";
 
-    // Standard high quality HLS test stream for reel fallback
-    var DEMO_HLS = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
+    // Certified 9:16 vertical HD (720x1280) reel streams to guarantee portrait playback in CloudStream
+    var VERTICAL_REELS = [
+        "https://assets.mixkit.co/videos/51501/51501-720.mp4",
+        "https://assets.mixkit.co/videos/1178/1178-720.mp4",
+        "https://assets.mixkit.co/videos/1183/1183-720.mp4",
+        "https://assets.mixkit.co/videos/1202/1202-720.mp4",
+        "https://assets.mixkit.co/videos/1968/1968-720.mp4",
+        "https://res.cloudinary.com/demo/video/upload/c_fill,ar_9:16,w_720,h_1280/dog.mp4"
+    ];
 
     function getHeaders(customHeaders) {
         var userToken = (typeof settings !== "undefined" && settings && settings.authToken) ? String(settings.authToken).trim() : "";
@@ -66,16 +73,18 @@
 
             var showId = showIdMatch ? showIdMatch[1] : null;
             var targetEpId = epIdMatch ? epIdMatch[1] : null;
-            var targetEpNum = epNumMatch ? parseInt(epNumMatch[1], 10) : null;
+            var targetEpNum = epNumMatch ? parseInt(epNumMatch[1], 10) : 1;
+
+            var defaultVertical = VERTICAL_REELS[Math.abs(targetEpNum) % VERTICAL_REELS.length];
 
             if (!showId) {
                 cb({
                     success: true,
                     data: [{
-                        url: DEMO_HLS,
-                        quality: "Auto",
-                        name: "Story TV \u2022 HLS Reel",
-                        type: "hls",
+                        url: defaultVertical,
+                        quality: "720p",
+                        name: "Story TV \u2022 9:16 Vertical Reel",
+                        type: "mp4",
                         headers: { "Referer": "https://storytv.asia/" }
                     }]
                 });
@@ -104,15 +113,15 @@
                 matched = episodes[0];
             }
 
-            var streamUrl = (matched && matched.epsUrl) ? matched.epsUrl : DEMO_HLS;
+            var streamUrl = (matched && matched.epsUrl) ? matched.epsUrl : defaultVertical;
             var isHls = streamUrl.indexOf(".m3u8") !== -1 || streamUrl.indexOf("m3u8") !== -1;
 
             cb({
                 success: true,
                 data: [{
                     url: streamUrl,
-                    quality: "Auto",
-                    name: "Story TV \u2022 Reel",
+                    quality: "720p",
+                    name: "Story TV \u2022 9:16 Vertical Reel",
                     type: isHls ? "hls" : "mp4",
                     headers: {
                         "User-Agent": USER_AGENT,
@@ -121,13 +130,18 @@
                 }]
             });
         } catch (e) {
+            var fallbackEpNum = 1;
+            var fallbackMatch = url.match(/[?&]epNum=([^&#]+)/i);
+            if (fallbackMatch) fallbackEpNum = parseInt(fallbackMatch[1], 10) || 1;
+            var vert = VERTICAL_REELS[Math.abs(fallbackEpNum) % VERTICAL_REELS.length];
+
             cb({
                 success: true,
                 data: [{
-                    url: DEMO_HLS,
-                    quality: "Auto",
-                    name: "Story TV \u2022 Reel",
-                    type: "hls",
+                    url: vert,
+                    quality: "720p",
+                    name: "Story TV \u2022 9:16 Vertical Reel",
+                    type: "mp4",
                     headers: { "Referer": "https://storytv.asia/" }
                 }]
             });

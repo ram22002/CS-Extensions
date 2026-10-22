@@ -33,7 +33,7 @@ class StoryProvider(
     override var mainUrl = source.baseUrl
     override var lang = source.lang
     override val hasMainPage = variant.hasHome
-    override val supportedTypes: Set<TvType> = setOf(TvType.TvSeries, TvType.Movie, TvType.Others)
+    override val supportedTypes: Set<TvType> = setOf(TvType.AsianDrama, TvType.TvSeries, TvType.Movie, TvType.Others)
     override val mainPage = mainPageOf("home" to "Home")
 
     private suspend fun callCatalog(fn: String, arg: String?): JSONObject? {
@@ -52,7 +52,7 @@ class StoryProvider(
         val url = o.text("url") ?: return null
         val title = o.text("title") ?: "Drama Reel"
         val poster = o.text("posterUrl")
-        return newTvSeriesSearchResponse(title, url, TvType.TvSeries) {
+        return newTvSeriesSearchResponse(title, url, TvType.AsianDrama) {
             posterUrl = poster
         }
     }
@@ -112,7 +112,7 @@ class StoryProvider(
 
         val recs = item.optJSONArray("recommendations")?.objects()?.mapNotNull { toSearch(it) }
 
-        return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
+        return newTvSeriesLoadResponse(title, url, TvType.AsianDrama, episodes) {
             this.posterUrl = item.text("posterUrl")
             this.backgroundPosterUrl = item.text("bannerUrl")
             this.plot = item.text("description")

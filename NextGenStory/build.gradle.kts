@@ -13,7 +13,7 @@ cloudstream {
     description = (first?.get("description") as? String) ?: "Short dramas, mini-series & vertical reels"
     authors = listOf("ram22002")
     status = 1
-    tvTypes = listOf("Movie", "TvSeries", "Others")
+    tvTypes = listOf("AsianDrama", "TvSeries", "Movie", "Others")
     language = "en"
     iconUrl = "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/story.png"
 }
