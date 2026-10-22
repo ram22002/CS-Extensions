@@ -123,5 +123,30 @@
     "hash": "d0bb7610cd417ba64ea5d900df1a2be21ef28031b286916979fe003bb3c3f4dd",
     "sha256": "d0bb7610cd417ba64ea5d900df1a2be21ef28031b286916979fe003bb3c3f4dd",
     "requiresResources": false
+  },
+  {
+    "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/builds/nextgenstory.cs3",
+    "status": 1,
+    "version": 10000,
+    "name": "NextGen Story",
+    "internalName": "NextGenStory",
+    "authors": [
+      "ram22002"
+    ],
+    "description": "Short dramas, mini-series & vertical reels",
+    "fileSize": 64630,
+    "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
+    "language": "en",
+    "tvTypes": [
+      "TvSeries",
+      "Others"
+    ],
+    "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/story.png",
+    "apiVersion": 1,
+    "fileHash": "sha256-2910b6a32ad616ad0b5dce489b713642ac999eba2aa321ec1e8b752d04fe0198",
+    "filesize": 64630,
+    "hash": "2910b6a32ad616ad0b5dce489b713642ac999eba2aa321ec1e8b752d04fe0198",
+    "sha256": "2910b6a32ad616ad0b5dce489b713642ac999eba2aa321ec1e8b752d04fe0198",
+    "requiresResources": false
   }
 ]
