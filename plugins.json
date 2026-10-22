@@ -154,14 +154,14 @@
   {
     "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/builds/anydrama.cs3",
     "status": 1,
-    "version": 10000,
+    "version": 10001,
     "name": "AnyDrama",
     "internalName": "AnyDrama",
     "authors": [
       "ram22002"
     ],
     "description": "Short dramas, mini-series & vertical reels from DramaBox, ReelShort, ShortMax, GoodShort & more",
-    "fileSize": 19477,
+    "fileSize": 19478,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -172,10 +172,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/anydrama.png",
     "apiVersion": 1,
-    "fileHash": "sha256-7498f92a78061bb5bfeefd149a74cbbbdac7948488910c648d9f0bf80d4c1c35",
-    "filesize": 19477,
-    "hash": "7498f92a78061bb5bfeefd149a74cbbbdac7948488910c648d9f0bf80d4c1c35",
-    "sha256": "7498f92a78061bb5bfeefd149a74cbbbdac7948488910c648d9f0bf80d4c1c35",
+    "fileHash": "sha256-345bfcccc3d9acd73a8439c363c8326254cd3d4a35ad7f3c07cca39745e59f4a",
+    "filesize": 19478,
+    "hash": "345bfcccc3d9acd73a8439c363c8326254cd3d4a35ad7f3c07cca39745e59f4a",
+    "sha256": "345bfcccc3d9acd73a8439c363c8326254cd3d4a35ad7f3c07cca39745e59f4a",
     "requiresResources": false
   }
 ]

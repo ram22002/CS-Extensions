@@ -18,6 +18,7 @@ open class AnyDramaProvider(
     override var lang = "en"
     override val hasMainPage = true
     override val supportedTypes: Set<TvType> = setOf(TvType.AsianDrama, TvType.TvSeries, TvType.Movie, TvType.Others)
+    override val mainPage = mainPageOf("home" to "Home")
 
     companion object {
         private const val API_BASE = "https://api.any-drama.com"
