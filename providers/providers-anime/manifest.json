@@ -229,6 +229,72 @@
         "ja"
       ],
       "hasSettings": true
+    },
+    {
+      "id": "animekizz",
+      "name": "Animekizz.",
+      "description": "Animekizz • Multi Dub • Anime",
+      "version": "1.0.0",
+      "author": "NextGen",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
+      "filename": "providers/providers-anime/animekizz.js",
+      "enabled": true,
+      "formats": [
+        "m3u8",
+        "mp4"
+      ],
+      "logo": "",
+      "contentLanguage": [
+        "en",
+        "ja"
+      ]
+    },
+    {
+      "id": "toonstream",
+      "name": "Toonstream.",
+      "description": "Toonstream • Multi Dub • Anime & Cartoon",
+      "version": "1.0.0",
+      "author": "NextGen",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
+      "filename": "providers/providers-anime/toonstream.js",
+      "enabled": true,
+      "formats": [
+        "m3u8",
+        "mp4"
+      ],
+      "logo": "",
+      "contentLanguage": [
+        "en",
+        "ja",
+        "hi"
+      ]
+    },
+    {
+      "id": "animesalt",
+      "name": "AnimeSalt.",
+      "description": "AnimeSalt • Multi Dub • Anime",
+      "version": "1.0.0",
+      "author": "NextGen",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
+      "filename": "providers/providers-anime/animesalt.js",
+      "enabled": true,
+      "formats": [
+        "m3u8"
+      ],
+      "logo": "",
+      "contentLanguage": [
+        "en",
+        "ja"
+      ]
     }
   ]
 }
