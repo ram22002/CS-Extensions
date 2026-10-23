@@ -134,7 +134,7 @@
       "ram22002"
     ],
     "description": "Short dramas, mini-series & vertical reels",
-    "fileSize": 64773,
+    "fileSize": 65176,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -145,10 +145,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/story.png",
     "apiVersion": 1,
-    "fileHash": "sha256-cc26ee256c88263b0dcd54b72b0b053ea6bbfab4859caebd5094f4a185244459",
-    "filesize": 64773,
-    "hash": "cc26ee256c88263b0dcd54b72b0b053ea6bbfab4859caebd5094f4a185244459",
-    "sha256": "cc26ee256c88263b0dcd54b72b0b053ea6bbfab4859caebd5094f4a185244459",
+    "fileHash": "sha256-8009d5813c516bb157162e01dd7cb62826f752eea213f87f1ef765446e0ac541",
+    "filesize": 65176,
+    "hash": "8009d5813c516bb157162e01dd7cb62826f752eea213f87f1ef765446e0ac541",
+    "sha256": "8009d5813c516bb157162e01dd7cb62826f752eea213f87f1ef765446e0ac541",
     "requiresResources": false
   },
   {
@@ -176,6 +176,33 @@
     "filesize": 32810,
     "hash": "645ef381b8065c55945e8f495a41ca90edf4fe3f12337b599edf73a7d5470e35",
     "sha256": "645ef381b8065c55945e8f495a41ca90edf4fe3f12337b599edf73a7d5470e35",
+    "requiresResources": false
+  },
+  {
+    "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/builds/reelfren.cs3",
+    "status": 1,
+    "version": 10000,
+    "name": "ReelFren",
+    "internalName": "ReelFren",
+    "authors": [
+      "ram22002"
+    ],
+    "description": "Short dramas, mini-series & vertical reels from ReelFren",
+    "fileSize": 50584,
+    "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
+    "language": "en",
+    "tvTypes": [
+      "AsianDrama",
+      "Movie",
+      "TvSeries",
+      "Others"
+    ],
+    "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/reelfren.png",
+    "apiVersion": 1,
+    "fileHash": "sha256-aa0c7fd3da204f143615808d78a1f6943d74baa491f401d66873d85cbd47d7c9",
+    "filesize": 50584,
+    "hash": "aa0c7fd3da204f143615808d78a1f6943d74baa491f401d66873d85cbd47d7c9",
+    "sha256": "aa0c7fd3da204f143615808d78a1f6943d74baa491f401d66873d85cbd47d7c9",
     "requiresResources": false
   }
 ]
