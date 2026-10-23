@@ -9,7 +9,7 @@
       "ram22002"
     ],
     "description": "Movies & TV series",
-    "fileSize": 467066,
+    "fileSize": 465893,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -18,10 +18,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/cinema.png",
     "apiVersion": 1,
-    "fileHash": "sha256-6370bb1db2d5bee592de4f9ff6987cdc2d985ba66f2268215226a7fa93fb4286",
-    "filesize": 467066,
-    "hash": "6370bb1db2d5bee592de4f9ff6987cdc2d985ba66f2268215226a7fa93fb4286",
-    "sha256": "6370bb1db2d5bee592de4f9ff6987cdc2d985ba66f2268215226a7fa93fb4286",
+    "fileHash": "sha256-4436e67db84ac4306f5220769a20cf65c6a04df2d819c3576b3db444e334f1ee",
+    "filesize": 465893,
+    "hash": "4436e67db84ac4306f5220769a20cf65c6a04df2d819c3576b3db444e334f1ee",
+    "sha256": "4436e67db84ac4306f5220769a20cf65c6a04df2d819c3576b3db444e334f1ee",
     "requiresResources": false
   },
   {
@@ -34,7 +34,7 @@
       "ram22002"
     ],
     "description": "Anime, movies & OVAs",
-    "fileSize": 359965,
+    "fileSize": 354809,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -44,10 +44,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/anime.png",
     "apiVersion": 1,
-    "fileHash": "sha256-b09062bfc9dd8c477e9966c7f05031d59ec5b3ecf070cfb9210ea63b8341f078",
-    "filesize": 359965,
-    "hash": "b09062bfc9dd8c477e9966c7f05031d59ec5b3ecf070cfb9210ea63b8341f078",
-    "sha256": "b09062bfc9dd8c477e9966c7f05031d59ec5b3ecf070cfb9210ea63b8341f078",
+    "fileHash": "sha256-c05b7eca94e8750f2621d0b10786d96f174c194616395914facb0f7a96f6b6d7",
+    "filesize": 354809,
+    "hash": "c05b7eca94e8750f2621d0b10786d96f174c194616395914facb0f7a96f6b6d7",
+    "sha256": "c05b7eca94e8750f2621d0b10786d96f174c194616395914facb0f7a96f6b6d7",
     "requiresResources": false
   },
   {
@@ -60,7 +60,7 @@
       "ram22002"
     ],
     "description": "Regional FTP sources",
-    "fileSize": 244649,
+    "fileSize": 243952,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -69,10 +69,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/bdix.png",
     "apiVersion": 1,
-    "fileHash": "sha256-7ad943b64599743b392242bd5e882ae455cf5d39106730b8b1b8b854703b1838",
-    "filesize": 244649,
-    "hash": "7ad943b64599743b392242bd5e882ae455cf5d39106730b8b1b8b854703b1838",
-    "sha256": "7ad943b64599743b392242bd5e882ae455cf5d39106730b8b1b8b854703b1838",
+    "fileHash": "sha256-6f8a5d43098b84439f683c554d7251f0deaf7ec51b74464e8eeca2e7bbb3427f",
+    "filesize": 243952,
+    "hash": "6f8a5d43098b84439f683c554d7251f0deaf7ec51b74464e8eeca2e7bbb3427f",
+    "sha256": "6f8a5d43098b84439f683c554d7251f0deaf7ec51b74464e8eeca2e7bbb3427f",
     "requiresResources": false
   },
   {
