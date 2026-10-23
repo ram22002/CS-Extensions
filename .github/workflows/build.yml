@@ -32,7 +32,7 @@ jobs:
           path: "builds"
 
       - name: Clean old builds
-        run: rm -f $GITHUB_WORKSPACE/builds/*.cs3
+        run: rm -rf $GITHUB_WORKSPACE/builds/*.cs3 $GITHUB_WORKSPACE/builds/icons
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -63,7 +63,7 @@ jobs:
           cd $GITHUB_WORKSPACE/builds
           git config --local user.email "ramlakhanregar1+github@gmail.com"
           git config --local user.name "ram22002"
-          git add *.cs3 plugins.json repo.json icons/
+          git add -A
           if [[ -n $(git status -s) ]]; then
             git commit --author="ram22002 <ramlakhanregar1+github@gmail.com>" -m "Auto-build plugins for $GITHUB_SHA [skip ci]"
             git push origin builds
