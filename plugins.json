@@ -125,60 +125,6 @@
     "requiresResources": false
   },
   {
-    "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/builds/nextgenstory.cs3",
-    "status": 1,
-    "version": 10000,
-    "name": "NextGen Story",
-    "internalName": "NextGenStory",
-    "authors": [
-      "ram22002"
-    ],
-    "description": "Short dramas, mini-series & vertical reels",
-    "fileSize": 65024,
-    "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
-    "language": "en",
-    "tvTypes": [
-      "AsianDrama",
-      "Movie",
-      "TvSeries",
-      "Others"
-    ],
-    "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/story.png",
-    "apiVersion": 1,
-    "fileHash": "sha256-fa1c15009e581b6e6383918ee335ec9f53c3e3f46e4c8ef4773686e411887027",
-    "filesize": 65024,
-    "hash": "fa1c15009e581b6e6383918ee335ec9f53c3e3f46e4c8ef4773686e411887027",
-    "sha256": "fa1c15009e581b6e6383918ee335ec9f53c3e3f46e4c8ef4773686e411887027",
-    "requiresResources": false
-  },
-  {
-    "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/builds/anydrama.cs3",
-    "status": 1,
-    "version": 10002,
-    "name": "AnyDrama",
-    "internalName": "AnyDrama",
-    "authors": [
-      "ram22002"
-    ],
-    "description": "Short dramas, mini-series & vertical reels from DramaBox, ReelShort, ShortMax, GoodShort & more",
-    "fileSize": 32810,
-    "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
-    "language": "en",
-    "tvTypes": [
-      "AsianDrama",
-      "Movie",
-      "TvSeries",
-      "Others"
-    ],
-    "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/anydrama.png",
-    "apiVersion": 1,
-    "fileHash": "sha256-645ef381b8065c55945e8f495a41ca90edf4fe3f12337b599edf73a7d5470e35",
-    "filesize": 32810,
-    "hash": "645ef381b8065c55945e8f495a41ca90edf4fe3f12337b599edf73a7d5470e35",
-    "sha256": "645ef381b8065c55945e8f495a41ca90edf4fe3f12337b599edf73a7d5470e35",
-    "requiresResources": false
-  },
-  {
     "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/builds/reelfren.cs3",
     "status": 1,
     "version": 10000,
