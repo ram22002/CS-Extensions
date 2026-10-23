@@ -127,14 +127,14 @@
   {
     "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/builds/reelfren.cs3",
     "status": 1,
-    "version": 10000,
+    "version": 10001,
     "name": "ReelFren",
     "internalName": "ReelFren",
     "authors": [
       "ram22002"
     ],
     "description": "Short dramas, mini-series & vertical reels from ReelFren",
-    "fileSize": 50584,
+    "fileSize": 51033,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -145,10 +145,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/reelfren.png",
     "apiVersion": 1,
-    "fileHash": "sha256-aa0c7fd3da204f143615808d78a1f6943d74baa491f401d66873d85cbd47d7c9",
-    "filesize": 50584,
-    "hash": "aa0c7fd3da204f143615808d78a1f6943d74baa491f401d66873d85cbd47d7c9",
-    "sha256": "aa0c7fd3da204f143615808d78a1f6943d74baa491f401d66873d85cbd47d7c9",
+    "fileHash": "sha256-4699b2617b00a14337834100609eaa083d9ea5c1830923d7e54fbb2fee5c182a",
+    "filesize": 51033,
+    "hash": "4699b2617b00a14337834100609eaa083d9ea5c1830923d7e54fbb2fee5c182a",
+    "sha256": "4699b2617b00a14337834100609eaa083d9ea5c1830923d7e54fbb2fee5c182a",
     "requiresResources": false
   }
 ]

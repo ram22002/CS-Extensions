@@ -2,6 +2,8 @@ package com.nextgen.reelfren.ui
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -14,6 +16,11 @@ object ReelFrenSettingsUi {
         ReelFrenStore.init(ctx)
         val dialog = Dialog(ctx, android.R.style.Theme_Material_NoActionBar)
 
+        dialog.window?.apply {
+            setLayout(MATCH_PARENT, MATCH_PARENT)
+            setBackgroundDrawable(ColorDrawable(C.BG))
+        }
+
         val root = FrameLayout(ctx).apply {
             setBackgroundColor(C.BG)
             fitsSystemWindows = true
@@ -25,53 +32,66 @@ object ReelFrenSettingsUi {
 
         val mainList = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(ctx, 16), dp(ctx, 24), dp(ctx, 16), dp(ctx, 48))
+            setPadding(dp(ctx, 16), dp(ctx, 20), dp(ctx, 16), dp(ctx, 40))
         }
 
         // Header with Back Button and Title
         val header = LinearLayout(ctx).apply {
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(ctx, 8), dp(ctx, 16), dp(ctx, 8), dp(ctx, 16))
-            addView(BackButton(ctx) { dialog.dismiss() }, LinearLayout.LayoutParams(dp(ctx, 44), dp(ctx, 44)))
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(dp(ctx, 4), dp(ctx, 12), dp(ctx, 4), dp(ctx, 16))
+            addView(BackButton(ctx) { dialog.dismiss() }, LinearLayout.LayoutParams(dp(ctx, 42), dp(ctx, 42)))
             addView(LinearLayout(ctx).apply {
                 orientation = LinearLayout.VERTICAL
-                addView(text(ctx, "ReelFren Platforms", 24f, C.TEXT, bold = true))
-                addView(text(ctx, "Toggle short drama sources on/off", 13.5f, C.TEXT_DIM), lp(top = 2))
-            }, LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply { leftMargin = dp(ctx, 14) })
+                addView(text(ctx, "ReelFren Platforms", 22f, C.TEXT, bold = true))
+                addView(text(ctx, "Toggle short drama sources on/off", 13f, C.TEXT_DIM).apply {
+                    setPadding(0, dp(ctx, 3), 0, 0)
+                })
+            }, LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f).apply { leftMargin = dp(ctx, 14) })
         }
         mainList.addView(header)
 
-        // Informational Description Card
-        val infoCard = card(ctx).apply {
-            background = android.graphics.drawable.GradientDrawable().apply {
+        // Informational Description Card (Explicitly VERTICAL layout)
+        val infoCard = LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
+            background = GradientDrawable().apply {
                 setColor(C.CARD_HIGH)
-                cornerRadius = dp(ctx, 16).toFloat()
+                cornerRadius = dp(ctx, 14).toFloat()
+                setStroke(dp(ctx, 1), C.OUTLINE)
             }
-            setPadding(dp(ctx, 16), dp(ctx, 14), dp(ctx, 16), dp(ctx, 14))
+            setPadding(dp(ctx, 16), dp(ctx, 16), dp(ctx, 16), dp(ctx, 16))
+
+            // Header row with icon + title
             addView(LinearLayout(ctx).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                addView(text(ctx, "💡", 16f, C.TEXT))
-                addView(text(ctx, "Watch All Platforms in ReelFren", 15f, C.TEXT, bold = true).apply {
-                    setPadding(dp(ctx, 8), 0, 0, 0)
+                addView(text(ctx, "💡", 18f, C.TEXT))
+                addView(text(ctx, "Watch All Platforms in ReelFren", 15.5f, C.TEXT, bold = true).apply {
+                    setPadding(dp(ctx, 10), 0, 0, 0)
                 })
-            })
+            }, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
+
+            // Detailed description text (Clearly visible, full width, stacked vertically)
             addView(
                 text(
                     ctx,
                     "You can watch all provider dramas directly in the master ReelFren extension without enabling individual providers. If you want a specific platform (e.g. DramaBox, ReelShort) to appear as its own separate provider in your CloudStream provider list, you can enable it below.\n\n(Default: All individual providers disabled for a clean list)",
-                    12.5f,
+                    13f,
                     C.TEXT_DIM
-                ),
-                lp(top = 6)
+                ).apply {
+                    setLineSpacing(dp(ctx, 3).toFloat(), 1.15f)
+                },
+                LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
+                    topMargin = dp(ctx, 10)
+                }
             )
         }
-        mainList.addView(infoCard, lp(top = 4))
+        mainList.addView(infoCard, lp(ctx, topDp = 4, bottomDp = 10))
 
         // Bulk action buttons: Enable All & Disable All
         val bulkRow = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
-            setPadding(dp(ctx, 8), dp(ctx, 8), dp(ctx, 8), dp(ctx, 14))
+            setPadding(0, dp(ctx, 6), 0, dp(ctx, 10))
         }
 
         val toggles = mutableListOf<Pair<String, ToggleView>>()
@@ -114,7 +134,7 @@ object ReelFrenSettingsUi {
                 item.count,
                 toggle
             )
-            mainList.addView(cardView, lp(top = 8))
+            mainList.addView(cardView, lp(ctx, topDp = 8))
         }
 
         scroll.addView(mainList)

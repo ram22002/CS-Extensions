@@ -1,4 +1,4 @@
-version = 10000
+version = 10001
 
 cloudstream {
     description = "Short dramas, mini-series & vertical reels from ReelFren"

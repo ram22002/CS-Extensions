@@ -9,7 +9,6 @@ import android.graphics.Path
 import android.graphics.RectF
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
-import android.os.Build
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -23,8 +22,8 @@ internal object C {
     val CARD = Color.parseColor("#16161A")
     val CARD_HIGH = Color.parseColor("#222228")
     val OUTLINE = Color.parseColor("#383842")
-    val TEXT = Color.parseColor("#F0F2F8")
-    val TEXT_DIM = Color.parseColor("#8E8E9A")
+    val TEXT = Color.parseColor("#FFFFFF")
+    val TEXT_DIM = Color.parseColor("#B0B4C4") // High-contrast, crystal clear readable text
     val PRIMARY = Color.parseColor("#FF5E3A") // ReelFren vibrant reel accent
     val ON_PRIMARY = Color.parseColor("#FFFFFF")
     val TONAL = Color.parseColor("#2E2E38")
@@ -90,19 +89,27 @@ internal class ToggleView(ctx: Context) : View(ctx) {
     }
 }
 
-internal fun toggleCard(ctx: Context, title: String, sub: String, toggle: ToggleView) = card(ctx).apply {
+internal fun toggleCard(ctx: Context, title: String, sub: String, toggle: ToggleView) = LinearLayout(ctx).apply {
     orientation = LinearLayout.HORIZONTAL
     gravity = Gravity.CENTER_VERTICAL
-    setPadding(dp(ctx, 16), dp(ctx, 14), dp(ctx, 12), dp(ctx, 14))
+    background = GradientDrawable().apply {
+        setColor(C.CARD)
+        cornerRadius = dp(ctx, 14).toFloat()
+        setStroke(dp(ctx, 1), C.OUTLINE)
+    }
+    setPadding(dp(ctx, 16), dp(ctx, 14), dp(ctx, 14), dp(ctx, 14))
     addView(LinearLayout(ctx).apply {
         orientation = LinearLayout.VERTICAL
         addView(text(ctx, title, 16f, C.TEXT, bold = true))
-        addView(text(ctx, sub, 12.5f, C.TEXT_DIM), lp(top = 2))
+        addView(text(ctx, sub, 12.5f, C.TEXT_DIM).apply {
+            setPadding(0, dp(ctx, 3), 0, 0)
+        })
     }, LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f))
-    addView(toggle, LinearLayout.LayoutParams(dp(ctx, 56), dp(ctx, 40)))
+    addView(toggle, LinearLayout.LayoutParams(dp(ctx, 54), dp(ctx, 36)))
 }
 
 internal fun card(ctx: Context) = LinearLayout(ctx).apply {
+    orientation = LinearLayout.VERTICAL
     background = GradientDrawable().apply {
         setColor(C.CARD)
         cornerRadius = dp(ctx, 16).toFloat()
@@ -126,12 +133,12 @@ internal fun text(
 internal fun sectionLabel(ctx: Context, title: String) = text(
     ctx,
     title.uppercase(),
-    11.5f,
+    12f,
     C.TEXT_DIM,
     bold = true
 ).apply {
     letterSpacing = 0.08f
-    setPadding(dp(ctx, 8), dp(ctx, 18), dp(ctx, 8), dp(ctx, 8))
+    setPadding(dp(ctx, 6), dp(ctx, 20), dp(ctx, 6), dp(ctx, 8))
 }
 
 internal fun button(
@@ -144,7 +151,7 @@ internal fun button(
     textSize = 13.5f
     gravity = Gravity.CENTER
     typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
-    setPadding(dp(ctx, 14), dp(ctx, 10), dp(ctx, 14), dp(ctx, 10))
+    setPadding(dp(ctx, 14), dp(ctx, 11), dp(ctx, 14), dp(ctx, 11))
     if (filled) {
         setTextColor(C.ON_PRIMARY)
         background = GradientDrawable().apply {
@@ -199,9 +206,9 @@ internal class BackButton(ctx: Context, onClick: () -> Unit) : View(ctx) {
 
 internal fun dp(ctx: Context, v: Int) = (v * ctx.resources.displayMetrics.density).toInt()
 
-internal fun lp(top: Int = 0, bottom: Int = 0, left: Int = 0, right: Int = 0) =
+internal fun lp(ctx: Context, topDp: Int = 0, bottomDp: Int = 0, leftDp: Int = 0, rightDp: Int = 0) =
     LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
-        setMargins(left, top, right, bottom)
+        setMargins(dp(ctx, leftDp), dp(ctx, topDp), dp(ctx, rightDp), dp(ctx, bottomDp))
     }
 
 internal fun toast(ctx: Context, msg: String) {
