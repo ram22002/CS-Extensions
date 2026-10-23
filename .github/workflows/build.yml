@@ -49,7 +49,6 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/src
           chmod +x gradlew
-          python tools/embed_story.py
           ./gradlew make --no-daemon
           python tools/update_plugins.py
 

@@ -11,8 +11,6 @@ pairs = [
     (root / "NextGenBDIX/build/NextGenBDIX.cs3", root / "nextgenbdix.cs3"),
     (root / "Live/build/Live.cs3", root / "live.cs3"),
     (root / "Soryn/build/NextGen OTT.cs3", root / "netmirror.cs3"),
-    (root / "NextGenStory/build/NextGenStory.cs3", root / "nextgenstory.cs3"),
-    (root / "AnyDrama/build/AnyDrama.cs3", root / "anydrama.cs3"),
     (root / "ReelFren/build/ReelFren.cs3", root / "reelfren.cs3"),
 ]
 
@@ -21,7 +19,7 @@ for src, dst in pairs:
         shutil.copy2(src, dst)
         print(f"Copied {src} to {dst}")
 
-for old_name in ["eclipsia.cs3", "eclipsiaanime.cs3", "eclipsiabdix.cs3"]:
+for old_name in ["eclipsia.cs3", "eclipsiaanime.cs3", "eclipsiabdix.cs3", "nextgenstory.cs3", "anydrama.cs3"]:
     old_file = root / old_name
     if old_file.exists():
         old_file.unlink()
