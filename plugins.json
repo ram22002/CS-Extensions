@@ -2,14 +2,14 @@
   {
     "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/builds/nextgen.cs3",
     "status": 1,
-    "version": 110900,
+    "version": 110901,
     "name": "NextGen Cinema",
     "internalName": "NextGen",
     "authors": [
       "ram22002"
     ],
     "description": "Movies & TV series",
-    "fileSize": 457330,
+    "fileSize": 467066,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -18,23 +18,23 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/cinema.png",
     "apiVersion": 1,
-    "fileHash": "sha256-375ccd594082dce6eee54fa8cc41a8b13d75f3d9a535d791fd878da0076bd3a9",
-    "filesize": 457330,
-    "hash": "375ccd594082dce6eee54fa8cc41a8b13d75f3d9a535d791fd878da0076bd3a9",
-    "sha256": "375ccd594082dce6eee54fa8cc41a8b13d75f3d9a535d791fd878da0076bd3a9",
+    "fileHash": "sha256-6370bb1db2d5bee592de4f9ff6987cdc2d985ba66f2268215226a7fa93fb4286",
+    "filesize": 467066,
+    "hash": "6370bb1db2d5bee592de4f9ff6987cdc2d985ba66f2268215226a7fa93fb4286",
+    "sha256": "6370bb1db2d5bee592de4f9ff6987cdc2d985ba66f2268215226a7fa93fb4286",
     "requiresResources": false
   },
   {
     "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/builds/nextgenanime.cs3",
     "status": 1,
-    "version": 10005,
+    "version": 10006,
     "name": "NextGen Anime",
     "internalName": "NextGenAnime",
     "authors": [
       "ram22002"
     ],
     "description": "Anime, movies & OVAs",
-    "fileSize": 328701,
+    "fileSize": 345901,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -44,10 +44,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/anime.png",
     "apiVersion": 1,
-    "fileHash": "sha256-e928b4fc094d57d9b10688d59ba7aa9506c4a26f64915c4aae94b5202ac50553",
-    "filesize": 328701,
-    "hash": "e928b4fc094d57d9b10688d59ba7aa9506c4a26f64915c4aae94b5202ac50553",
-    "sha256": "e928b4fc094d57d9b10688d59ba7aa9506c4a26f64915c4aae94b5202ac50553",
+    "fileHash": "sha256-65504a897ad5e1e92bf1b31f1809754e178629170dcdbe637146914bf0d63dc0",
+    "filesize": 345901,
+    "hash": "65504a897ad5e1e92bf1b31f1809754e178629170dcdbe637146914bf0d63dc0",
+    "sha256": "65504a897ad5e1e92bf1b31f1809754e178629170dcdbe637146914bf0d63dc0",
     "requiresResources": false
   },
   {
@@ -60,7 +60,7 @@
       "ram22002"
     ],
     "description": "Regional FTP sources",
-    "fileSize": 238194,
+    "fileSize": 244649,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -69,10 +69,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/bdix.png",
     "apiVersion": 1,
-    "fileHash": "sha256-7a4f674d0a1fa1d0c3361d4751b344a2c7328b471fb511ff38ea4c1fb93a171f",
-    "filesize": 238194,
-    "hash": "7a4f674d0a1fa1d0c3361d4751b344a2c7328b471fb511ff38ea4c1fb93a171f",
-    "sha256": "7a4f674d0a1fa1d0c3361d4751b344a2c7328b471fb511ff38ea4c1fb93a171f",
+    "fileHash": "sha256-7ad943b64599743b392242bd5e882ae455cf5d39106730b8b1b8b854703b1838",
+    "filesize": 244649,
+    "hash": "7ad943b64599743b392242bd5e882ae455cf5d39106730b8b1b8b854703b1838",
+    "sha256": "7ad943b64599743b392242bd5e882ae455cf5d39106730b8b1b8b854703b1838",
     "requiresResources": false
   },
   {
