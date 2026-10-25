@@ -38,11 +38,15 @@ internal object NextGenParallel {
             if (list.any { it.second == data }) list else list + (name to data)
         }
         for ((rowName, rowData) in targets) {
-            slots.compute(key(rowData)) { _, old ->
+            val k = key(rowData)
+            synchronized(slots) {
+                val old = slots[k]
                 val usable = old != null && now - old.at < TTL_MS &&
                     !old.deferred.isCancelled &&
                     !(old.deferred.isCompleted && old.deferred.getCompletionExceptionOrNull() != null)
-                if (usable) old else Slot(scope.async { loader(1, rowName, rowData) }, now)
+                if (!usable) {
+                    slots[k] = Slot(scope.async { loader(1, rowName, rowData) }, now)
+                }
             }
         }
 

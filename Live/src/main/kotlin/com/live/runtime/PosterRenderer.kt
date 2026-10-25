@@ -141,7 +141,10 @@ internal object PosterRenderer {
 
     private fun noteHost(host: String, networkOk: Boolean) {
         if (networkOk) hostFails.remove(host)
-        else hostFails.compute(host) { _, old -> ((old?.first ?: 0) + 1) to System.currentTimeMillis() }
+        else synchronized(hostFails) {
+            val old = hostFails[host]
+            hostFails[host] = ((old?.first ?: 0) + 1) to System.currentTimeMillis()
+        }
     }
 
     private fun fetchImage(url: String): Bitmap? = synchronized(urlLocks.getOrPut(url) { Any() }) {

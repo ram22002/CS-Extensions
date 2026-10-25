@@ -125,7 +125,9 @@ internal object NextGenAnilistMeta {
             val m = EP_RE.find(o.str("title") ?: continue) ?: continue
             val n = m.groupValues[1].toIntOrNull()?.takeIf { it > 0 } ?: continue
             val title = m.groupValues[2].trim().takeIf { it.isNotEmpty() }
-            out.putIfAbsent(n, NextGenKitsuMeta.Ep(title, null, o.str("thumbnail"), null, null))
+            if (!out.containsKey(n)) {
+                out[n] = NextGenKitsuMeta.Ep(title, null, o.str("thumbnail"), null, null)
+            }
         }
         return out
     }

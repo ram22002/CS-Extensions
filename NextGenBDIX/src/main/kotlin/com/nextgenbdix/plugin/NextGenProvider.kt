@@ -26,6 +26,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withTimeoutOrNull
 import org.json.JSONObject
+import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -72,8 +73,8 @@ open class NextGenProvider : TmdbProvider() {
         if (scrapers.isEmpty()) return false
 
         val found = AtomicBoolean(false)
-        val seenSubtitles = ConcurrentHashMap.newKeySet<String>()
-        val seenLinks = ConcurrentHashMap.newKeySet<String>()
+        val seenSubtitles = Collections.newSetFromMap(ConcurrentHashMap<String, Boolean>())
+        val seenLinks = Collections.newSetFromMap(ConcurrentHashMap<String, Boolean>())
         val deadlineMs = NextGenStore.timeoutSeconds * 1000L
         suspend fun <T> withDeadline(block: suspend () -> T): T? =
             if (deadlineMs > 0) withTimeoutOrNull(deadlineMs) { block() } else block()
@@ -217,7 +218,7 @@ open class NextGenProvider : TmdbProvider() {
         runCatching { ExtractorLinkType.valueOf(name) }.getOrNull()
 
     private fun clean(s: String?): String = s.orEmpty()
-        .replace("﻿", "").replace("​", "")
+        .replace("\uFEFF", "").replace("\u200B", "")
         .replace(Regex("\\s*[\\r\\n]+\\s*"), " • ")
         .trim()
 
