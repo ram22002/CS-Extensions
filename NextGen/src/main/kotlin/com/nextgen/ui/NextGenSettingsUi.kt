@@ -228,34 +228,43 @@ object NextGenSettingsUi {
         val posterPresets = listOf(
             "BetterPosters" to "https://btttr.cc/poster-ra/imdb/poster-default/{imdb_id}.jpg?tag=none&rs=IM",
             "Poster+" to "https://postersplus.elfhosted.com/p/bar_sash/{type}/{imdb_id}.jpg",
+            "OpenPosterDB" to "https://openposterdb.com/{api_key}/imdb/poster-default/{imdb_id}.jpg",
         )
         val posterChips = LinearLayout(ctx).apply {
             posterPresets.forEach { (label, url) ->
                 addView(TextView(ctx).apply {
                     text = label; textSize = 14f; setTextColor(C.ON_TONAL)
                     setTypeface(typeface, Typeface.BOLD); gravity = Gravity.CENTER
-                    background = GradientDrawable().apply { setColor(C.TONAL); cornerRadius = dp(ctx, 18).toFloat() }
+                    background = GradientDrawable().apply {
+                        setColor(C.TONAL)
+                        cornerRadius = dp(ctx, 18).toFloat()
+                        setStroke(dp(ctx, 1), C.OUTLINE)
+                    }
                     setPadding(dp(ctx, 18), 0, dp(ctx, 18), 0)
                     focusRing(ctx, this, 18, 1f)
                     setOnClickListener { posterField.setText(url) }
                 }, LinearLayout.LayoutParams(WRAP_CONTENT, dp(ctx, 36)).apply { rightMargin = dp(ctx, 8) })
             }
         }
+        val posterChipsScroll = android.widget.HorizontalScrollView(ctx).apply {
+            isHorizontalScrollBarEnabled = false
+            addView(posterChips)
+        }
         val posterToggle = ToggleView(ctx).apply {
             setChecked(NextGenStore.customPosterEnabled, false)
             onChange = { on ->
                 val v = if (on) View.VISIBLE else View.GONE
-                posterFieldCard.visibility = v; posterHint.visibility = v; posterChips.visibility = v
+                posterFieldCard.visibility = v; posterHint.visibility = v; posterChipsScroll.visibility = v
             }
         }
         val posterVisibility = if (posterToggle.checked) View.VISIBLE else View.GONE
         posterFieldCard.visibility = posterVisibility
         posterHint.visibility = posterVisibility
-        posterChips.visibility = posterVisibility
+        posterChipsScroll.visibility = posterVisibility
         posterList.addView(toggleCard(ctx, "Custom Poster", "Disabled: TMDb posters are used", posterToggle))
         posterList.addView(posterFieldCard, lp(top = 10))
         posterList.addView(posterHint)
-        posterList.addView(posterChips)
+        posterList.addView(posterChipsScroll)
 
         val hideLabelsToggle = ToggleView(ctx).apply { setChecked(NextGenStore.hideLabels, false) }
         posterList.addView(
@@ -375,7 +384,7 @@ object NextGenSettingsUi {
         refreshMenu()
         menuList.addView(sectionLabel(ctx, "Preferences"))
         menuList.addView(
-            menuCard(ctx, IconView.Kind.BOLT, Color.parseColor("#FF9F0A"), "Performance", perfSub) { showPage(2) },
+            menuCard(ctx, IconView.Kind.BOLT, C.PRIMARY, "Performance", perfSub) { showPage(2) },
             lp(top = 0)
         )
         menuList.addView(
@@ -422,7 +431,11 @@ object NextGenSettingsUi {
                 addView(TextView(ctx).apply {
                     text = preset.label; textSize = 14f; setTextColor(C.ON_TONAL)
                     setTypeface(typeface, Typeface.BOLD); gravity = Gravity.CENTER
-                    background = GradientDrawable().apply { setColor(C.TONAL); cornerRadius = dp(ctx, 18).toFloat() }
+                    background = GradientDrawable().apply {
+                        setColor(C.TONAL)
+                        cornerRadius = dp(ctx, 18).toFloat()
+                        setStroke(dp(ctx, 1), C.OUTLINE)
+                    }
                     setPadding(dp(ctx, 18), 0, dp(ctx, 18), 0)
                     focusRing(ctx, this, 18, 1f)
                     setOnClickListener {
@@ -568,15 +581,19 @@ object NextGenSettingsUi {
         var current = 0
 
         val tabs = LinearLayout(ctx).apply {
-            background = GradientDrawable().apply { setColor(C.CARD); cornerRadius = dp(ctx, 22).toFloat() }
+            background = GradientDrawable().apply {
+                setColor(C.CARD)
+                cornerRadius = dp(ctx, 16).toFloat()
+                setStroke(dp(ctx, 1), C.OUTLINE)
+            }
             setPadding(dp(ctx, 4), dp(ctx, 4), dp(ctx, 4), dp(ctx, 4))
             listOf("Providers", "Settings").forEachIndexed { i, label ->
                 val t = TextView(ctx).apply {
                     text = label; textSize = 15f; gravity = Gravity.CENTER
                     setTypeface(typeface, Typeface.BOLD)
-                    background = GradientDrawable().apply { cornerRadius = dp(ctx, 18).toFloat() }
+                    background = GradientDrawable().apply { cornerRadius = dp(ctx, 12).toFloat() }
                     setOnClickListener { showPage(i) }
-                    focusRing(ctx, this, 18, 1f)
+                    focusRing(ctx, this, 12, 1f)
                 }
                 tabViews += t
                 addView(t, LinearLayout.LayoutParams(0, dp(ctx, 40), 1f))
@@ -772,7 +789,11 @@ object NextGenSettingsUi {
         val maxH = (dm.heightPixels * 0.55f).toInt()
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
-            background = GradientDrawable().apply { setColor(C.CARD); cornerRadius = dp(ctx, 28).toFloat() }
+            background = GradientDrawable().apply {
+                setColor(C.CARD)
+                cornerRadius = dp(ctx, 20).toFloat()
+                setStroke(dp(ctx, 1), C.OUTLINE)
+            }
             setPadding(0, dp(ctx, 24), 0, dp(ctx, 20))
         }
         root.addView(text(ctx, title, 24f, C.TEXT, bold = true).apply {

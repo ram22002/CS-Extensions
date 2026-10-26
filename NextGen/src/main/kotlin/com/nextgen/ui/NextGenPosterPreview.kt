@@ -54,7 +54,11 @@ internal object NextGenPosterPreview {
         val slots = samples.map { s ->
             val image = ImageView(ctx).apply {
                 scaleType = ImageView.ScaleType.CENTER_CROP
-                background = GradientDrawable().apply { setColor(C.CARD_HIGH); cornerRadius = dp(ctx, 12).toFloat() }
+                background = GradientDrawable().apply {
+                    setColor(C.CARD_HIGH)
+                    cornerRadius = dp(ctx, 12).toFloat()
+                    setStroke(dp(ctx, 1), C.OUTLINE)
+                }
                 clipToOutline = true
                 outlineProvider = object : ViewOutlineProvider() {
                     override fun getOutline(v: View, o: Outline) = o.setRoundRect(0, 0, v.width, v.height, dp(ctx, 12).toFloat())

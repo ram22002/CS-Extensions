@@ -1,6 +1,6 @@
 {
   "name": "NextGen",
-  "version": "11.9.0",
+  "version": "11.9.5",
   "scrapers": [
     {
       "id": "brellor",
