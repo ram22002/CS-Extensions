@@ -2,14 +2,14 @@
   {
     "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/builds/nextgen.cs3",
     "status": 1,
-    "version": 110900,
+    "version": 110907,
     "name": "NextGen Cinema",
     "internalName": "NextGen",
     "authors": [
       "ram22002"
     ],
     "description": "Movies & TV series",
-    "fileSize": 457062,
+    "fileSize": 458145,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -18,23 +18,23 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/cinema.png",
     "apiVersion": 1,
-    "fileHash": "sha256-f93b011ab79e0f7bdcf913c486b31e96da50ae092f1e80c64232dec25aa93169",
-    "filesize": 457062,
-    "hash": "f93b011ab79e0f7bdcf913c486b31e96da50ae092f1e80c64232dec25aa93169",
-    "sha256": "f93b011ab79e0f7bdcf913c486b31e96da50ae092f1e80c64232dec25aa93169",
+    "fileHash": "sha256-45130623120664027c778cd45a833fba3307f555cdcac62377ba9f64923e5211",
+    "filesize": 458145,
+    "hash": "45130623120664027c778cd45a833fba3307f555cdcac62377ba9f64923e5211",
+    "sha256": "45130623120664027c778cd45a833fba3307f555cdcac62377ba9f64923e5211",
     "requiresResources": false
   },
   {
     "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/builds/nextgenanime.cs3",
     "status": 1,
-    "version": 20003,
+    "version": 20006,
     "name": "NextGen Anime",
     "internalName": "NextGenAnime",
     "authors": [
       "ram22002"
     ],
     "description": "Anime, movies & OVAs",
-    "fileSize": 273942,
+    "fileSize": 274590,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -44,10 +44,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/anime.png",
     "apiVersion": 1,
-    "fileHash": "sha256-e87377c3dd6909c9cca7a6a4d3da0223a458837f64841dc92276f10fdc2977b3",
-    "filesize": 273942,
-    "hash": "e87377c3dd6909c9cca7a6a4d3da0223a458837f64841dc92276f10fdc2977b3",
-    "sha256": "e87377c3dd6909c9cca7a6a4d3da0223a458837f64841dc92276f10fdc2977b3",
+    "fileHash": "sha256-0638e2edecbebeb5c387ad018cfdbbc13f9c11c2417525727c224534797317e5",
+    "filesize": 274590,
+    "hash": "0638e2edecbebeb5c387ad018cfdbbc13f9c11c2417525727c224534797317e5",
+    "sha256": "0638e2edecbebeb5c387ad018cfdbbc13f9c11c2417525727c224534797317e5",
     "requiresResources": false
   },
   {
