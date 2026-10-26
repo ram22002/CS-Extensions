@@ -426,7 +426,7 @@ object NextGenAnilistDetails {
         val mainUrl = "https://anilist.co/anime/${rootMedia.id}"
 
         return api.newTvSeriesLoadResponse(mainTitle, mainUrl, TvType.Anime, allEpisodes) {
-            posterUrl = rootMedia.coverImage?.best()
+            posterUrl = NextGenPosters.resolve(rootMedia.id, rootMedia.coverImage?.best())
             backgroundPosterUrl = rootMedia.bannerImage ?: rootMedia.coverImage?.best()
             year = rootMedia.startDateYear ?: rootMedia.seasonYear
             plot = NextGenAnilistMeta.cleanDescription(rootMedia.description)
@@ -499,11 +499,11 @@ object NextGenAnilistDetails {
                 val typeLabel = rel.relationType.replace('_', ' ').lowercase().replaceFirstChar { it.uppercase() }
                 recList.add(
                     api.newAnimeSearchResponse(
-                        "${rel.title} ($typeLabel)",
+                        NextGenPosters.cardLabel("${rel.title} ($typeLabel)"),
                         "https://anilist.co/anime/${rel.id}",
                         if (isMovie) TvType.AnimeMovie else TvType.Anime
                     ) {
-                        posterUrl = rel.posterUrl
+                        posterUrl = NextGenPosters.resolve(rel.id, rel.posterUrl)
                     }
                 )
             }
@@ -523,11 +523,11 @@ object NextGenAnilistDetails {
 
                     recList.add(
                         api.newAnimeSearchResponse(
-                            recTitle,
+                            NextGenPosters.cardLabel(recTitle),
                             "https://anilist.co/anime/$recId",
                             if (isRecMovie) TvType.AnimeMovie else TvType.Anime
                         ) {
-                            posterUrl = recCover
+                            posterUrl = NextGenPosters.resolve(recId, recCover)
                         }
                     )
                 }

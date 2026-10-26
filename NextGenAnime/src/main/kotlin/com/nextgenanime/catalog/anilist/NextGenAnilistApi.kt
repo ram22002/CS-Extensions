@@ -107,7 +107,7 @@ internal object NextGenAnilistApi {
         val tvType = if (isMovie) TvType.AnimeMovie else TvType.Anime
 
         return api.newAnimeSearchResponse(NextGenPosters.cardLabel(title), target, tvType) {
-            posterUrl = poster
+            posterUrl = NextGenPosters.resolve(id, poster)
         }
     }
 

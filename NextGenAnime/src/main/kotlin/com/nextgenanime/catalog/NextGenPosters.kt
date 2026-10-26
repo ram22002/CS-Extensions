@@ -16,9 +16,11 @@ internal object NextGenPosters {
             ?.takeIf { it.startsWith("http://") || it.startsWith("https://") }
     }
 
-    fun resolveImdb(imdbId: String, fallback: String?): String? {
+    fun resolve(anilistId: Int, fallback: String?): String? {
         val pattern = template() ?: return fallback
-        if ("{imdb_id}" !in pattern) return fallback
-        return pattern.replace("{imdb_id}", imdbId)
+        return pattern
+            .replace("{anilist_id}", anilistId.toString())
+            .replace("{id}", anilistId.toString())
+            .replace("{type}", "series")
     }
 }

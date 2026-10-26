@@ -2,14 +2,14 @@
   {
     "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/builds/nextgen.cs3",
     "status": 1,
-    "version": 110905,
+    "version": 110907,
     "name": "NextGen Cinema",
     "internalName": "NextGen",
     "authors": [
       "ram22002"
     ],
     "description": "Movies & TV series",
-    "fileSize": 457367,
+    "fileSize": 458145,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -18,23 +18,23 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/cinema.png",
     "apiVersion": 1,
-    "fileHash": "sha256-aacd6b59a7127e3a54289869049da1f21ddbead825abdcb2b240a83bfa053a52",
-    "filesize": 457367,
-    "hash": "aacd6b59a7127e3a54289869049da1f21ddbead825abdcb2b240a83bfa053a52",
-    "sha256": "aacd6b59a7127e3a54289869049da1f21ddbead825abdcb2b240a83bfa053a52",
+    "fileHash": "sha256-45130623120664027c778cd45a833fba3307f555cdcac62377ba9f64923e5211",
+    "filesize": 458145,
+    "hash": "45130623120664027c778cd45a833fba3307f555cdcac62377ba9f64923e5211",
+    "sha256": "45130623120664027c778cd45a833fba3307f555cdcac62377ba9f64923e5211",
     "requiresResources": false
   },
   {
     "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/builds/nextgenanime.cs3",
     "status": 1,
-    "version": 20004,
+    "version": 20006,
     "name": "NextGen Anime",
     "internalName": "NextGenAnime",
     "authors": [
       "ram22002"
     ],
     "description": "Anime, movies & OVAs",
-    "fileSize": 264452,
+    "fileSize": 274590,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -44,10 +44,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/anime.png",
     "apiVersion": 1,
-    "fileHash": "sha256-b5ee9403a2952361d8046965eaff16e4a664604f4b99d66c524a2ef402376745",
-    "filesize": 264452,
-    "hash": "b5ee9403a2952361d8046965eaff16e4a664604f4b99d66c524a2ef402376745",
-    "sha256": "b5ee9403a2952361d8046965eaff16e4a664604f4b99d66c524a2ef402376745",
+    "fileHash": "sha256-0638e2edecbebeb5c387ad018cfdbbc13f9c11c2417525727c224534797317e5",
+    "filesize": 274590,
+    "hash": "0638e2edecbebeb5c387ad018cfdbbc13f9c11c2417525727c224534797317e5",
+    "sha256": "0638e2edecbebeb5c387ad018cfdbbc13f9c11c2417525727c224534797317e5",
     "requiresResources": false
   },
   {
@@ -60,7 +60,7 @@
       "ram22002"
     ],
     "description": "Regional FTP sources",
-    "fileSize": 238194,
+    "fileSize": 237899,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -69,10 +69,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/bdix.png",
     "apiVersion": 1,
-    "fileHash": "sha256-7a4f674d0a1fa1d0c3361d4751b344a2c7328b471fb511ff38ea4c1fb93a171f",
-    "filesize": 238194,
-    "hash": "7a4f674d0a1fa1d0c3361d4751b344a2c7328b471fb511ff38ea4c1fb93a171f",
-    "sha256": "7a4f674d0a1fa1d0c3361d4751b344a2c7328b471fb511ff38ea4c1fb93a171f",
+    "fileHash": "sha256-779ef0bdcfbdaf8bbb1469c6d8e511f318df3b5c5217744590fae3e7f6c38962",
+    "filesize": 237899,
+    "hash": "779ef0bdcfbdaf8bbb1469c6d8e511f318df3b5c5217744590fae3e7f6c38962",
+    "sha256": "779ef0bdcfbdaf8bbb1469c6d8e511f318df3b5c5217744590fae3e7f6c38962",
     "requiresResources": false
   },
   {
@@ -85,7 +85,7 @@
       "ram22002"
     ],
     "description": "Live sports & sports TV",
-    "fileSize": 2159527,
+    "fileSize": 2159336,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -93,10 +93,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/arena.png",
     "apiVersion": 1,
-    "fileHash": "sha256-7ceb0aa80a2a92081306f93d8eeb431885d2ffc1e85299af3d10b1369456c840",
-    "filesize": 2159527,
-    "hash": "7ceb0aa80a2a92081306f93d8eeb431885d2ffc1e85299af3d10b1369456c840",
-    "sha256": "7ceb0aa80a2a92081306f93d8eeb431885d2ffc1e85299af3d10b1369456c840",
+    "fileHash": "sha256-c9f6d67781383d09bc4467079d00a2e03b3cd83c42853455c2bebd22323864c4",
+    "filesize": 2159336,
+    "hash": "c9f6d67781383d09bc4467079d00a2e03b3cd83c42853455c2bebd22323864c4",
+    "sha256": "c9f6d67781383d09bc4467079d00a2e03b3cd83c42853455c2bebd22323864c4",
     "requiresResources": false
   },
   {

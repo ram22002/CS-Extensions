@@ -4,6 +4,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 internal object NextGenPosters {
     private val imdbIds = ConcurrentHashMap<String, String>()
+    private val tmdbIds = ConcurrentHashMap<String, Int>()
 
     private const val HIDDEN_TITLE = "\u200B"
 
@@ -27,25 +28,47 @@ internal object NextGenPosters {
             ?.optString("imdb_id")?.takeIf { it.startsWith("tt") }
             ?: return null
         imdbIds[key] = found
+        tmdbIds[found] = tmdbId
         return found
     }
 
     fun resolveImdb(kind: String, imdbId: String, fallback: String?): String? {
         val pattern = template() ?: return fallback
-        if ("{tmdb_id}" in pattern) return fallback
-        return pattern
+        var url = pattern
             .replace("{imdb_id}", imdbId)
             .replace("{type}", if (kind == "series") "series" else "movie")
+        if ("{tmdb_id}" in url) {
+            val tmdb = tmdbIds[imdbId]
+            url = if (tmdb != null) {
+                url.replace("{tmdb_id}", tmdb.toString())
+            } else {
+                url.replace("tmdb_id={tmdb_id}&", "")
+                    .replace("&tmdb_id={tmdb_id}", "")
+                    .replace("?tmdb_id={tmdb_id}", "?")
+            }
+            if ("{tmdb_id}" in url) return fallback
+        }
+        return url
     }
 
     suspend fun resolve(kind: String, tmdbId: Int, imdbId: String?, fallback: String?): String? {
         val pattern = template() ?: return fallback
         var url = pattern
         if ("{imdb_id}" in url) {
-            val imdb = imdbId?.takeIf { it.startsWith("tt") } ?: imdbOf(kind, tmdbId) ?: return fallback
-            url = url.replace("{imdb_id}", imdb)
+            val imdb = imdbId?.takeIf { it.startsWith("tt") } ?: imdbOf(kind, tmdbId)
+            if (imdb != null) {
+                imdbIds["$kind:$tmdbId"] = imdb
+                tmdbIds[imdb] = tmdbId
+                url = url.replace("{imdb_id}", imdb)
+            } else {
+                url = url.replace("imdb_id={imdb_id}&", "")
+                    .replace("&imdb_id={imdb_id}", "")
+                    .replace("?imdb_id={imdb_id}", "?")
+            }
+            if ("{imdb_id}" in url) return fallback
         }
         return url
+        
             .replace("{tmdb_id}", tmdbId.toString())
             .replace("{type}", if (kind == "tv") "series" else "movie")
     }

@@ -226,9 +226,12 @@ object NextGenSettingsUi {
             13f, C.TEXT_DIM
         ).apply { setPadding(dp(ctx, 8), dp(ctx, 8), 0, dp(ctx, 8)) }
         val posterPresets = listOf(
-            "BetterPosters" to "https://btttr.cc/poster-ra/imdb/poster-default/{imdb_id}.jpg?tag=none&rs=IM",
+            "Posters+2" to "https://postersplus.slokker.cc/poster?tmdb_id={tmdb_id}&imdb_id={imdb_id}&type={type}&pc=stremio_tv_nuvio&tg=off&bgr=custom&bgo=0.55&bgh=0.2&tvso=1&vpct=1&vcs=reference&sm=hidden&fti=1&irs=dataset&trs=direct&rdm=3&scm=0&mam=3&mmfsr=0.058&mmfxo=0.200&mmfyo=0.930&mc=1&ms=bullet&mrs=bullet&rb=tomatoes&mw=lb:.99,tk:.01&tw=tk:.8,rt:.2&psm=fanart&pp=random&lp=native&fbs=photoreal&lmwr=0.92&lmhr=0.13&lbr=0.05&cg=0&mo=year,rating,genre&lf=spacegrotesk&ol=en&bdm=7&bg1=&pp_ts=1793032510392",
             "Poster+" to "https://postersplus.elfhosted.com/p/bar_sash/{type}/{imdb_id}.jpg",
-            "OpenPosterDB" to "https://openposterdb.com/{api_key}/imdb/poster-default/{imdb_id}.jpg",
+            "BetterPosters" to "https://btttr.cc/poster-ra/imdb/poster-default/{imdb_id}.jpg?tag=none&rs=IM",
+            "OpenPosterDB" to "https://openposterdb.com/c/8bdb1768dd1b3132ada6de21029b5409/imdb/poster-default/{imdb_id}.jpg",
+            "AIORatings" to "https://api.aioratings.com/t0-free-rpdb/imdb/poster-default/{imdb_id}.jpg",
+            "OpenPosterDB (Key)" to "https://openposterdb.com/{api_key}/imdb/poster-default/{imdb_id}.jpg",
         )
         val posterChips = LinearLayout(ctx).apply {
             posterPresets.forEach { (label, url) ->
