@@ -23,15 +23,15 @@ import android.widget.TextView
 import android.widget.Toast
 
 internal object C {
-    val BG = Color.parseColor("#000000")
-    val CARD = Color.parseColor("#1C1C1E")
-    val CARD_HIGH = Color.parseColor("#2C2C2E")
-    val OUTLINE = Color.parseColor("#48484A")
-    val TEXT = Color.parseColor("#D5DCEC")
-    val TEXT_DIM = Color.parseColor("#98989F")
-    val PRIMARY = Color.parseColor("#2F6FDE")
-    val ON_PRIMARY = Color.parseColor("#D5DCEC")
-    val TONAL = Color.parseColor("#3A3A3C")
+    val BG = Color.parseColor("#0A0A0C")
+    val CARD = Color.parseColor("#16161A")
+    val CARD_HIGH = Color.parseColor("#222228")
+    val OUTLINE = Color.parseColor("#383842")
+    val TEXT = Color.parseColor("#FFFFFF")
+    val TEXT_DIM = Color.parseColor("#B0B4C4")
+    val PRIMARY = Color.parseColor("#FF5E3A") // ReelFren vibrant reel accent
+    val ON_PRIMARY = Color.parseColor("#FFFFFF")
+    val TONAL = Color.parseColor("#2E2E38")
     val ON_TONAL = Color.parseColor("#D5DCEC")
 }
 
@@ -222,11 +222,15 @@ internal fun stepper(ctx: Context, value: TextView, valueWidthDp: Int, onMinus: 
         text = label; textSize = 22f; gravity = Gravity.CENTER
         setTextColor(C.PRIMARY); includeFontPadding = false
         setOnClickListener { click() }
-        focusRing(ctx, this, 20, 1.1f)
+        focusRing(ctx, this, 16, 1.1f)
     }
     return LinearLayout(ctx).apply {
         gravity = Gravity.CENTER_VERTICAL
-        background = GradientDrawable().apply { setColor(C.CARD_HIGH); cornerRadius = dp(ctx, 22).toFloat() }
+        background = GradientDrawable().apply {
+            setColor(C.CARD_HIGH)
+            cornerRadius = dp(ctx, 16).toFloat()
+            setStroke(dp(ctx, 1), C.OUTLINE)
+        }
         addView(btn("−", onMinus), LinearLayout.LayoutParams(dp(ctx, 44), dp(ctx, 40)))
         value.minWidth = dp(ctx, valueWidthDp)
         addView(value)
@@ -308,7 +312,11 @@ internal class BackButton(ctx: Context, onClick: () -> Unit) : View(ctx) {
     }
 
     init {
-        background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(C.CARD) }
+        background = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(C.CARD)
+            setStroke(dp(ctx, 1), C.OUTLINE)
+        }
         setOnClickListener { onClick() }
         focusRing(ctx, this, 20, 1.1f)
     }
@@ -383,23 +391,31 @@ internal fun text(ctx: Context, s: String, size: Float, color: Int, bold: Boolea
     if (bold) setTypeface(typeface, Typeface.BOLD)
 }
 
-internal fun sectionLabel(ctx: Context, s: String) = text(ctx, s.uppercase(), 12f, C.PRIMARY, bold = true).apply {
-    letterSpacing = 0.1f
-    setPadding(dp(ctx, 8), dp(ctx, 24), 0, dp(ctx, 8))
+internal fun sectionLabel(ctx: Context, s: String) = text(ctx, s.uppercase(), 12f, C.TEXT_DIM, bold = true).apply {
+    letterSpacing = 0.08f
+    setPadding(dp(ctx, 8), dp(ctx, 20), 0, dp(ctx, 8))
 }
 
 internal fun card(ctx: Context) = LinearLayout(ctx).apply {
     orientation = LinearLayout.VERTICAL
-    background = GradientDrawable().apply { setColor(C.CARD); cornerRadius = dp(ctx, 22).toFloat() }
+    background = GradientDrawable().apply {
+        setColor(C.CARD)
+        cornerRadius = dp(ctx, 16).toFloat()
+        setStroke(dp(ctx, 1), C.OUTLINE)
+    }
 }
 
 internal fun fieldCard(ctx: Context, child: View) = LinearLayout(ctx).apply {
     orientation = LinearLayout.VERTICAL
-    background = GradientDrawable().apply { setColor(C.CARD_HIGH); cornerRadius = dp(ctx, 16).toFloat() }
+    background = GradientDrawable().apply {
+        setColor(C.CARD_HIGH)
+        cornerRadius = dp(ctx, 14).toFloat()
+        setStroke(dp(ctx, 1), C.OUTLINE)
+    }
     setPadding(dp(ctx, 16), dp(ctx, 12), dp(ctx, 16), dp(ctx, 12))
     addView(child, LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
     if (child is EditText) {
-        val ring = ringDrawable(ctx, 16)
+        val ring = ringDrawable(ctx, 14)
         child.setOnFocusChangeListener { _, has ->
             if (Build.VERSION.SDK_INT >= 23) foreground = if (has) ring else null
         }
@@ -408,15 +424,21 @@ internal fun fieldCard(ctx: Context, child: View) = LinearLayout(ctx).apply {
 
 internal fun button(ctx: Context, label: String, filled: Boolean, compact: Boolean = false, onClick: () -> Unit) =
     TextView(ctx).apply {
-        text = label; textSize = 16f; gravity = Gravity.CENTER
+        text = label; textSize = if (compact) 14f else 15f; gravity = Gravity.CENTER
         setTypeface(typeface, Typeface.BOLD)
-        setTextColor(if (filled) C.ON_PRIMARY else C.ON_TONAL)
+        setTextColor(if (filled) C.ON_PRIMARY else C.TEXT)
         background = GradientDrawable().apply {
-            setColor(if (filled) C.PRIMARY else C.TONAL); cornerRadius = dp(ctx, 26).toFloat()
+            if (filled) {
+                setColor(C.PRIMARY)
+            } else {
+                setColor(C.TONAL)
+                setStroke(dp(ctx, 1), C.OUTLINE)
+            }
+            cornerRadius = dp(ctx, 14).toFloat()
         }
-        if (compact) setPadding(dp(ctx, 24), 0, dp(ctx, 24), 0)
+        if (compact) setPadding(dp(ctx, 20), 0, dp(ctx, 20), 0)
         setOnClickListener { onClick() }
-        focusRing(ctx, this, 26, 1.04f)
+        focusRing(ctx, this, 14, 1.04f)
     }
 
 internal fun textButton(ctx: Context, label: String, onClick: () -> Unit) = TextView(ctx).apply {

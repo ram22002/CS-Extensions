@@ -45,7 +45,6 @@ object NextGenSettingsUi {
         }
 
         val perfList = pageColumn()
-        val posterList = pageColumn()
         val homeList = pageColumn()
         val langList = pageColumn()
         val menuList = pageColumn()
@@ -161,77 +160,13 @@ object NextGenSettingsUi {
             setPadding(dp(ctx, 8), dp(ctx, 8), 0, dp(ctx, 8))
         }
 
-        val posterField = EditText(ctx).apply {
-            hint = "https://…/{imdb_id}.jpg"
-            setText(NextGenStore.customPosterTemplate)
-            textSize = 14f
-            setTextColor(C.TEXT)
-            setHintTextColor(C.OUTLINE)
-            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_URI
-            background = null
-            setPadding(0, dp(ctx, 4), 0, dp(ctx, 4))
-        }
-        val posterFieldCard = fieldCard(ctx, posterField)
-        val posterHint = text(
-            ctx,
-                "AniList poster is used when custom poster is missing. Applies to the home page, details and recommendations.",
-            13f, C.TEXT_DIM
-        ).apply { setPadding(dp(ctx, 8), dp(ctx, 8), 0, dp(ctx, 8)) }
-        val posterPresets = listOf(
-            "BetterPosters" to "https://btttr.cc/poster-ra/imdb/poster-default/{imdb_id}.jpg?tag=none&rs=IM",
-            "Poster+" to "https://postersplus.elfhosted.com/p/bar_sash/{type}/{imdb_id}.jpg",
-        )
-        val posterChips = LinearLayout(ctx).apply {
-            posterPresets.forEach { (label, url) ->
-                addView(TextView(ctx).apply {
-                    text = label; textSize = 14f; setTextColor(C.ON_TONAL)
-                    setTypeface(typeface, Typeface.BOLD); gravity = Gravity.CENTER
-                    background = GradientDrawable().apply { setColor(C.TONAL); cornerRadius = dp(ctx, 18).toFloat() }
-                    setPadding(dp(ctx, 18), 0, dp(ctx, 18), 0)
-                    focusRing(ctx, this, 18, 1f)
-                    setOnClickListener { posterField.setText(url) }
-                }, LinearLayout.LayoutParams(WRAP_CONTENT, dp(ctx, 36)).apply { rightMargin = dp(ctx, 8) })
-            }
-        }
-        val posterToggle = ToggleView(ctx).apply {
-            setChecked(NextGenStore.customPosterEnabled, false)
-            onChange = { on ->
-                val v = if (on) View.VISIBLE else View.GONE
-                posterFieldCard.visibility = v; posterHint.visibility = v; posterChips.visibility = v
-            }
-        }
-        val posterVisibility = if (posterToggle.checked) View.VISIBLE else View.GONE
-        posterFieldCard.visibility = posterVisibility
-        posterHint.visibility = posterVisibility
-        posterChips.visibility = posterVisibility
-        posterList.addView(toggleCard(ctx, "Custom Poster", "Disabled: AniList posters are used", posterToggle))
-        posterList.addView(posterFieldCard, lp(top = 10))
-        posterList.addView(posterHint)
-        posterList.addView(posterChips)
-
         val hideLabelsToggle = ToggleView(ctx).apply { setChecked(NextGenStore.hideLabels, false) }
-        posterList.addView(
-            toggleCard(ctx, "Hide Labels", "Enabled: no label below posters on home rows and recommendations", hideLabelsToggle),
-            lp(top = 10)
+        homeList.addView(sectionLabel(ctx, "Display"))
+        homeList.addView(
+            toggleCard(ctx, "Hide Row Labels", "Enabled: no label below posters on home rows", hideLabelsToggle),
+            lp(top = 0)
         )
-
-        val (posterPreview, reloadPosterPreview) = NextGenPosterPreview.build(ctx, uiScope, { hideLabelsToggle.checked }) {
-            if (!posterToggle.checked) null
-            else posterField.text.toString().trim()
-                .replace("%7B", "{", ignoreCase = true).replace("%7D", "}", ignoreCase = true)
-                .takeIf { it.startsWith("http://") || it.startsWith("https://") }
-        }
-        posterList.addView(posterPreview, lp(top = 16))
-        hideLabelsToggle.onChange = { reloadPosterPreview() }
-        val toggleVisibility = posterToggle.onChange
-        posterToggle.onChange = { on ->
-            toggleVisibility?.invoke(on)
-            reloadPosterPreview()
-        }
-        posterPresets.forEachIndexed { i, preset ->
-            posterChips.getChildAt(i).setOnClickListener { posterField.setText(preset.second); reloadPosterPreview() }
-        }
-        reloadPosterPreview()
+        homeList.addView(sectionLabel(ctx, "Home Rows"))
 
         val catalogToggles = ArrayList<Pair<String, ToggleView>>()
         val rowOrderSavers = ArrayList<() -> Unit>()
@@ -281,12 +216,6 @@ object NextGenSettingsUi {
         }
         rowsCard("anilist", "ANILIST", "Rows shown on the AniList home page. Use the arrows to reorder", NextGenAnilistApi.titles, NextGenAnilistApi.labels)
 
-        fun savePoster() {
-            NextGenStore.customPosterTemplate = posterField.text.toString()
-            NextGenStore.customPosterEnabled = posterToggle.checked
-            NextGenStore.hideLabels = hideLabelsToggle.checked
-        }
-
         val langEnglishToggle = ToggleView(ctx).apply { setChecked(NextGenStore.langEnglish, false) }
         val langMultiToggle = ToggleView(ctx).apply { setChecked(NextGenStore.langMultiDub, false) }
         val langJapaneseToggle = ToggleView(ctx).apply { setChecked(NextGenStore.langJapanese, false) }
@@ -306,28 +235,21 @@ object NextGenSettingsUi {
         refreshMenu()
         menuList.addView(sectionLabel(ctx, "Preferences"))
         menuList.addView(
-            menuCard(ctx, IconView.Kind.BOLT, Color.parseColor("#FF9F0A"), "Performance", perfSub) { showPage(2) },
+            menuCard(ctx, IconView.Kind.BOLT, C.PRIMARY, "Performance", perfSub) { showPage(2) },
             lp(top = 0)
         )
         menuList.addView(
             menuCard(
-                ctx, IconView.Kind.LIST, Color.parseColor("#64D2FF"), "Language",
+                ctx, IconView.Kind.LIST, Color.parseColor("#5E9BFF"), "Language",
                 text(ctx, "English, Japanese & Multi-Dub streams", 13f, C.TEXT_DIM)
             ) { showPage(3) },
             lp(top = 12)
         )
         menuList.addView(
             menuCard(
-                ctx, IconView.Kind.IMAGE, Color.parseColor("#30D158"), "Poster",
-                text(ctx, "Custom poster, labels and Preview", 13f, C.TEXT_DIM)
-            ) { showPage(4) },
-            lp(top = 12)
-        )
-        menuList.addView(
-            menuCard(
-                ctx, IconView.Kind.LIST, Color.parseColor("#FF453A"), "Home",
+                ctx, IconView.Kind.GRID, Color.parseColor("#34C759"), "Home",
                 text(ctx, "Show, hide and reorder home rows", 13f, C.TEXT_DIM)
-            ) { showPage(5) },
+            ) { showPage(4) },
             lp(top = 12)
         )
 
@@ -375,7 +297,7 @@ object NextGenSettingsUi {
                 NextGenStore.totalCap = totalCapValue
                 NextGenStore.perProviderCapEnabled = perCapToggle.checked
                 providerCapValues.forEach { (id, v) -> NextGenStore.setProviderCap(id, v) }
-                savePoster()
+                NextGenStore.hideLabels = hideLabelsToggle.checked
                 NextGenStore.langEnglish = langEnglishToggle.checked
                 NextGenStore.langMultiDub = langMultiToggle.checked
                 NextGenStore.langJapanese = langJapaneseToggle.checked
@@ -391,9 +313,8 @@ object NextGenSettingsUi {
         val menuScroll = ScrollView(ctx).apply { addView(menuList) }
         val perfPage = subPage(ctx, "Performance", "Search speed, Time & Stream limits", perfList) { showPage(1) }
         val langPage = subPage(ctx, "Language", "Stream language preference", langList) { showPage(1) }
-        val posterPage = subPage(ctx, "Poster", "Custom poster, labels and Preview", posterList) { showPage(1) }
         val homePage = subPage(ctx, "Home", "Show, hide and reorder rows", homeList) { showPage(1) }
-        val pageViews = listOf<View>(provScroll, menuScroll, perfPage, langPage, posterPage, homePage)
+        val pageViews = listOf<View>(provScroll, menuScroll, perfPage, langPage, homePage)
         val pages = android.widget.FrameLayout(ctx).apply {
             pageViews.forEach { addView(it, MATCH_PARENT, MATCH_PARENT) }
         }
@@ -401,15 +322,19 @@ object NextGenSettingsUi {
         var current = 0
 
         val tabs = LinearLayout(ctx).apply {
-            background = GradientDrawable().apply { setColor(C.CARD); cornerRadius = dp(ctx, 22).toFloat() }
+            background = GradientDrawable().apply {
+                setColor(C.CARD)
+                cornerRadius = dp(ctx, 16).toFloat()
+                setStroke(dp(ctx, 1), C.OUTLINE)
+            }
             setPadding(dp(ctx, 4), dp(ctx, 4), dp(ctx, 4), dp(ctx, 4))
             listOf("Providers", "Settings").forEachIndexed { i, label ->
                 val t = TextView(ctx).apply {
                     text = label; textSize = 15f; gravity = Gravity.CENTER
                     setTypeface(typeface, Typeface.BOLD)
-                    background = GradientDrawable().apply { cornerRadius = dp(ctx, 18).toFloat() }
+                    background = GradientDrawable().apply { cornerRadius = dp(ctx, 12).toFloat() }
                     setOnClickListener { showPage(i) }
-                    focusRing(ctx, this, 18, 1f)
+                    focusRing(ctx, this, 12, 1f)
                 }
                 tabViews += t
                 addView(t, LinearLayout.LayoutParams(0, dp(ctx, 40), 1f))
@@ -605,7 +530,11 @@ object NextGenSettingsUi {
         val maxH = (dm.heightPixels * 0.55f).toInt()
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
-            background = GradientDrawable().apply { setColor(C.CARD); cornerRadius = dp(ctx, 28).toFloat() }
+            background = GradientDrawable().apply {
+                setColor(C.CARD)
+                cornerRadius = dp(ctx, 20).toFloat()
+                setStroke(dp(ctx, 1), C.OUTLINE)
+            }
             setPadding(0, dp(ctx, 24), 0, dp(ctx, 20))
         }
         root.addView(text(ctx, title, 24f, C.TEXT, bold = true).apply {
