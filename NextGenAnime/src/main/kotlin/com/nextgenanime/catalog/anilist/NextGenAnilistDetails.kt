@@ -29,12 +29,16 @@ object NextGenAnilistDetails {
     data class AniZipEpisode(
         val title: String?,
         val image: String?,
-        val summary: String?
+        val summary: String?,
+        val seasonNumber: Int? = null,
+        val episodeNumber: Int? = null,
+        val absoluteEpisodeNumber: Int? = null,
     )
 
     data class AniZipData(
         val episodeCount: Int,
-        val episodes: Map<Int, AniZipEpisode>
+        val episodes: Map<Int, AniZipEpisode>,
+        val mappings: JSONObject? = null,
     )
 
     private const val FULL_MEDIA_QUERY = """
@@ -277,15 +281,35 @@ object NextGenAnilistDetails {
                         ?: item.optString("name").takeIf { it.isNotBlank() }
                     val image = item.optString("image").takeIf { it.isNotBlank() }
                     val summary = item.optString("summary").takeIf { it.isNotBlank() }
-                    epMap[num] = AniZipEpisode(title, image, summary)
+                    val sNum = item.optInt("seasonNumber", 0).takeIf { it > 0 }
+                    val epNum = item.optInt("episodeNumber", 0).takeIf { it > 0 }
+                    val absNum = item.optInt("absoluteEpisodeNumber", 0).takeIf { it > 0 }
+                    epMap[num] = AniZipEpisode(title, image, summary, sNum, epNum, absNum)
                 }
             }
-            AniZipData(epCount, epMap).also {
+            val mappings = json.optJSONObject("mappings")
+            AniZipData(epCount, epMap, mappings).also {
                 if (aniZipCache.size < 200) aniZipCache[anilistId] = it
             }
         } catch (_: Throwable) {
             null
         }
+    }
+
+    fun extractSeasonFromTitle(title: String?): Int? {
+        if (title.isNullOrBlank()) return null
+        val match = Regex("""\b(?:season\s*(\d+)|(\d+)(?:nd|rd|th|st)\s*season|s(\d+))\b""", RegexOption.IGNORE_CASE).find(title) ?: return null
+        return (match.groupValues[1].takeIf { it.isNotBlank() }
+            ?: match.groupValues[2].takeIf { it.isNotBlank() }
+            ?: match.groupValues[3].takeIf { it.isNotBlank() })?.toIntOrNull()
+    }
+
+    fun extractBaseTitle(title: String?): String {
+        if (title.isNullOrBlank()) return ""
+        return title
+            .replace(Regex("""\b(?:season\s*\d+|\d+(?:nd|rd|th|st)\s*season|s\d+)\b.*$""", RegexOption.IGNORE_CASE), "")
+            .replace(Regex("""[:\-–—\s]+$"""), "")
+            .trim()
     }
 
     suspend fun buildTvSeriesResponse(
@@ -301,14 +325,26 @@ object NextGenAnilistDetails {
 
         seasons.forEachIndexed { index, seasonMedia ->
             val seasonNo = index + 1
+            val aniZipEpData = fetchAniZipEpisodes(seasonMedia.id)
+            val seasonInTitle = extractSeasonFromTitle(seasonMedia.title.best())
+                ?: extractSeasonFromTitle(seasonMedia.title.romaji)
+                ?: extractSeasonFromTitle(seasonMedia.title.english)
+            val aniZipSeason = aniZipEpData?.episodes?.values?.mapNotNull { it.seasonNumber }?.firstOrNull()
+            val detectedSeason = aniZipSeason ?: seasonInTitle
+            val effectiveSeason = if (seasons.size == 1 && detectedSeason != null && detectedSeason > 1) {
+                detectedSeason
+            } else {
+                seasonNo
+            }
+
             val seasonLabel = if (seasons.size == 1) {
-                "Season 1"
+                if (detectedSeason != null && detectedSeason > 1) "Season $detectedSeason" else "Season 1"
             } else {
                 val name = seasonMedia.title.best()
                 if (name.isNotBlank()) name else "Season $seasonNo"
             }
 
-            seasonDataList.add(SeasonData(seasonNo, seasonLabel, seasonNo))
+            seasonDataList.add(SeasonData(effectiveSeason, seasonLabel, effectiveSeason))
 
             val streamingEpsByNumber = mutableMapOf<Int, AniListStreamingEpisode>()
             val epList = streamingEps[seasonMedia.id]
@@ -326,7 +362,6 @@ object NextGenAnilistDetails {
                 totalCount = seasonMedia.nextAiring.episode - 1
             }
 
-            val aniZipEpData = fetchAniZipEpisodes(seasonMedia.id)
             if (aniZipEpData != null && aniZipEpData.episodeCount > 0) {
                 totalCount = maxOf(totalCount, aniZipEpData.episodeCount)
             }
@@ -354,21 +389,32 @@ object NextGenAnilistDetails {
                     ?: seasonMedia.bannerImage
                     ?: seasonMedia.coverImage?.best()
 
+                val trueSeason = aniZipEp?.seasonNumber ?: detectedSeason ?: effectiveSeason
+                val trueEpisode = aniZipEp?.episodeNumber ?: epNo
+                val trueAbsolute = aniZipEp?.absoluteEpisodeNumber
+
+                val rawBase = extractBaseTitle(seasonMedia.title.best()).takeIf { it.isNotBlank() }
+                    ?: extractBaseTitle(seasonMedia.title.romaji).takeIf { it.isNotBlank() }
+                    ?: extractBaseTitle(rootMedia.title.best()).takeIf { it.isNotBlank() }
+                    ?: rootMedia.title.best()
+
                 val payload = AniListEpisodePayload(
                     anilistId = seasonMedia.id,
                     malId = seasonMedia.idMal,
-                    season = seasonNo,
-                    episode = epNo,
+                    season = trueSeason,
+                    episode = trueEpisode,
                     title = epTitle,
-                    showTitle = rootMedia.title.best(),
-                    romajiTitle = seasonMedia.title.romaji
+                    showTitle = seasonMedia.title.best().takeIf { it.isNotBlank() } ?: rootMedia.title.best(),
+                    romajiTitle = seasonMedia.title.romaji,
+                    baseTitle = rawBase,
+                    absoluteEpisode = trueAbsolute
                 )
 
                 allEpisodes.add(
                     api.newEpisode(payload.toJson()) {
                         name = epTitle
-                        season = seasonNo
-                        episode = epNo
+                        season = trueSeason
+                        episode = trueEpisode
                         posterUrl = epThumb
                         description = aniZipEp?.summary
                     }
@@ -394,16 +440,38 @@ object NextGenAnilistDetails {
                 seasonNames = seasonDataList
             }
 
-            // AniList and MyAnimeList trackers
+            // AniList, MyAnimeList, and Simkl trackers
             val aniStr = rootMedia.id.toString()
             syncData["anilist"] = aniStr
             syncData["aniList"] = aniStr
+            val simklMap = JSONObject().apply {
+                put("AniList", aniStr)
+                put("anilist", aniStr)
+            }
             rootMedia.idMal?.let {
                 val malStr = it.toString()
                 syncData["myanimelist"] = malStr
                 syncData["myAnimeList"] = malStr
                 syncData["mal"] = malStr
+                simklMap.put("Mal", malStr)
+                simklMap.put("mal", malStr)
             }
+            val rootAniZip = aniZipCache[rootMedia.id] ?: fetchAniZipEpisodes(rootMedia.id)
+            rootAniZip?.mappings?.let { m ->
+                val tmdb = m.optString("themoviedb_id").takeIf { it.isNotBlank() }
+                if (tmdb != null) {
+                    simklMap.put("Tmdb", tmdb)
+                    simklMap.put("tmdb", tmdb)
+                    syncData["tmdb"] = tmdb
+                }
+                val imdb = m.optString("imdb_id").takeIf { it.isNotBlank() }
+                if (imdb != null) {
+                    simklMap.put("Imdb", imdb)
+                    simklMap.put("imdb", imdb)
+                    syncData["imdb"] = imdb
+                }
+            }
+            syncData["simkl"] = simklMap.toString()
 
             if (rootMedia.trailerYoutubeId != null) {
                 addTrailer("https://www.youtube.com/watch?v=${rootMedia.trailerYoutubeId}")
@@ -478,6 +546,7 @@ object NextGenAnilistDetails {
     ): LoadResponse {
         val title = media.title.best()
         val url = "https://anilist.co/anime/${media.id}"
+        val baseTitle = extractBaseTitle(title).takeIf { it.isNotBlank() } ?: title
         val payload = AniListEpisodePayload(
             anilistId = media.id,
             malId = media.idMal,
@@ -485,7 +554,9 @@ object NextGenAnilistDetails {
             episode = 1,
             title = title,
             showTitle = title,
-            romajiTitle = media.title.romaji
+            romajiTitle = media.title.romaji,
+            baseTitle = baseTitle,
+            absoluteEpisode = 1
         )
 
         return api.newMovieLoadResponse(title, url, TvType.AnimeMovie, payload.toJson()) {
@@ -500,12 +571,34 @@ object NextGenAnilistDetails {
             val aniStr = media.id.toString()
             syncData["anilist"] = aniStr
             syncData["aniList"] = aniStr
+            val simklMap = JSONObject().apply {
+                put("AniList", aniStr)
+                put("anilist", aniStr)
+            }
             media.idMal?.let {
                 val malStr = it.toString()
                 syncData["myanimelist"] = malStr
                 syncData["myAnimeList"] = malStr
                 syncData["mal"] = malStr
+                simklMap.put("Mal", malStr)
+                simklMap.put("mal", malStr)
             }
+            val movieAniZip = aniZipCache[media.id] ?: fetchAniZipEpisodes(media.id)
+            movieAniZip?.mappings?.let { m ->
+                val tmdb = m.optString("themoviedb_id").takeIf { it.isNotBlank() }
+                if (tmdb != null) {
+                    simklMap.put("Tmdb", tmdb)
+                    simklMap.put("tmdb", tmdb)
+                    syncData["tmdb"] = tmdb
+                }
+                val imdb = m.optString("imdb_id").takeIf { it.isNotBlank() }
+                if (imdb != null) {
+                    simklMap.put("Imdb", imdb)
+                    simklMap.put("imdb", imdb)
+                    syncData["imdb"] = imdb
+                }
+            }
+            syncData["simkl"] = simklMap.toString()
 
             if (media.trailerYoutubeId != null) {
                 addTrailer("https://www.youtube.com/watch?v=${media.trailerYoutubeId}")

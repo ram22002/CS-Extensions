@@ -1,5 +1,10 @@
 const CryptoJS = require("crypto-js");
-const cheerio = require("cheerio-without-node-native");
+let cheerio;
+try {
+    cheerio = require("cheerio-without-node-native");
+} catch {
+    cheerio = require("cheerio");
+}
 const BASE_URL = "https://toonworld4all.me";
 
 const ARCV_BASE = "https://archive.toonworld4all.me";

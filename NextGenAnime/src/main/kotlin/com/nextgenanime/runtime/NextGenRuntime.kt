@@ -72,6 +72,8 @@ object NextGenRuntime {
             .put("showTitle", animeTitle ?: JSONObject.NULL)
             .put("episodeTitle", epTitle ?: JSONObject.NULL)
             .put("romajiTitle", payload.romajiTitle ?: JSONObject.NULL)
+            .put("baseTitle", (payload.baseTitle ?: animeTitle) ?: JSONObject.NULL)
+            .put("absoluteEpisode", payload.absoluteEpisode ?: JSONObject.NULL)
             .toString()
         val raw = execute(scraper, "run", args, NextGenStore.settingsJson(scraper.id)) ?: return emptyList()
         return NextGenStream.parseList(raw)

@@ -58,6 +58,8 @@ data class AniListEpisodePayload(
     val title: String? = null,
     val showTitle: String? = null,
     val romajiTitle: String? = null,
+    val baseTitle: String? = null,
+    val absoluteEpisode: Int? = null,
 ) {
     fun toJson(): String = org.json.JSONObject().apply {
         put("anilistId", anilistId)
@@ -67,6 +69,8 @@ data class AniListEpisodePayload(
         if (!title.isNullOrBlank()) put("title", title)
         if (!showTitle.isNullOrBlank()) put("showTitle", showTitle)
         if (!romajiTitle.isNullOrBlank()) put("romajiTitle", romajiTitle)
+        if (!baseTitle.isNullOrBlank()) put("baseTitle", baseTitle)
+        if (absoluteEpisode != null) put("absoluteEpisode", absoluteEpisode)
     }.toString()
 
     companion object {
@@ -80,6 +84,8 @@ data class AniListEpisodePayload(
                 title = obj.optString("title", "").takeIf { it.isNotBlank() },
                 showTitle = obj.optString("showTitle", "").takeIf { it.isNotBlank() },
                 romajiTitle = obj.optString("romajiTitle", "").takeIf { it.isNotBlank() },
+                baseTitle = obj.optString("baseTitle", "").takeIf { it.isNotBlank() },
+                absoluteEpisode = if (obj.has("absoluteEpisode")) obj.optInt("absoluteEpisode").takeIf { it > 0 } else null,
             )
         }
     }

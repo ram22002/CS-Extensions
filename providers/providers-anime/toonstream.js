@@ -187,21 +187,26 @@ async function extractEmbedStreams(embedUrl, serverLabel) {
 
 async function getStreams(tmdbId, mediaType, season, episode) {
     try {
+        const bridge = (typeof globalThis !== "undefined" && (globalThis.NextGenNative || globalThis.EclipsiaNative)) || null;
+        const callArgs = bridge ? JSON.parse(bridge.getCallArgs() || "{}") : {};
         const isTv = mediaType === "tv";
         const title = await getAnimeTitle(tmdbId, mediaType);
         if (!title) return [];
 
-        const s = season || 1;
-        const ep = episode || 1;
+        const s = callArgs.season || season || 1;
+        const ep = callArgs.episode || episode || 1;
 
+        const baseTitle = (callArgs.baseTitle || "").trim();
+        const baseSlug = slugify(baseTitle || title.replace(/\b(?:season\s*\d+|\d+(?:nd|rd|th|st)\s*season|s\d+)\b.*$/gi, "").trim());
         const cleanTitle = title.split(/[:\-]/)[0].trim();
         const fullSlug = slugify(title);
         const shortSlug = slugify(cleanTitle);
 
         const candidates = [
-            isTv ? `${BASE_URL}/episode/${fullSlug}-${s}x${ep}/` : `${BASE_URL}/movies/${fullSlug}/`,
-            isTv ? `${BASE_URL}/episode/${shortSlug}-${s}x${ep}/` : `${BASE_URL}/movies/${shortSlug}/`
-        ];
+            isTv && baseSlug ? `${BASE_URL}/episode/${baseSlug}-${s}x${ep}/` : null,
+            isTv ? `${BASE_URL}/episode/${shortSlug}-${s}x${ep}/` : `${BASE_URL}/movies/${shortSlug}/`,
+            isTv ? `${BASE_URL}/episode/${fullSlug}-${s}x${ep}/` : `${BASE_URL}/movies/${fullSlug}/`
+        ].filter(Boolean);
 
         let html = "";
         let usedUrl = "";
@@ -216,26 +221,31 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
         // Search fallback if direct candidate is not found
         if (!html || (!html.includes("<iframe") && !html.includes("data-src="))) {
-            const searchHtml = await httpText(`${BASE_URL}/s?q=${encodeURIComponent(cleanTitle || title)}`);
-            if (searchHtml) {
-                if (isTv) {
-                    const seriesMatches = [...searchHtml.matchAll(/href=["'](\/series\/[^"'\/]+)\/?["']/gi)].map(m => m[1]);
-                    if (seriesMatches.length > 0) {
-                        const targetSlug = shortSlug || fullSlug;
-                        const matchedSeries = seriesMatches.find(s => s.includes(targetSlug) || s.includes(shortSlug)) || seriesMatches[0];
-                        const seriesHtml = await httpText(`${BASE_URL}${matchedSeries}/`);
-                        const epRegex = new RegExp(`href=["'](\\/episode\\/[^"']*${s}x${ep}\\/?)["']`, "i");
-                        const epMatch = seriesHtml.match(epRegex);
-                        if (epMatch) {
-                            usedUrl = `${BASE_URL}${epMatch[1]}`;
-                            html = await httpText(usedUrl);
+            const searchTerms = [baseTitle, cleanTitle, title].filter(Boolean);
+            for (const st of searchTerms) {
+                const searchHtml = await httpText(`${BASE_URL}/s?q=${encodeURIComponent(st)}`);
+                if (searchHtml) {
+                    if (isTv) {
+                        const seriesMatches = [...searchHtml.matchAll(/href=["'](\/series\/[^"'\/]+)\/?["']/gi)].map(m => m[1]);
+                        if (seriesMatches.length > 0) {
+                            const targetSlug = baseSlug || shortSlug || fullSlug;
+                            const matchedSeries = seriesMatches.find(s => s.includes(targetSlug) || s.includes(shortSlug)) || seriesMatches[0];
+                            const seriesHtml = await httpText(`${BASE_URL}${matchedSeries}/`);
+                            const epRegex = new RegExp(`href=["'](\\/episode\\/[^"']*${s}x${ep}\\/?)["']`, "i");
+                            const epMatch = seriesHtml.match(epRegex);
+                            if (epMatch) {
+                                usedUrl = `${BASE_URL}${epMatch[1]}`;
+                                html = await httpText(usedUrl);
+                                if (html) break;
+                            }
                         }
-                    }
-                } else {
-                    const movieMatch = searchHtml.match(/href=["'](\/movies\/[^"'\/]+)\/?["']/i);
-                    if (movieMatch) {
-                        usedUrl = `${BASE_URL}${movieMatch[1]}`;
-                        html = await httpText(usedUrl);
+                    } else {
+                        const movieMatch = searchHtml.match(/href=["'](\/movies\/[^"'\/]+)\/?["']/i);
+                        if (movieMatch) {
+                            usedUrl = `${BASE_URL}${movieMatch[1]}`;
+                            html = await httpText(usedUrl);
+                            if (html) break;
+                        }
                     }
                 }
             }

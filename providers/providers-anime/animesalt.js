@@ -81,23 +81,29 @@ async function getAnimeTitle(id, mediaType) {
 
 async function getStreams(tmdbId, mediaType, season, episode) {
     try {
+        const bridge = (typeof globalThis !== "undefined" && (globalThis.NextGenNative || globalThis.EclipsiaNative)) || null;
+        const callArgs = bridge ? JSON.parse(bridge.getCallArgs() || "{}") : {};
         const isTv = mediaType === "tv";
         const title = await getAnimeTitle(tmdbId, mediaType);
         if (!title) return [];
 
-        const s = season || 1;
-        const ep = episode || 1;
+        const s = callArgs.season || season || 1;
+        const ep = callArgs.episode || episode || 1;
 
+        const baseTitle = (callArgs.baseTitle || "").trim();
+        const baseSlug = slugify(baseTitle || title.replace(/\b(?:season\s*\d+|\d+(?:nd|rd|th|st)\s*season|s\d+)\b.*$/gi, "").trim());
         const cleanTitle = title.split(/[:\-]/)[0].trim();
         const fullSlug = slugify(title);
         const shortSlug = slugify(cleanTitle);
 
         const candidateUrls = [
+            isTv && baseSlug ? `${BASE_URL}/episode/${baseSlug}-${s}x${ep}/` : null,
+            isTv && baseSlug ? `${ALT_URL}/episode/${baseSlug}-${s}x${ep}/` : null,
             isTv ? `${BASE_URL}/episode/${shortSlug}-${s}x${ep}/` : `${BASE_URL}/movies/${shortSlug}/`,
             isTv ? `${BASE_URL}/episode/${fullSlug}-${s}x${ep}/` : `${BASE_URL}/movies/${fullSlug}/`,
             isTv ? `${ALT_URL}/episode/${shortSlug}-${s}x${ep}/` : `${ALT_URL}/movies/${shortSlug}/`,
             isTv ? `${ALT_URL}/episode/${fullSlug}-${s}x${ep}/` : `${ALT_URL}/movies/${fullSlug}/`
-        ];
+        ].filter(Boolean);
 
         let html = "";
         let usedBase = BASE_URL;
@@ -112,22 +118,27 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
         // If direct candidate failed, search by title
         if (!html || (!html.includes("ravok.buzz") && !html.includes("as-cdn"))) {
-            const searchHtml = await httpText(`${BASE_URL}/?s=${encodeURIComponent(cleanTitle || title)}`);
-            if (searchHtml) {
-                if (isTv) {
-                    const seriesMatches = [...searchHtml.matchAll(/href=["'](https?:\/\/animesalt\.(?:cx|ac)\/series\/[^"'\/]+\/)["']/gi)];
-                    if (seriesMatches.length > 0) {
-                        const seriesHtml = await httpText(seriesMatches[0][1]);
-                        const epRegex = new RegExp(`href=["'](https?:\\/\\/animesalt\\.(?:cx|ac)\\/episode\\/[^"']*${s}x${ep}\\/?)["']`, "i");
-                        const epMatch = seriesHtml.match(epRegex);
-                        if (epMatch) {
-                            html = await httpText(epMatch[1]);
+            const searchTerms = [baseTitle, cleanTitle, title].filter(Boolean);
+            for (const st of searchTerms) {
+                const searchHtml = await httpText(`${BASE_URL}/?s=${encodeURIComponent(st)}`);
+                if (searchHtml) {
+                    if (isTv) {
+                        const seriesMatches = [...searchHtml.matchAll(/href=["'](https?:\/\/animesalt\.(?:cx|ac)\/series\/[^"'\/]+\/)["']/gi)];
+                        if (seriesMatches.length > 0) {
+                            const seriesHtml = await httpText(seriesMatches[0][1]);
+                            const epRegex = new RegExp(`href=["'](https?:\\/\\/animesalt\\.(?:cx|ac)\\/episode\\/[^"']*${s}x${ep}\\/?)["']`, "i");
+                            const epMatch = seriesHtml.match(epRegex);
+                            if (epMatch) {
+                                html = await httpText(epMatch[1]);
+                                if (html) break;
+                            }
                         }
-                    }
-                } else {
-                    const movieMatch = searchHtml.match(/href=["'](https?:\/\/animesalt\.(?:cx|ac)\/movies\/[^"'\/]+\/)["']/i);
-                    if (movieMatch) {
-                        html = await httpText(movieMatch[1]);
+                    } else {
+                        const movieMatch = searchHtml.match(/href=["'](https?:\/\/animesalt\.(?:cx|ac)\/movies\/[^"'\/]+\/)["']/i);
+                        if (movieMatch) {
+                            html = await httpText(movieMatch[1]);
+                            if (html) break;
+                        }
                     }
                 }
             }

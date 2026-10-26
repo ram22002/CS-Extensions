@@ -47,7 +47,8 @@ class PlaybackMappingTest {
         assertEquals(2, payload.season)
         assertEquals(1, payload.episode)
         assertEquals("Episode 1", payload.title)
-        assertEquals("Re:ZERO Season 1", payload.showTitle)
+        assertEquals("Re:ZERO Season 2", payload.showTitle)
+        assertEquals("Re:ZERO", payload.baseTitle)
         assertEquals("Re:Zero kara Hajimeru Isekai Seikatsu 2nd Season", payload.romajiTitle)
 
         // Episode number must NOT be flattened to 26

@@ -51,7 +51,8 @@ async function getAnimeInfo(id, isSeries) {
         if (callArgs.title || callArgs.showTitle) {
             return {
                 title: callArgs.title || callArgs.showTitle || "",
-                originalTitle: callArgs.romajiTitle || ""
+                originalTitle: callArgs.romajiTitle || "",
+                baseTitle: callArgs.baseTitle || ""
             };
         }
         const aniData = await fetch(`https://api.ani.zip/mappings?anilist_id=${id}`, {
@@ -60,7 +61,8 @@ async function getAnimeInfo(id, isSeries) {
         if (aniData?.titles) {
             return {
                 title: aniData.titles.en || aniData.titles['x-jat'] || "",
-                originalTitle: aniData.titles.ja || aniData.titles['x-jat'] || ""
+                originalTitle: aniData.titles.ja || aniData.titles['x-jat'] || "",
+                baseTitle: aniData.titles.en || ""
             };
         }
         return null;
@@ -70,9 +72,12 @@ async function getAnimeInfo(id, isSeries) {
 }
 
 async function searchSite(info, isSeries) {
-    const html = await getText(`${BASE_URL}/?s=${encodeURIComponent(info.title)}`);
-    if (!html) return [];
-    const $ = cheerio.load(html);
+    const titlesToTry = [
+        info.baseTitle,
+        info.title,
+        info.originalTitle
+    ].filter(Boolean);
+
     const want = isSeries ? "/series/" : "/movies/";
     const seen = new Set();
     const found = [];
@@ -82,24 +87,33 @@ async function searchSite(info, isSeries) {
         seen.add(href);
         const sim = Math.max(
             similarity(info.title, title),
+            info.baseTitle ? similarity(info.baseTitle, title) : 0,
             info.originalTitle ? similarity(info.originalTitle, title) : 0
         );
         found.push({ href, sim });
     };
 
-    $("article, .result-item, div.item, .search-post").each((_, el) => {
-        const a = $(el).find("a").first();
-        const title = $(el).find(".title, h2, h3, .entry-title").text().trim() || a.attr("title") || a.text().trim();
-        add(a.attr("href"), title);
-    });
+    for (const searchTitle of titlesToTry) {
+        const html = await getText(`${BASE_URL}/?s=${encodeURIComponent(searchTitle)}`);
+        if (!html) continue;
+        const $ = cheerio.load(html);
 
-    if (!found.length) {
-        $("a[href]").each((_, el) => {
-            const href = $(el).attr("href") || "";
-            const m = href.match(/^https?:\/\/[^/]+\/(?:series|movies)\/([^/]+)\//);
-            if (!m || m[1] === "page") return;
-            add(href, $(el).attr("title") || $(el).text().trim() || m[1].replace(/-/g, " "));
+        $("article, .result-item, div.item, .search-post").each((_, el) => {
+            const a = $(el).find("a").first();
+            const title = $(el).find(".title, h2, h3, .entry-title").text().trim() || a.attr("title") || a.text().trim();
+            add(a.attr("href"), title);
         });
+
+        if (!found.length) {
+            $("a[href]").each((_, el) => {
+                const href = $(el).attr("href") || "";
+                const m = href.match(/^https?:\/\/[^/]+\/(?:series|movies)\/([^/]+)\//);
+                if (!m || m[1] === "page") return;
+                add(href, $(el).attr("title") || $(el).text().trim() || m[1].replace(/-/g, " "));
+            });
+        }
+
+        if (found.length) break;
     }
 
     const good = found.filter((c) => c.sim >= 0.5);

@@ -93,6 +93,10 @@ class AniListDetailsTest {
         // Verify CloudStream syncData
         assertEquals("100", tv.syncData["anilist"])
         assertEquals("1001", tv.syncData["mal"])
+        assertTrue(tv.syncData.containsKey("simkl"))
+        val simklJson = org.json.JSONObject(tv.syncData["simkl"]!!)
+        assertEquals("100", simklJson.getString("AniList"))
+        assertEquals("1001", simklJson.getString("Mal"))
     }
 
     @Test
@@ -124,5 +128,9 @@ class AniListDetailsTest {
         // Trackers
         assertEquals("500", mov.syncData["anilist"])
         assertEquals("5005", mov.syncData["mal"])
+        assertTrue(mov.syncData.containsKey("simkl"))
+        val movSimklJson = org.json.JSONObject(mov.syncData["simkl"]!!)
+        assertEquals("500", movSimklJson.getString("AniList"))
+        assertEquals("5005", movSimklJson.getString("Mal"))
     }
 }
