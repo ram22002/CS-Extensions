@@ -1,5 +1,4 @@
 const BASE_URL = "https://anikoto.cz";
-const TMDB_API_URL = "https://api.themoviedb.org/3";
 const HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
     "Referer": `${BASE_URL}/`,
@@ -59,52 +58,31 @@ function dedupeStreamsByUrl(streams) {
     return streams.filter(s => s.url && !seen.has(s.url) && seen.add(s.url));
 }
 
-async function fetchTmdbMetadata(tmdbId, mediaType, targetSeason) {
-    const endpoint = mediaType === "movie" ? "movie" : "tv";
-    try {
-        const res = await fetch(
-            `${TMDB_API_URL}/${endpoint}/${tmdbId}?api_key=${TMDB_API_KEY}&append_to_response=alternative_titles,external_ids`,
-            { headers: HEADERS }
-        );
-        if (!res.ok) return null;
-        const data = await res.json();
-        if (!data) return null;
-        const genreIds = (data.genres || []).map(g => g.id);
-        const originCountries = data.origin_country || [];
-        const isAnime = genreIds.includes(16) || originCountries.includes("JP");
-        if (!isAnime) return null;
-        const title = endpoint === "tv" ? data.name : data.title;
-        const origTitle = endpoint === "tv" ? data.original_name : data.original_title;
-        const altTitles = (
-            data.alternative_titles?.results ||
-            data.alternative_titles?.titles ||
-            []
-        ).map(t => decodeHtmlEntities(t.title));
-        let absoluteOffset = 0;
-        let seasonName;
-        if (endpoint === "tv" && targetSeason && data.seasons) {
-            for (const s of data.seasons) {
-                if (s.season_number > 0 && s.season_number < targetSeason) {
-                    absoluteOffset += s.episode_count || 0;
-                }
-                if (s.season_number === targetSeason) {
-                    seasonName = s.name;
-                }
+async function fetchAnimeMetadata(tmdbId, mediaType, targetSeason) {
+    const bridge = (typeof globalThis !== "undefined" && (globalThis.NextGenNative || globalThis.EclipsiaNative)) || null;
+    const callArgs = bridge ? JSON.parse(bridge.getCallArgs() || "{}") : {};
+    const title = callArgs.title || callArgs.showTitle || "";
+    const origTitle = callArgs.romajiTitle || "";
+    const altTitles = [];
+    if (!title) {
+        try {
+            const aniData = await fetch(`https://api.ani.zip/mappings?anilist_id=${tmdbId}`, { headers: HEADERS }).then(r => r.json()).catch(() => null);
+            if (aniData?.titles) {
+                if (aniData.titles.en) altTitles.push(aniData.titles.en);
+                if (aniData.titles['x-jat']) altTitles.push(aniData.titles['x-jat']);
             }
-        }
-        return {
-            numericId: String(tmdbId),
-            kind: endpoint,
-            title: decodeHtmlEntities(title || ""),
-            originalTitle: origTitle ? decodeHtmlEntities(origTitle) : undefined,
-            alternateTitles: altTitles,
-            imdbId: data.external_ids?.imdb_id,
-            seasonName,
-            absoluteOffset,
-        };
-    } catch {
-        return null;
+        } catch { }
     }
+    return {
+        numericId: String(tmdbId),
+        kind: mediaType === "movie" ? "movie" : "tv",
+        title: decodeHtmlEntities(title || altTitles[0] || ""),
+        originalTitle: origTitle ? decodeHtmlEntities(origTitle) : undefined,
+        alternateTitles: altTitles,
+        imdbId: undefined,
+        seasonName: undefined,
+        absoluteOffset: 0,
+    };
 }
 
 async function searchAnikoto(query) {
@@ -488,7 +466,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const targetSeason = typeof season === "number" ? season : 1;
         const targetEpisode = typeof episode === "number" ? episode : 1;
 
-        const meta = await fetchTmdbMetadata(tmdbId, mediaType, targetSeason);
+        const meta = await fetchAnimeMetadata(tmdbId, mediaType, targetSeason);
         if (!meta?.title) return [];
 
         const searchQueries = [

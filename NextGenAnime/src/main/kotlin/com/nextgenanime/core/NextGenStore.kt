@@ -20,11 +20,11 @@ object NextGenStore {
             val old = ctx.getSharedPreferences(LEGACY_PREFS, Context.MODE_PRIVATE)
             val ed = own.edit()
             val keep = listOf(
-                "enabled_", "settings_", "catalog_row_", "row_order_anilist", "row_order_kitsu",
+                "enabled_", "settings_", "catalog_row_", "row_order_anilist",
             )
             val plain = setOf(
-                "kitsu_enabled", "anilist_enabled", "tmdb_key", "tmdb_personal", "concurrency", "concurrency_auto",
-                "timeout_seconds", "poster_custom", "poster_template", "hide_labels", "catalog_language",
+                "anilist_enabled", "concurrency", "concurrency_auto",
+                "timeout_seconds", "poster_custom", "poster_template", "hide_labels",
             )
             old.all.forEach { (k, v) ->
                 if (k !in plain && keep.none { k.startsWith(it) }) return@forEach
@@ -57,18 +57,6 @@ object NextGenStore {
     fun saveSettings(scraperId: String, json: String) {
         prefs.edit().putString("settings_$scraperId", json).apply()
     }
-
-    var tmdbKeyOverride: String
-        get() = prefs.getString("tmdb_key", "") ?: ""
-        set(value) {
-            prefs.edit().putString("tmdb_key", value.trim()).apply()
-        }
-
-    var tmdbPersonalEnabled: Boolean
-        get() = prefs.getBoolean("tmdb_personal", false)
-        set(value) {
-            prefs.edit().putBoolean("tmdb_personal", value).apply()
-        }
 
     private const val DEFAULT_CONCURRENCY = 15
     private const val LOW_END_CONCURRENCY = 4
@@ -161,12 +149,6 @@ object NextGenStore {
             prefs.edit().putBoolean("hide_labels", value).apply()
         }
 
-    var kitsuEnabled: Boolean
-        get() = prefs.getBoolean("kitsu_enabled", true)
-        set(value) {
-            prefs.edit().putBoolean("kitsu_enabled", value).apply()
-        }
-
     var anilistEnabled: Boolean
         get() = prefs.getBoolean("anilist_enabled", true)
         set(value) {
@@ -196,26 +178,4 @@ object NextGenStore {
         set(value) {
             prefs.edit().putString("poster_template", value.trim()).apply()
         }
-
-    const val DEFAULT_TMDB_KEY = "307b7b8ef035c6aa336900aef4e203bd"
-
-    fun tmdbKey(): String {
-        val custom = tmdbKeyOverride
-        return if (tmdbPersonalEnabled && custom.isNotBlank()) custom else DEFAULT_TMDB_KEY
-    }
-
-    const val DEFAULT_LANGUAGE = "en-US"
-
-    private val LANGUAGE_RE = Regex("^[a-z]{2}(-[A-Z]{2})?$")
-
-    var language: String
-        get() = prefs.getString("catalog_language", DEFAULT_LANGUAGE)?.takeIf { LANGUAGE_RE.matches(it) } ?: DEFAULT_LANGUAGE
-        set(value) {
-            val v = value.trim().let { raw ->
-                raw.substringBefore('-').lowercase() + (raw.substringAfter('-', "").takeIf { it.isNotEmpty() }?.let { "-" + it.uppercase() } ?: "")
-            }
-            prefs.edit().putString("catalog_language", v.takeIf { LANGUAGE_RE.matches(it) } ?: DEFAULT_LANGUAGE).apply()
-        }
-
-    val languageCode: String get() = language.substringBefore('-')
 }

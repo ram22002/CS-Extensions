@@ -45,8 +45,6 @@ object NextGenSettingsUi {
         }
 
         val perfList = pageColumn()
-        val catList = pageColumn()
-        val tmdbList = pageColumn()
         val posterList = pageColumn()
         val homeList = pageColumn()
         val langList = pageColumn()
@@ -159,53 +157,9 @@ object NextGenSettingsUi {
         )
         perfList.addView(perCapBox)
 
-        val key = EditText(ctx).apply {
-            hint = "Enter your TMDb API key"
-            setText(NextGenStore.tmdbKeyOverride)
-            textSize = 16f
-            setTextColor(C.TEXT)
-            setHintTextColor(C.OUTLINE)
-            inputType = InputType.TYPE_CLASS_TEXT
-            background = null
-            setPadding(0, dp(ctx, 4), 0, dp(ctx, 4))
-        }
-        val keyCard = fieldCard(ctx, key)
-        val keyHint =
-            text(ctx, "Used instead of the built-in key [Recommended]", 13f, C.TEXT_DIM).apply {
-                setPadding(dp(ctx, 8), dp(ctx, 8), 0, 0)
-            }
-        val personalToggle = ToggleView(ctx).apply {
-            setChecked(NextGenStore.tmdbPersonalEnabled, false)
-            onChange = { on ->
-                val v = if (on) View.VISIBLE else View.GONE
-                keyCard.visibility = v; keyHint.visibility = v
-            }
-        }
-        keyCard.visibility = if (personalToggle.checked) View.VISIBLE else View.GONE
-        keyHint.visibility = keyCard.visibility
-        tmdbList.addView(
-            toggleCard(ctx, "Personal API key", "Custom API key is Recommended\nDisabled: built-in key is used", personalToggle)
-        )
-        tmdbList.addView(keyCard, lp(top = 10))
-        tmdbList.addView(keyHint)
-
-        fun plainField(initial: String, hintText: String, sizeSp: Float = 16f) = EditText(ctx).apply {
-            hint = hintText
-            setText(initial)
-            textSize = sizeSp
-            setTextColor(C.TEXT)
-            setHintTextColor(C.OUTLINE)
-            inputType = InputType.TYPE_CLASS_TEXT
-            background = null
-            setPadding(0, dp(ctx, 4), 0, dp(ctx, 4))
-        }
         fun note(msg: String) = text(ctx, msg, 13f, C.TEXT_DIM).apply {
             setPadding(dp(ctx, 8), dp(ctx, 8), 0, dp(ctx, 8))
         }
-        tmdbList.addView(sectionLabel(ctx, "Language"))
-        val languageField = plainField(NextGenStore.language, "en-US")
-        tmdbList.addView(fieldCard(ctx, languageField), lp(top = 10))
-        tmdbList.addView(note("TMDb language for titles, descriptions and title logos (e.g. en-US, de-DE, pt-BR). Invalid values fall back to ${NextGenStore.DEFAULT_LANGUAGE}."))
 
         val posterField = EditText(ctx).apply {
             hint = "https://…/{imdb_id}.jpg"
@@ -220,7 +174,7 @@ object NextGenSettingsUi {
         val posterFieldCard = fieldCard(ctx, posterField)
         val posterHint = text(
             ctx,
-                "TMDb poster is used when poster is missing. Applies to the home page, details and recommendations.",
+                "AniList poster is used when custom poster is missing. Applies to the home page, details and recommendations.",
             13f, C.TEXT_DIM
         ).apply { setPadding(dp(ctx, 8), dp(ctx, 8), 0, dp(ctx, 8)) }
         val posterPresets = listOf(
@@ -250,7 +204,7 @@ object NextGenSettingsUi {
         posterFieldCard.visibility = posterVisibility
         posterHint.visibility = posterVisibility
         posterChips.visibility = posterVisibility
-        posterList.addView(toggleCard(ctx, "Custom Poster", "Disabled: TMDb posters are used", posterToggle))
+        posterList.addView(toggleCard(ctx, "Custom Poster", "Disabled: AniList posters are used", posterToggle))
         posterList.addView(posterFieldCard, lp(top = 10))
         posterList.addView(posterHint)
         posterList.addView(posterChips)
@@ -278,29 +232,6 @@ object NextGenSettingsUi {
             posterChips.getChildAt(i).setOnClickListener { posterField.setText(preset.second); reloadPosterPreview() }
         }
         reloadPosterPreview()
-
-        val anilistEnabledToggle = ToggleView(ctx).apply { setChecked(NextGenStore.anilistEnabled, false) }
-        val allOff = !NextGenStore.kitsuEnabled && !NextGenStore.anilistEnabled
-        val kitsuEnabledToggle = ToggleView(ctx).apply { setChecked(NextGenStore.kitsuEnabled || allOff, false) }
-        val catalogToggleList = listOf(
-            "AniList" to anilistEnabledToggle,
-            "Kitsu" to kitsuEnabledToggle,
-        )
-        fun guardLastCatalog() {
-            val on = catalogToggleList.count { it.second.checked }
-            catalogToggleList.forEach { (_, t) ->
-                t.isEnabled = !(on == 1 && t.checked)
-                t.invalidate()
-            }
-        }
-        catalogToggleList.forEach { (label, toggle) ->
-            toggle.onChange = { guardLastCatalog() }
-            catList.addView(
-                toggleCard(ctx, label, "Disabled: hidden from the provider list after restarting the app", toggle),
-                lp(top = 10)
-            )
-        }
-        guardLastCatalog()
 
         val catalogToggles = ArrayList<Pair<String, ToggleView>>()
         val rowOrderSavers = ArrayList<() -> Unit>()
@@ -348,18 +279,12 @@ object NextGenSettingsUi {
                 addView(rows)
             }, lp(top = 10))
         }
-        listOf<Pair<String, () -> Unit>>(
-            "Kitsu" to { rowsCard("kitsu", "KITSU", "Rows shown on the Kitsu home page. Use the arrows to reorder", NextGenKitsuApi.titles, NextGenKitsuApi.labels) },
-            "AniList" to { rowsCard("anilist", "ANILIST", "Rows shown on the AniList home page. Use the arrows to reorder", NextGenAnilistApi.titles, NextGenAnilistApi.labels) },
-        ).sortedBy { it.first.lowercase() }.forEach { it.second() }
+        rowsCard("anilist", "ANILIST", "Rows shown on the AniList home page. Use the arrows to reorder", NextGenAnilistApi.titles, NextGenAnilistApi.labels)
 
-        fun saveTmdb() {
+        fun savePoster() {
             NextGenStore.customPosterTemplate = posterField.text.toString()
             NextGenStore.customPosterEnabled = posterToggle.checked
             NextGenStore.hideLabels = hideLabelsToggle.checked
-            NextGenStore.tmdbKeyOverride = key.text.toString()
-            NextGenStore.tmdbPersonalEnabled = personalToggle.checked
-            NextGenStore.language = languageField.text.toString()
         }
 
         val langEnglishToggle = ToggleView(ctx).apply { setChecked(NextGenStore.langEnglish, false) }
@@ -386,38 +311,23 @@ object NextGenSettingsUi {
         )
         menuList.addView(
             menuCard(
-                ctx, IconView.Kind.GRID, Color.parseColor("#BF5AF2"), "Catalog",
-                text(ctx, "Enable or disable AniList and Kitsu", 13f, C.TEXT_DIM)
+                ctx, IconView.Kind.LIST, Color.parseColor("#64D2FF"), "Language",
+                text(ctx, "English, Japanese & Multi-Dub streams", 13f, C.TEXT_DIM)
             ) { showPage(3) },
             lp(top = 12)
         )
         menuList.addView(
             menuCard(
-                ctx, IconView.Kind.LIST, Color.parseColor("#64D2FF"), "Language",
-                text(ctx, "English, Japanese & Multi-Dub streams", 13f, C.TEXT_DIM)
-            ) { showPage(4) },
-            lp(top = 12)
-        )
-
-        menuList.addView(
-            menuCard(
                 ctx, IconView.Kind.IMAGE, Color.parseColor("#30D158"), "Poster",
                 text(ctx, "Custom poster, labels and Preview", 13f, C.TEXT_DIM)
-            ) { showPage(5) },
+            ) { showPage(4) },
             lp(top = 12)
         )
         menuList.addView(
             menuCard(
                 ctx, IconView.Kind.LIST, Color.parseColor("#FF453A"), "Home",
                 text(ctx, "Show, hide and reorder home rows", 13f, C.TEXT_DIM)
-            ) { showPage(6) },
-            lp(top = 12)
-        )
-        menuList.addView(
-            menuCard(
-                ctx, IconView.Kind.KEY, Color.parseColor("#0A84FF"), "TMDb",
-                text(ctx, "API key and Language", 13f, C.TEXT_DIM)
-            ) { showPage(7) },
+            ) { showPage(5) },
             lp(top = 12)
         )
 
@@ -465,18 +375,14 @@ object NextGenSettingsUi {
                 NextGenStore.totalCap = totalCapValue
                 NextGenStore.perProviderCapEnabled = perCapToggle.checked
                 providerCapValues.forEach { (id, v) -> NextGenStore.setProviderCap(id, v) }
-                saveTmdb()
-                val providersChanged = NextGenStore.kitsuEnabled != kitsuEnabledToggle.checked ||
-                    NextGenStore.anilistEnabled != anilistEnabledToggle.checked
-                NextGenStore.kitsuEnabled = kitsuEnabledToggle.checked
-                NextGenStore.anilistEnabled = anilistEnabledToggle.checked
+                savePoster()
                 NextGenStore.langEnglish = langEnglishToggle.checked
                 NextGenStore.langMultiDub = langMultiToggle.checked
                 NextGenStore.langJapanese = langJapaneseToggle.checked
                 catalogToggles.forEach { (title, t) -> NextGenStore.setCatalogRowEnabled(title, t.checked) }
                 rowOrderSavers.forEach { it() }
                 toggles.forEach { (sc, t) -> NextGenStore.setEnabled(sc.id, t.checked) }
-                toast(ctx, if (providersChanged) "Saved. Restart the app to apply provider changes" else "Saved")
+                toast(ctx, "Saved")
                 dialog.dismiss()
             }, LinearLayout.LayoutParams(0, dp(ctx, 52), 1f).apply { leftMargin = dp(ctx, 8) })
         }
@@ -484,12 +390,10 @@ object NextGenSettingsUi {
         val provScroll = ScrollView(ctx).apply { addView(provList) }
         val menuScroll = ScrollView(ctx).apply { addView(menuList) }
         val perfPage = subPage(ctx, "Performance", "Search speed, Time & Stream limits", perfList) { showPage(1) }
-        val catPage = subPage(ctx, "Catalog", "AniList and Kitsu", catList) { showPage(1) }
-        val tmdbPage = subPage(ctx, "TMDb", "API key and Language", tmdbList) { showPage(1) }
+        val langPage = subPage(ctx, "Language", "Stream language preference", langList) { showPage(1) }
         val posterPage = subPage(ctx, "Poster", "Custom poster, labels and Preview", posterList) { showPage(1) }
         val homePage = subPage(ctx, "Home", "Show, hide and reorder rows", homeList) { showPage(1) }
-        val langPage = subPage(ctx, "Language", "Stream language preference", langList) { showPage(1) }
-        val pageViews = listOf<View>(provScroll, menuScroll, perfPage, catPage, langPage, posterPage, homePage, tmdbPage)
+        val pageViews = listOf<View>(provScroll, menuScroll, perfPage, langPage, posterPage, homePage)
         val pages = android.widget.FrameLayout(ctx).apply {
             pageViews.forEach { addView(it, MATCH_PARENT, MATCH_PARENT) }
         }

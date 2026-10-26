@@ -1,6 +1,5 @@
 const BASE_URL = "https://ani.pm";
 const API_BASE = "https://embed.settlar.io";
-const TMDB_API = "https://api.themoviedb.org/3";
 const LANGS = { sub: "Japanese", dub: "English" };
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36";
 const HEADERS = {
@@ -22,15 +21,20 @@ const fetchJson = async (url, referer) => {
 const tokenize = (value) => String(value || "").toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
 const normalize = (value) => tokenize(value).join("");
 
-const fetchTmdbDetails = async (tmdbId, mediaType, season) => {
-    const isTv = mediaType === "tv";
-    const data = await fetchJson(`${TMDB_API}/${isTv ? "tv" : "movie"}/${tmdbId}?api_key=${TMDB_API_KEY}`, "");
-    if (!data) return null;
-
-    const titles = [...new Set((isTv ? [data.name, data.original_name] : [data.title, data.original_title]).filter(Boolean))];
-    const seasonInfo = isTv && (data.seasons || []).find((entry) => entry.season_number === season);
-    const date = (seasonInfo && seasonInfo.air_date) || (isTv ? data.first_air_date : data.release_date);
-    return { titles, year: parseInt(String(date || "").slice(0, 4), 10) || null };
+const fetchAnimeDetails = async (tmdbId, mediaType, season) => {
+    const bridge = (typeof globalThis !== "undefined" && (globalThis.NextGenNative || globalThis.EclipsiaNative)) || null;
+    const callArgs = bridge ? JSON.parse(bridge.getCallArgs() || "{}") : {};
+    const titles = [callArgs.title, callArgs.showTitle, callArgs.romajiTitle].filter(Boolean);
+    if (!titles.length) {
+        try {
+            const aniData = await fetchJson(`https://api.ani.zip/mappings?anilist_id=${tmdbId}`, "");
+            if (aniData?.titles) {
+                if (aniData.titles.en) titles.push(aniData.titles.en);
+                if (aniData.titles['x-jat']) titles.push(aniData.titles['x-jat']);
+            }
+        } catch { }
+    }
+    return { titles: [...new Set(titles)], year: null };
 };
 
 const searchAnime = async (query) => {
@@ -151,7 +155,7 @@ const getStreams = async (tmdbId, mediaType, season, episode) => {
         const isTv = mediaType === "tv";
         if (isTv && (season == null || episode == null)) return [];
 
-        const details = await fetchTmdbDetails(tmdbId, mediaType, season);
+        const details = await fetchAnimeDetails(tmdbId, mediaType, season);
         const anime = details && details.titles.length ? await findAnime(details, isTv, season) : null;
         const episodeNumber = isTv ? Number(episode) : 1;
         if (!anime || !(episodeNumber >= 1)) return [];

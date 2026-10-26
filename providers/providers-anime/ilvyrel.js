@@ -1,7 +1,7 @@
 const CryptoJS = require("crypto-js");
 const cheerio = require("cheerio-without-node-native");
 const BASE_URL = "https://toonworld4all.me";
-const TMDB_API = "https://api.themoviedb.org/3";
+
 const ARCV_BASE = "https://archive.toonworld4all.me";
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36";
 
@@ -166,35 +166,23 @@ async function resolveRedirectTarget(redirectPath) {
     return null;
 }
 
-function getTmdbKey() {
-    return (typeof TMDB_API_KEY !== "undefined" && TMDB_API_KEY) || "";
-}
-
-async function fetchTmdbMetadata(tmdbId, isSeries) {
-    const numericId = String(tmdbId || "").replace(/\D/g, "");
-    const apiKey = getTmdbKey();
-    if (!numericId || !apiKey) return null;
-
+async function fetchAnimeMetadata(numericId, isSeries) {
     try {
-        const response = await safeFetch(
-            TMDB_API + "/" + (isSeries ? "tv" : "movie") + "/" + numericId + "?api_key=" + apiKey
-        );
-        if (!response.ok) return null;
-
-        const data = await response.json();
-        if (!data) return null;
-
-        const title = isSeries ? (data.name || data.original_name) : (data.title || data.original_title);
-        const releaseDate = isSeries ? data.first_air_date : data.release_date;
-
-        if (title) {
+        const bridge = (typeof globalThis !== "undefined" && (globalThis.NextGenNative || globalThis.EclipsiaNative)) || null;
+        const callArgs = bridge ? JSON.parse(bridge.getCallArgs() || "{}") : {};
+        if (callArgs.title || callArgs.showTitle) {
             return {
-                title: title,
-                year: releaseDate ? parseInt(releaseDate.split("-")[0], 10) : null
+                title: callArgs.title || callArgs.showTitle || "",
+                year: null
             };
         }
+        const aniData = await safeFetch(`https://api.ani.zip/mappings?anilist_id=${numericId}`);
+        if (aniData?.ok) {
+            const data = await aniData.json();
+            const t = data?.titles?.en || data?.titles?.['x-jat'] || data?.titles?.ja;
+            if (t) return { title: t, year: null };
+        }
     } catch { }
-
     return null;
 }
 
@@ -487,7 +475,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const seasonNumber = isSeries ? Number(season) : null;
         const episodeNumber = isSeries ? Number(episode) : null;
 
-        const metadata = await fetchTmdbMetadata(tmdbId, isSeries);
+        const metadata = await fetchAnimeMetadata(tmdbId, isSeries);
         if (!metadata) return [];
 
         const post = await findBestMatchingPost(metadata, isSeries, seasonNumber);

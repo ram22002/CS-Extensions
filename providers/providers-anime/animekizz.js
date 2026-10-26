@@ -1,8 +1,6 @@
 const PROVIDER = "Animekizz";
 const BASE_URL = "https://animekizz.live";
-const TMDB_API = "https://api.themoviedb.org/3";
 const ANIZIP_API = "https://api.ani.zip/mappings";
-const API_KEY = (typeof TMDB_API_KEY !== "undefined" && TMDB_API_KEY) ? TMDB_API_KEY : (typeof globalThis !== "undefined" && globalThis.TMDB_API_KEY) ? globalThis.TMDB_API_KEY : "307b7b8ef035c6aa336900aef4e203bd";
 
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
@@ -39,34 +37,31 @@ async function resolveMetadata(tmdbId, mediaType, season) {
     let title = "";
     let anilistId = null;
 
-    // 1. Check AniZip first for direct anilist_id and anime title
-    try {
-        const aniData = await httpJson(`${ANIZIP_API}?themoviedb_id=${tmdbId}`);
-        if (aniData?.mappings) {
-            anilistId = aniData.mappings.anilist_id;
-        }
-        if (aniData?.titles) {
-            title = (aniData.titles.en || aniData.titles['x-jat'] || aniData.titles.ja || "").trim();
-        }
-    } catch { }
+    const bridge = (typeof globalThis !== "undefined" && (globalThis.NextGenNative || globalThis.EclipsiaNative)) || null;
+    const callArgs = bridge ? JSON.parse(bridge.getCallArgs() || "{}") : {};
+    if (callArgs.anilistId) anilistId = callArgs.anilistId;
+    if (callArgs.title) title = callArgs.title;
+    if (!title && callArgs.romajiTitle) title = callArgs.romajiTitle;
 
-    // 2. Query TMDb for anime title if still missing
-    if (!title) {
+    const targetId = anilistId || tmdbId;
+
+    if (!anilistId || !title) {
         try {
-            const endpoint = mediaType === "tv" ? "tv" : "movie";
-            const tmdbData = await httpJson(`${TMDB_API}/${endpoint}/${tmdbId}?api_key=${API_KEY}`);
-            if (tmdbData) {
-                title = (tmdbData.name || tmdbData.title || tmdbData.original_name || tmdbData.original_title || "").trim();
+            const aniData = await httpJson(`${ANIZIP_API}?anilist_id=${targetId}`);
+            if (aniData?.mappings) {
+                anilistId = aniData.mappings.anilist_id;
+            }
+            if (aniData?.titles) {
+                title = (aniData.titles.en || aniData.titles['x-jat'] || aniData.titles.ja || "").trim();
             }
         } catch { }
     }
 
-    // 3. Fallback: query AniList directly by title if anilistId missing
-    if (!anilistId && title) {
+    if (!anilistId || !title) {
         try {
             const anilistQuery = `
-                query ($search: String) {
-                    Media (search: $search, type: ANIME) {
+                query ($id: Int) {
+                    Media (id: $id, type: ANIME) {
                         id
                         title { english romaji }
                     }
@@ -75,16 +70,16 @@ async function resolveMetadata(tmdbId, mediaType, season) {
             const alData = await httpJson("https://graphql.anilist.co", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ query: anilistQuery, variables: { search: title } })
+                body: JSON.stringify({ query: anilistQuery, variables: { id: parseInt(targetId, 10) } })
             });
-            anilistId = alData?.data?.Media?.id || null;
+            anilistId = alData?.data?.Media?.id || anilistId || targetId;
             if (alData?.data?.Media?.title) {
                 title = alData.data.Media.title.english || alData.data.Media.title.romaji || title;
             }
         } catch { }
     }
 
-    return { title, anilistId };
+    return { title, anilistId: anilistId || targetId };
 }
 
 async function getStreams(tmdbId, mediaType, season, episode) {

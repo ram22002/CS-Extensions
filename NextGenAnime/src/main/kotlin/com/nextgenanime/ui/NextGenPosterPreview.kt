@@ -19,26 +19,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Request
-import org.json.JSONObject
 
 internal object NextGenPosterPreview {
-    private class Sample(val label: String, val kind: String, val tmdbId: Int, val imdbId: String)
+    private class Sample(val label: String, val anilistId: Int, val imdbId: String, val fallbackCover: String)
 
     private val samples = listOf(
-        Sample("Inception", "movie", 27205, "tt1375666"),
-        Sample("One Piece", "tv", 37854, "tt0388629"),
+        Sample("One Piece", 21, "tt0388629", "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21-YCDoj1EkAxFn.jpg"),
+        Sample("Spirited Away", 199, "tt0245429", "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx199-hWSc9N4sKx9k.png"),
     )
 
     private fun fill(template: String, s: Sample) = template
         .replace("{imdb_id}", s.imdbId)
-        .replace("{tmdb_id}", s.tmdbId.toString())
-        .replace("{type}", if (s.kind == "tv") "series" else "movie")
-
-    private suspend fun tmdbPoster(s: Sample): String? {
-        val text = NextGenTmdb.get("${s.kind}/${s.tmdbId}?language=${NextGenStore.language}") ?: return null
-        val path = runCatching { JSONObject(text).optString("poster_path") }.getOrNull()
-        return path?.takeIf { it.startsWith("/") }?.let { "https://image.tmdb.org/t/p/w500$it" }
-    }
+        .replace("{anilist_id}", s.anilistId.toString())
 
     private fun download(url: String): Bitmap? = try {
         app.baseClient.newCall(Request.Builder().url(url).build()).execute().use { r ->
@@ -60,59 +52,74 @@ internal object NextGenPosterPreview {
                     override fun getOutline(v: View, o: Outline) = o.setRoundRect(0, 0, v.width, v.height, dp(ctx, 12).toFloat())
                 }
             }
-            val note = text(ctx, "", 12f, C.TEXT_DIM).apply { gravity = Gravity.CENTER }
-            Slot(image, note)
+            val title = text(ctx, s.label, 13f, C.TEXT, bold = true).apply {
+                gravity = Gravity.CENTER
+                maxLines = 1
+                ellipsize = android.text.TextUtils.TruncateAt.END
+            }
+            val note = text(ctx, "", 11f, C.TEXT_DIM).apply {
+                gravity = Gravity.CENTER
+                maxLines = 1
+            }
+            val col = LinearLayout(ctx).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.CENTER_HORIZONTAL
+                val posterH = dp(ctx, 140)
+                val posterW = (posterH * 2) / 3
+                addView(image, LinearLayout.LayoutParams(posterW, posterH))
+                addView(title, LinearLayout.LayoutParams(posterW, WRAP_CONTENT).apply { topMargin = dp(ctx, 6) })
+                addView(note, LinearLayout.LayoutParams(posterW, WRAP_CONTENT).apply { topMargin = dp(ctx, 2) })
+            }
+            Slot(image, note) to col
         }
 
-        val labels = samples.map { s -> text(ctx, s.label, 14f, C.TEXT, bold = true).apply { gravity = Gravity.CENTER } }
-
         val row = LinearLayout(ctx).apply {
-            weightSum = samples.size.toFloat()
-            samples.forEachIndexed { i, s ->
-                addView(LinearLayout(ctx).apply {
-                    orientation = LinearLayout.VERTICAL
-                    gravity = Gravity.CENTER_HORIZONTAL
-                    addView(slots[i].image, LinearLayout.LayoutParams(dp(ctx, 120), dp(ctx, 180)))
-                    addView(labels[i], lp(top = 8))
-                    addView(slots[i].note, lp(top = 2))
-                }, LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f))
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_HORIZONTAL
+            slots.forEachIndexed { i, (_, col) ->
+                if (i > 0) addView(View(ctx), LinearLayout.LayoutParams(dp(ctx, 16), 1))
+                addView(col, WRAP_CONTENT, WRAP_CONTENT)
             }
         }
 
-        var generation = 0
-        fun reload() {
-            val gen = ++generation
-            val tpl = template()
-            labels.forEach { it.visibility = if (hideLabel()) View.GONE else View.VISIBLE }
-            samples.forEachIndexed { i, s ->
-                slots[i].image.setImageDrawable(null)
-                slots[i].note.text = "Loading…"
-                scope.launch {
-                    val custom = tpl != null
-                    val url = if (tpl != null) fill(tpl, s) else tmdbPoster(s)
-                    val bmp = url?.let { withContext(Dispatchers.IO) { download(it) } }
-                    if (gen != generation) return@launch
+        val refresh: () -> Unit = {
+            val t = template()
+            val hide = hideLabel()
+            scope.launch {
+                samples.forEachIndexed { i, s ->
+                    val (slot, col) = slots[i]
+                    val titleView = col.getChildAt(1) as? TextView
+                    titleView?.visibility = if (hide) View.GONE else View.VISIBLE
+
+                    val (url, label) = when {
+                        t.isNullOrBlank() -> s.fallbackCover to "Default poster"
+                        else -> {
+                            val custom = fill(t, s)
+                            custom to "Custom poster"
+                        }
+                    }
+
+                    slot.note.text = "Loading..."
+                    val bmp = withContext(Dispatchers.IO) { download(url) }
                     if (bmp != null) {
-                        slots[i].image.setImageBitmap(bmp)
-                        slots[i].note.text = if (custom) "Custom Poster" else "TMDb Poster"
+                        slot.image.setImageBitmap(bmp)
+                        slot.note.text = label
                     } else {
-                        slots[i].note.text = if (custom) "Custom Poster failed to load" else "Could not load poster"
+                        val fallbackBmp = withContext(Dispatchers.IO) { download(s.fallbackCover) }
+                        slot.image.setImageBitmap(fallbackBmp)
+                        slot.note.text = if (t.isNullOrBlank()) "Default poster" else "Failed to load custom"
                     }
                 }
             }
         }
 
-        val box = card(ctx).apply {
-            setPadding(dp(ctx, 16), dp(ctx, 14), dp(ctx, 12), dp(ctx, 16))
-            val head = LinearLayout(ctx).apply {
-                gravity = Gravity.CENTER_VERTICAL
-                addView(text(ctx, "PREVIEW", 17f, C.TEXT, bold = true), LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f))
-                addView(textButton(ctx, "Reload") { reload() })
-            }
-            addView(head)
-            addView(text(ctx, "Anime poster using the settings above", 13f, C.TEXT_DIM), lp(top = 2))
-            addView(row, lp(top = 14))
+        val container = LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(C.BG)
+            setPadding(dp(ctx, 16), dp(ctx, 16), dp(ctx, 16), dp(ctx, 16))
+            addView(row, MATCH_PARENT, WRAP_CONTENT)
         }
-        return box to ::reload
+
+        return container to refresh
     }
 }

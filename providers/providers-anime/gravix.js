@@ -1,6 +1,5 @@
 const cheerio = require("cheerio");
 const BASE_URL = "https://watchanimeworld.one";
-const TMDB_API = "https://api.themoviedb.org/3";
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36";
 const HEADERS = {
     "User-Agent": USER_AGENT,
@@ -45,16 +44,26 @@ function isFullHd(...values) {
     return !/4k|uhd|2160/i.test(text);
 }
 
-async function getTmdbInfo(tmdbId, isSeries) {
+async function getAnimeInfo(id, isSeries) {
     try {
-        const res = await fetch(`${TMDB_API}/${isSeries ? "tv" : "movie"}/${tmdbId}?api_key=${TMDB_API_KEY}`);
-        if (!res.ok) return null;
-        const d = await res.json();
-        if (!d) return null;
-        return {
-            title: d.name || d.title || "",
-            originalTitle: d.original_name || d.original_title || ""
-        };
+        const bridge = (typeof globalThis !== "undefined" && (globalThis.NextGenNative || globalThis.EclipsiaNative)) || null;
+        const callArgs = bridge ? JSON.parse(bridge.getCallArgs() || "{}") : {};
+        if (callArgs.title || callArgs.showTitle) {
+            return {
+                title: callArgs.title || callArgs.showTitle || "",
+                originalTitle: callArgs.romajiTitle || ""
+            };
+        }
+        const aniData = await fetch(`https://api.ani.zip/mappings?anilist_id=${id}`, {
+            headers: { "User-Agent": "Mozilla/5.0" }
+        }).then(r => r.json()).catch(() => null);
+        if (aniData?.titles) {
+            return {
+                title: aniData.titles.en || aniData.titles['x-jat'] || "",
+                originalTitle: aniData.titles.ja || aniData.titles['x-jat'] || ""
+            };
+        }
+        return null;
     } catch {
         return null;
     }
@@ -324,7 +333,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const isSeries = mediaType === "tv";
         if (isSeries && (season == null || episode == null)) return [];
 
-        const info = await getTmdbInfo(tmdbId, isSeries);
+        const info = await getAnimeInfo(tmdbId, isSeries);
         if (!info || !info.title) return [];
 
         const candidates = await searchSite(info, isSeries);

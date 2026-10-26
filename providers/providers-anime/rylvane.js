@@ -1,7 +1,6 @@
 const PROVIDER = "WcoFlix";
 const BASE_URL = "https://www.wcoflix.tv";
 const EMBD_URL = "https://embed.wcostream.com";
-const TMDB_API = "https://api.themoviedb.org/3";
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0 Safari/537.36";
 
 async function fetchText(url, referer, extraHeaders) {
@@ -25,20 +24,19 @@ function normalizeTitle(title) {
         .replace(/\s+/g, " ").trim();
 }
 
-async function fetchTmdbTitles(tmdbId, mediaType) {
-    const endpoint = mediaType === "movie" ? "movie" : "tv";
-    const query = `api_key=${TMDB_API_KEY}&append_to_response=alternative_titles`;
-    const response = await fetch(`${TMDB_API}/${endpoint}/${tmdbId}?${query}`);
-    const details = await response.json();
-    if (!details) return [];
-    const alternatives = details.alternative_titles || {};
-    const alternativeTitles = (alternatives.titles || alternatives.results || [])
-        .slice(0, 15)
-        .map((alternative) => alternative.title);
-    const candidates = [
-        details.title, details.name, details.original_title, details.original_name,
-        ...alternativeTitles
-    ];
+async function fetchAnimeTitles(tmdbId, mediaType) {
+    const bridge = (typeof globalThis !== "undefined" && (globalThis.NextGenNative || globalThis.EclipsiaNative)) || null;
+    const callArgs = bridge ? JSON.parse(bridge.getCallArgs() || "{}") : {};
+    const candidates = [callArgs.title, callArgs.showTitle, callArgs.romajiTitle].filter(Boolean);
+    if (!candidates.length) {
+        try {
+            const aniData = await fetch(`https://api.ani.zip/mappings?anilist_id=${tmdbId}`).then(r => r.json()).catch(() => null);
+            if (aniData?.titles) {
+                if (aniData.titles.en) candidates.push(aniData.titles.en);
+                if (aniData.titles['x-jat']) candidates.push(aniData.titles['x-jat']);
+            }
+        } catch { }
+    }
     return [...new Set(candidates.map(normalizeTitle).filter(Boolean))];
 }
 
@@ -153,7 +151,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         if (mediaType !== "movie" && mediaType !== "tv") return [];
         if (mediaType === "tv" && (season == null || episode == null)) return [];
 
-        const [titles, catalog] = await Promise.all([fetchTmdbTitles(tmdbId, mediaType), loadCatalog()]);
+        const [titles, catalog] = await Promise.all([fetchAnimeTitles(tmdbId, mediaType), loadCatalog()]);
         const episodeGroups = await Promise.all(findCatalogMatches(catalog, titles).map(async (match) => {
             try {
                 const html = await fetchText(match.url);

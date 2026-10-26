@@ -8,9 +8,7 @@ import com.lagradost.cloudstream3.plugins.Plugin
 class NextGenAnimePlugin : Plugin() {
     override fun load(context: Context) {
         NextGenStore.init(context.applicationContext)
-        val anyCatalog = NextGenStore.kitsuEnabled || NextGenStore.anilistEnabled
-        if (NextGenStore.kitsuEnabled || !anyCatalog) registerMainAPI(NextGenKitsuProvider())
-        if (NextGenStore.anilistEnabled) registerMainAPI(NextGenAnilistProvider())
+        registerMainAPI(NextGenAnimeProvider())
 
         openSettings = { ctx -> NextGenSettingsUi.show(ctx) }
     }

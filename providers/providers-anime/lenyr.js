@@ -1,6 +1,5 @@
 const cheerio = require("cheerio");
 const BASE_URL = "https://anizone.to";
-const TMDB_API = "https://api.themoviedb.org/3";
 const HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
     "Referer": "https://anizone.to/",
@@ -59,120 +58,6 @@ async function httpWithCookies(path) {
     } catch {
         return { text: "", cookies: "", ok: false };
     }
-}
-
-async function resolveImdbId(tmdbId) {
-    const data = await httpJson(
-        `${TMDB_API}/tv/${tmdbId}/external_ids?api_key=${TMDB_API_KEY}`
-    );
-    return data?.imdb_id ?? null;
-}
-
-async function collectMalIds(imdbId, tmdbId) {
-    const ids = new Set();
-
-    const [byImdb, byTmdb] = await Promise.all([
-        imdbId ? httpJson(`https://animap.id/api/map/imdb/${imdbId}`) : Promise.resolve(null),
-        tmdbId ? httpJson(`https://animap.id/api/map/tmdb/${tmdbId}`) : Promise.resolve(null),
-    ]);
-
-    for (const data of [byImdb, byTmdb]) {
-        if (!data) continue;
-        const arr = Array.isArray(data.mal_id) ? data.mal_id : data.mal_id ? [data.mal_id] : [];
-        arr.forEach(id => { if (id) ids.add(id); });
-    }
-
-    return [...ids].filter(Boolean).sort((a, b) => b - a);
-}
-
-function withinTwoDays(a, b) {
-    if (!a || !b) return false;
-    const t1 = new Date(a.split("T")[0] + "T00:00:00Z").getTime();
-    const t2 = new Date(b.split("T")[0] + "T00:00:00Z").getTime();
-    return Math.ceil(Math.abs(t1 - t2) / 86400000) <= 2;
-}
-
-async function fetchTmdbEpisodeMeta(tmdbId, seasonNum, episodeNum) {
-    const [epData, tvData, seasonData] = await Promise.all([
-        httpJson(`${TMDB_API}/tv/${tmdbId}/season/${seasonNum}/episode/${episodeNum}?api_key=${TMDB_API_KEY}`),
-        httpJson(`${TMDB_API}/tv/${tmdbId}?api_key=${TMDB_API_KEY}`),
-        httpJson(`${TMDB_API}/tv/${tmdbId}/season/${seasonNum}?api_key=${TMDB_API_KEY}`),
-    ]);
-
-    if (!epData?.air_date) return null;
-
-    const airDate = epData.air_date.split("T")[0];
-
-    let dayIndex = 0;
-    if (seasonData?.episodes) {
-        dayIndex = seasonData.episodes.filter(ep => {
-            const d = ep.air_date?.split("T")[0];
-            return d === airDate && ep.episode_number < episodeNum;
-        }).length;
-    }
-
-    return {
-        airDate,
-        dayIndex,
-        showTitle: tvData?.name || tvData?.original_name || "",
-        originalTitle: tvData?.original_name || tvData?.original_title || "",
-        seasonName: seasonData?.name || "",
-    };
-}
-
-async function resolveEpisodeFromAniZip(malId, airDate, dayIndex) {
-    const ani = await httpJson(`https://api.ani.zip/mappings?mal_id=${malId}`);
-    if (!ani?.episodes) return null;
-
-    const titles = ani.titles ? Object.values(ani.titles).filter(Boolean) : [];
-
-    const candidates = Object.values(ani.episodes)
-        .map(ep => ({ number: parseInt(ep.episode, 10), airDate: ep.airDateUtc || ep.airDate || ep.airdate }))
-        .filter(ep => !isNaN(ep.number) && withinTwoDays(ep.airDate, airDate))
-        .sort((a, b) => a.number - b.number);
-
-    if (!candidates[dayIndex]) return null;
-    return { episodeNumber: candidates[dayIndex].number, titles };
-}
-
-async function resolveEpisodeFromAnimapMal(malId, airDate, dayIndex) {
-    const data = await httpJson(`https://animap.id/api/mal/${malId}`);
-    if (!data?.aired_from || !withinTwoDays(data.aired_from, airDate)) return null;
-
-    const titles = [
-        data.title,
-        data.title_english,
-        data.title_japanese,
-        ...(data.title_synonyms || []),
-    ].filter(Boolean);
-
-    return { episodeNumber: dayIndex + 1, titles };
-}
-
-async function resolveAnimeMapping(tmdbId, imdbId, seasonNum, episodeNum) {
-    const tmdbMeta = await fetchTmdbEpisodeMeta(tmdbId, seasonNum, episodeNum);
-    if (!tmdbMeta) return null;
-
-    const { airDate, dayIndex, showTitle, seasonName } = tmdbMeta;
-    const malIds = await collectMalIds(imdbId, tmdbId);
-
-    for (const malId of malIds) {
-        const fromAniZip = await resolveEpisodeFromAniZip(malId, airDate, dayIndex).catch(() => null);
-        if (fromAniZip) {
-            return { mal_id: malId, mal_episode: fromAniZip.episodeNumber, anime_title: showTitle, titles: fromAniZip.titles, season_name: seasonName };
-        }
-
-        const fromAnimap = await resolveEpisodeFromAnimapMal(malId, airDate, dayIndex).catch(() => null);
-        if (fromAnimap) {
-            return { mal_id: malId, mal_episode: fromAnimap.episodeNumber, anime_title: showTitle, titles: fromAnimap.titles, season_name: seasonName };
-        }
-    }
-
-    if (malIds.length === 1 && seasonNum === 1) {
-        return { mal_id: malIds[0], mal_episode: episodeNum, anime_title: showTitle, titles: [], season_name: seasonName };
-    }
-
-    return null;
 }
 
 async function fetchMalTitle(malId) {
@@ -333,53 +218,28 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const seasonNum = mediaType === "tv" ? parseInt(season, 10) : 1;
         const episodeNum = mediaType === "tv" ? parseInt(episode, 10) : 1;
 
-        let title = "";
-        let fallbackTitles = [];
-        let mappedTitles = [];
+        const bridge = (typeof globalThis !== "undefined" && (globalThis.NextGenNative || globalThis.EclipsiaNative)) || null;
+        const callArgs = bridge ? JSON.parse(bridge.getCallArgs() || "{}") : {};
+
+        let title = callArgs.showTitle || callArgs.title || "";
+        let fallbackTitles = [callArgs.romajiTitle, callArgs.englishTitle, callArgs.nativeTitle].filter(Boolean);
         let targetEpisode = episodeNum;
-        let tmdbSeasonName = "";
 
-        if (mediaType === "tv") {
-            const imdbId = await resolveImdbId(tmdbId);
-
-            if (imdbId) {
-                const mapping = await resolveAnimeMapping(tmdbId, imdbId, seasonNum, episodeNum);
-                if (mapping) {
-                    targetEpisode = mapping.mal_episode || episodeNum;
-                    title = mapping.anime_title || "";
-                    tmdbSeasonName = mapping.season_name || "";
-                    if (Array.isArray(mapping.titles)) mappedTitles.push(...mapping.titles);
-
-                    const malTitle = await fetchMalTitle(mapping.mal_id);
-                    if (malTitle) {
-                        mappedTitles.push(malTitle);
-                        if (!title) title = malTitle;
-                    }
-                }
+        try {
+            const aniData = await httpJson(`https://api.ani.zip/mappings?anilist_id=${tmdbId}`);
+            if (aniData?.titles) {
+                Object.values(aniData.titles).forEach(t => { if (t && !fallbackTitles.includes(t)) fallbackTitles.push(t); });
             }
-
-            if (!title) {
-                const meta = await fetchTmdbEpisodeMeta(tmdbId, seasonNum, episodeNum);
-                if (meta) {
-                    title = meta.showTitle;
-                    tmdbSeasonName = meta.seasonName || "";
-                    if (meta.originalTitle) fallbackTitles.push(meta.originalTitle);
-                }
+            if (aniData?.mappings?.mal_id) {
+                const malTitle = await fetchMalTitle(aniData.mappings.mal_id);
+                if (malTitle && !fallbackTitles.includes(malTitle)) fallbackTitles.push(malTitle);
             }
-        } else {
-            const data = await httpJson(`${TMDB_API}/movie/${tmdbId}?api_key=${TMDB_API_KEY}`);
-            if (data) {
-                title = data.title || data.original_title || "";
-                if (data.original_title) fallbackTitles.push(data.original_title);
-            }
-        }
+        } catch { }
 
-        if (!title && mappedTitles.length === 0) return [];
-        if (!title) title = mappedTitles[0];
+        if (!title && fallbackTitles.length > 0) title = fallbackTitles[0];
+        if (!title) return [];
 
-        const candidateTitles = (seasonNum === 1 || mediaType === "movie")
-            ? [...mappedTitles, title, ...fallbackTitles]
-            : [...mappedTitles];
+        const candidateTitles = [title, ...fallbackTitles];
 
         const searchQuery = title
             .split(":")[0]
@@ -397,7 +257,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         if (cards.length === 0) return [];
 
         const animeSlug = mediaType === "tv"
-            ? pickSeriesSlug(cards, candidateTitles, searchQuery, seasonNum, tmdbSeasonName)
+            ? pickSeriesSlug(cards, candidateTitles, searchQuery, seasonNum, "")
             : pickMovieSlug(cards, candidateTitles);
 
         if (!animeSlug) return [];
@@ -413,8 +273,8 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
         if (primary.src) {
             streams.push({
-                name: "AniZone \u2022 Varyg",
-                title: "AniZone \u2022 Varyg",
+                name: "AniZone • Varyg",
+                title: "AniZone • Varyg",
                 url: primary.src,
                 quality: "1080p",
                 headers: HEADERS,
@@ -460,8 +320,8 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                                 const alt = extractVidstack(fragment, $f);
                                 if (alt.src && alt.src !== primary.src) {
                                     streams.push({
-                                        name: "AniZone \u2022 Varyg",
-                                        title: "AniZone \u2022 Varyg",
+                                        name: "AniZone • Varyg",
+                                        title: "AniZone • Varyg",
                                         url: alt.src,
                                         quality: "1080p",
                                         headers: HEADERS,

@@ -1,5 +1,4 @@
 const BASE_URL = "https://anv.to";
-const TMDB_API = "https://api.themoviedb.org/3";
 const HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36",
     "Accept-Language": "en-US,en;q=0.9"
@@ -92,34 +91,25 @@ async function detectStreamHeight(streamUrl, headers) {
     }
 }
 
-async function fetchTmdbDetails(tmdbId, mediaType, season) {
-    if (!TMDB_API_KEY) return null;
-
-    const isTv = mediaType === "tv";
-    const query = `api_key=${TMDB_API_KEY}`;
-
-    try {
-        const [showResponse, seasonResponse] = await Promise.all([
-            fetch(`${TMDB_API}/${isTv ? "tv" : "movie"}/${tmdbId}?${query}`),
-            isTv && season > 1 ? fetch(`${TMDB_API}/tv/${tmdbId}/season/${season}?${query}`) : null
-        ]);
-
-        const show = await showResponse.json();
-        if (!show) return null;
-
-        const seasonDetails = seasonResponse ? await seasonResponse.json() : null;
-        const releaseDate = show.release_date || show.first_air_date || "";
-
-        return {
-            titles: [...new Set([show.name, show.title, show.original_name, show.original_title].filter(Boolean))],
-            year: releaseDate ? parseInt(releaseDate.slice(0, 4), 10) : null,
-            seasonYear: seasonDetails?.air_date ? parseInt(seasonDetails.air_date.slice(0, 4), 10) : null,
-            seasonName:
-                seasonDetails?.name && !/^season\s*\d+$/i.test(seasonDetails.name.trim()) ? seasonDetails.name : null
-        };
-    } catch {
-        return null;
+async function fetchAnimeDetails(tmdbId, mediaType, season) {
+    const bridge = (typeof globalThis !== "undefined" && (globalThis.NextGenNative || globalThis.EclipsiaNative)) || null;
+    const callArgs = bridge ? JSON.parse(bridge.getCallArgs() || "{}") : {};
+    const titles = [callArgs.title, callArgs.showTitle, callArgs.romajiTitle].filter(Boolean);
+    if (!titles.length) {
+        try {
+            const aniData = await fetch(`https://api.ani.zip/mappings?anilist_id=${tmdbId}`).then(r => r.json()).catch(() => null);
+            if (aniData?.titles) {
+                if (aniData.titles.en) titles.push(aniData.titles.en);
+                if (aniData.titles['x-jat']) titles.push(aniData.titles['x-jat']);
+            }
+        } catch { }
     }
+    return {
+        titles: [...new Set(titles)],
+        year: null,
+        seasonYear: null,
+        seasonName: null
+    };
 }
 
 function scoreCandidate(candidate, tmdb, season) {
@@ -254,14 +244,15 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const isTv = mediaType === "tv";
         if (!/^\d+$/.test(String(tmdbId)) || (isTv && (season == null || episode == null))) return [];
 
-        const seasonNumber = isTv ? season : 1;
-        const tmdb = await fetchTmdbDetails(tmdbId, mediaType, seasonNumber);
-        if (!tmdb) return [];
+        const seasonNumber = isTv ? parseInt(season, 10) || 1 : 1;
+        const episodeNumber = isTv ? parseInt(episode, 10) || 1 : 1;
+        const anime = await fetchAnimeDetails(tmdbId, mediaType, seasonNumber);
+        if (!anime || !anime.titles.length) return [];
 
-        const match = await findBestMatch(tmdb, mediaType, seasonNumber);
+        const match = await findBestMatch(anime, mediaType, seasonNumber);
         if (!match) return [];
 
-        const entry = await resolveEpisodeEntry(match.media, match.candidates, isTv ? episode : 1);
+        const entry = await resolveEpisodeEntry(match.media, match.candidates, episodeNumber);
         if (!entry) return [];
 
         const pageUrl = `${BASE_URL}/anime/${entry.media.slug}-episode-${entry.episodeNumber}`;

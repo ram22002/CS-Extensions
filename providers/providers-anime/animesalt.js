@@ -1,8 +1,6 @@
 const PROVIDER = "AnimeSalt";
 const BASE_URL = "https://animesalt.cx";
 const ALT_URL = "https://animesalt.ac";
-const TMDB_API = "https://api.themoviedb.org/3";
-const API_KEY = (typeof TMDB_API_KEY !== "undefined" && TMDB_API_KEY) ? TMDB_API_KEY : (typeof globalThis !== "undefined" && globalThis.TMDB_API_KEY) ? globalThis.TMDB_API_KEY : "307b7b8ef035c6aa336900aef4e203bd";
 
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
@@ -56,21 +54,27 @@ async function httpJson(url, options = {}, timeoutMs = 5000) {
 
 const ANIZIP_API = "https://api.ani.zip/mappings";
 
-async function getTmdbTitle(tmdbId, mediaType) {
-    // 1. AniZip mapping (fast, universally accessible, never geo-blocked)
+async function getAnimeTitle(id, mediaType) {
+    const bridge = (typeof globalThis !== "undefined" && (globalThis.NextGenNative || globalThis.EclipsiaNative)) || null;
+    const callArgs = bridge ? JSON.parse(bridge.getCallArgs() || "{}") : {};
+    if (callArgs.title) return callArgs.title.trim();
+    if (callArgs.romajiTitle) return callArgs.romajiTitle.trim();
+
     try {
-        const aniData = await httpJson(`${ANIZIP_API}?themoviedb_id=${tmdbId}`);
+        const aniData = await httpJson(`${ANIZIP_API}?anilist_id=${id}`);
         const aniTitle = aniData?.titles?.en || aniData?.titles?.['x-jat'] || aniData?.titles?.ja;
         if (aniTitle) return aniTitle.trim();
     } catch { }
 
-    // 2. Direct TMDb fallback
     try {
-        const endpoint = mediaType === "tv" ? "tv" : "movie";
-        const data = await httpJson(`${TMDB_API}/${endpoint}/${tmdbId}?api_key=${API_KEY}`);
-        if (data) {
-            return (data.name || data.title || data.original_name || data.original_title || "").trim();
-        }
+        const query = `query ($id: Int) { Media (id: $id, type: ANIME) { title { english romaji } } }`;
+        const alData = await httpJson("https://graphql.anilist.co", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query, variables: { id: parseInt(id, 10) } })
+        });
+        const m = alData?.data?.Media?.title;
+        if (m) return (m.english || m.romaji || "").trim();
     } catch { }
     return "";
 }
@@ -78,7 +82,7 @@ async function getTmdbTitle(tmdbId, mediaType) {
 async function getStreams(tmdbId, mediaType, season, episode) {
     try {
         const isTv = mediaType === "tv";
-        const title = await getTmdbTitle(tmdbId, mediaType);
+        const title = await getAnimeTitle(tmdbId, mediaType);
         if (!title) return [];
 
         const s = season || 1;

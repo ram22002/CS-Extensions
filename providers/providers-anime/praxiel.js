@@ -2,7 +2,6 @@ const PROVIDER = "Re:ANIME";
 const BASE_URL = "https://reanime.to";
 const API_BASE = "https://flixcloud.cc";
 const ENC_DEC_API = "https://enc-dec.app/api";
-const TMDB_API = "https://api.themoviedb.org/3";
 const USER_AGENT = "Mozilla/5.0 (Linux; Android 16; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Mobile Safari/537.36";
 
 function createSortTag(rank) {
@@ -339,19 +338,31 @@ async function fetchServerList(path) {
 }
 
 async function locateServers(tmdbId, mediaType, season, episode) {
-    const directServers = await fetchServerList(
-        `/api/flix/0/${episode}?tmdb=${encodeURIComponent(tmdbId)}&season=${season}`
-    );
-    if (directServers.length) return directServers;
+    const targetId = parseInt(tmdbId, 10);
+    if (targetId) {
+        const directServers = await fetchServerList(`/api/flix/${targetId}/${episode}`);
+        if (directServers.length) return directServers;
+    }
 
-    const kind = mediaType === "tv" ? "tv" : "movie";
-    const details = await request(`${TMDB_API}/${kind}/${tmdbId}?api_key=${TMDB_API_KEY}`, {}, "json");
-    if (!details) return [];
+    const bridge = (typeof globalThis !== "undefined" && (globalThis.NextGenNative || globalThis.EclipsiaNative)) || null;
+    const callArgs = bridge ? JSON.parse(bridge.getCallArgs() || "{}") : {};
+    const titleCandidates = [callArgs.title, callArgs.showTitle, callArgs.romajiTitle].filter(Boolean);
 
-    const titles = [
-        ...new Set([details.name, details.title, details.original_name, details.original_title].filter(Boolean)),
-    ].slice(0, 3);
+    if (!titleCandidates.length) {
+        try {
+            const query = `query ($id: Int) { Media (id: $id, type: ANIME) { title { english romaji } } }`;
+            const alData = await request("https://graphql.anilist.co", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query, variables: { id: targetId } })
+            }, "json");
+            const m = alData?.data?.Media?.title;
+            if (m?.english) titleCandidates.push(m.english);
+            if (m?.romaji) titleCandidates.push(m.romaji);
+        } catch { }
+    }
 
+    const titles = [...new Set(titleCandidates)].slice(0, 3);
     const searchResults = await Promise.all(
         titles.map(title =>
             request(
@@ -378,11 +389,9 @@ async function locateServers(tmdbId, mediaType, season, episode) {
         )
     );
 
-    const targetId = parseInt(tmdbId, 10);
     const match = candidates.find(c => {
-        if (!c?.anilist_id || parseInt(c.themoviedb_id, 10) !== targetId) return false;
-        const tmdbSeason = c.external_seasons?.tmdb;
-        return !(mediaType === "tv" && tmdbSeason != null && tmdbSeason !== season);
+        if (!c?.anilist_id) return false;
+        return c.anilist_id === targetId;
     });
 
     return match ? fetchServerList(`/api/flix/${match.anilist_id}/${episode}`) : [];
@@ -456,11 +465,11 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     try {
         if (mediaType === "tv" && (season == null || episode == null)) return [];
 
-        const hlsEnabled = SCRAPER_SETTINGS.hlsEnabled === true;
+        const hlsEnabled = (typeof SCRAPER_SETTINGS !== "undefined" && SCRAPER_SETTINGS.hlsEnabled === true);
         const isTv = mediaType === "tv";
 
         const servers = await locateServers(tmdbId, mediaType, isTv ? season : 1, isTv ? episode : 1);
-        if (!servers.length) return [];
+        if (!servers || !servers.length) return [];
 
         const outcomes = await Promise.allSettled(
             extractEmbeds(servers).map(({ link, audioType }) =>

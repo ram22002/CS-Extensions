@@ -3,18 +3,16 @@ package com.nextgenanime
 import android.util.Base64
 import com.lagradost.cloudstream3.HomePageResponse
 import com.lagradost.cloudstream3.LoadResponse
+import com.lagradost.cloudstream3.MainAPI
 import com.lagradost.cloudstream3.MainPageData
 import com.lagradost.cloudstream3.MainPageRequest
 import com.lagradost.cloudstream3.ProviderType
 import com.lagradost.cloudstream3.SearchResponse
 import com.lagradost.cloudstream3.SearchResponseList
-import com.lagradost.cloudstream3.newSearchResponseList
 import com.lagradost.cloudstream3.SubtitleFile
 import com.lagradost.cloudstream3.TvType
-import com.lagradost.cloudstream3.metaproviders.TmdbLink
-import com.lagradost.cloudstream3.metaproviders.TmdbProvider
+import com.lagradost.cloudstream3.newSearchResponseList
 import com.lagradost.cloudstream3.newSubtitleFile
-import com.lagradost.cloudstream3.utils.AppUtils.parseJson
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.ExtractorLinkType
 import com.lagradost.cloudstream3.utils.Qualities
@@ -25,20 +23,34 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withTimeoutOrNull
-import org.json.JSONObject
 import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
-abstract class NextGenAnimeProvider : TmdbProvider() {
-    override var mainUrl = "https://www.themoviedb.org"
+open class NextGenAnimeProvider : MainAPI() {
+    override var name = "NextGenAnime"
+    override var mainUrl = "https://anilist.co"
     override var lang = "en"
-    override val useMetaLoadResponse = true
     override val providerType = ProviderType.DirectProvider
     override val instantLinkLoading = true
-    override val supportedTypes = setOf(TvType.Movie, TvType.TvSeries)
+    override val supportedTypes = setOf(TvType.Anime, TvType.AnimeMovie)
     override val hasMainPage = true
-    private class Target(val tmdbId: String, val season: Int?, val episode: Int?, val isTv: Boolean)
+    override val hasQuickSearch = false
+
+    override val mainPage: List<MainPageData>
+        get() = NextGenAnilistApi.activeRows()
+
+    override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse =
+        NextGenAnilistApi.page(this, page, request)
+
+    override suspend fun search(query: String): List<SearchResponse> =
+        NextGenAnilistApi.search(this, query)
+
+    override suspend fun search(query: String, page: Int): SearchResponseList =
+        newSearchResponseList(NextGenAnilistApi.search(this, query, page), hasNext = true)
+
+    override suspend fun load(url: String): LoadResponse? =
+        NextGenAnilistDetails.loadDetails(this, url)
 
     override suspend fun loadLinks(
         data: String,
@@ -46,11 +58,8 @@ abstract class NextGenAnimeProvider : TmdbProvider() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit,
     ): Boolean {
-        val link = runCatching { parseJson<TmdbLink>(data) }.getOrNull() ?: return false
-        val target = resolveTarget(link) ?: return false
-
-        if (target.isTv && (target.season == null || target.episode == null)) return false
-        val mediaType = if (target.isTv) "tv" else "movie"
+        val payload = runCatching { AniListEpisodePayload.fromJson(data) }.getOrNull() ?: return false
+        val mediaType = if (payload.season > 0) "tv" else "movie"
 
         val scrapers = NextGenRepository.active(mediaType)
         if (scrapers.isEmpty()) return false
@@ -63,64 +72,32 @@ abstract class NextGenAnimeProvider : TmdbProvider() {
         suspend fun <T> withDeadline(block: suspend () -> T): T? =
             if (deadlineMs > 0) withTimeoutOrNull(deadlineMs) { block() } else block()
         withDeadline {
-        coroutineScope {
-            scrapers.map { scraper ->
-                async {
-                    val streams = try {
-                        NextGenRuntime.getStreams(scraper, target.tmdbId, mediaType, target.season, target.episode)
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (_: Exception) {
-                        emptyList()
-                    }
-                    streams.map { stream ->
-                        async {
-                            try {
-                                emit(scraper, stream, seenSubtitles, seenLinks, caps, subtitleCallback, callback)
-                                found.set(true)
-                            } catch (e: CancellationException) {
-                                throw e
-                            } catch (_: Exception) {
-                            }
+            coroutineScope {
+                scrapers.map { scraper ->
+                    async {
+                        val streams = try {
+                            NextGenRuntime.getStreams(scraper, payload)
+                        } catch (e: CancellationException) {
+                            throw e
+                        } catch (_: Exception) {
+                            emptyList()
                         }
-                    }.awaitAll()
-                }
-            }.awaitAll()
-        }
-        }
-        return found.get()
-    }
-
-    private suspend fun resolveTarget(link: TmdbLink): Target? {
-        val season = link.season
-        val episode = link.episode
-        val tvHint = season != null || episode != null
-
-        link.tmdbID?.let { return Target(it.toString(), season, episode, tvHint) }
-
-        val imdb = link.imdbID?.trim()?.takeIf { it.startsWith("tt") } ?: return null
-        val text = NextGenTmdb.get("find/$imdb?external_source=imdb_id", ttlMs = 60 * 60 * 1000L) ?: return null
-        val root = runCatching { JSONObject(text) }.getOrNull() ?: return null
-        fun first(key: String): JSONObject? = root.optJSONArray(key)?.optJSONObject(0)
-
-        first("tv_episode_results")?.let { ep ->
-            val show = ep.optInt("show_id", 0)
-            if (show > 0) {
-                return Target(
-                    show.toString(),
-                    season ?: ep.optInt("season_number", -1).takeIf { it >= 0 },
-                    episode ?: ep.optInt("episode_number", -1).takeIf { it >= 0 },
-                    true,
-                )
+                        streams.map { stream ->
+                            async {
+                                try {
+                                    emit(scraper, stream, seenSubtitles, seenLinks, caps, subtitleCallback, callback)
+                                    found.set(true)
+                                } catch (e: CancellationException) {
+                                    throw e
+                                } catch (_: Exception) {
+                                }
+                            }
+                        }.awaitAll()
+                    }
+                }.awaitAll()
             }
         }
-        val order = if (tvHint) listOf("tv_results" to true, "movie_results" to false)
-        else listOf("movie_results" to false, "tv_results" to true)
-        for ((key, tv) in order) {
-            val id = first(key)?.optInt("id", 0) ?: 0
-            if (id > 0) return Target(id.toString(), season, episode, tv)
-        }
-        return null
+        return found.get()
     }
 
     private suspend fun emit(

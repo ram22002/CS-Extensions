@@ -27,14 +27,14 @@
   {
     "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/builds/nextgenanime.cs3",
     "status": 1,
-    "version": 10005,
+    "version": 20002,
     "name": "NextGen Anime",
     "internalName": "NextGenAnime",
     "authors": [
       "ram22002"
     ],
     "description": "Anime, movies & OVAs",
-    "fileSize": 328701,
+    "fileSize": 270918,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -44,10 +44,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/anime.png",
     "apiVersion": 1,
-    "fileHash": "sha256-e928b4fc094d57d9b10688d59ba7aa9506c4a26f64915c4aae94b5202ac50553",
-    "filesize": 328701,
-    "hash": "e928b4fc094d57d9b10688d59ba7aa9506c4a26f64915c4aae94b5202ac50553",
-    "sha256": "e928b4fc094d57d9b10688d59ba7aa9506c4a26f64915c4aae94b5202ac50553",
+    "fileHash": "sha256-28e74da0aae11112f6bce59b2a9d6f5895698ca21983038f3756cdf0245f0b85",
+    "filesize": 270918,
+    "hash": "28e74da0aae11112f6bce59b2a9d6f5895698ca21983038f3756cdf0245f0b85",
+    "sha256": "28e74da0aae11112f6bce59b2a9d6f5895698ca21983038f3756cdf0245f0b85",
     "requiresResources": false
   },
   {

@@ -52,13 +52,42 @@ object NextGenRuntime {
 
     suspend fun getStreams(
         scraper: NextGenScraper,
-        tmdbId: String,
+        payload: AniListEpisodePayload,
+    ): List<NextGenStream> {
+        val isTv = payload.season > 0
+        val mediaType = if (isTv) "tv" else "movie"
+        val animeTitle = payload.showTitle?.takeIf { it.isNotBlank() }
+            ?: payload.title?.takeIf { it.isNotBlank() }
+        val epTitle = payload.title?.takeIf { it.isNotBlank() }
+
+        val args = JSONObject()
+            .put("anilistId", payload.anilistId)
+            .put("id", payload.anilistId.toString())
+            .put("tmdbId", payload.anilistId.toString())
+            .put("malId", payload.malId ?: JSONObject.NULL)
+            .put("mediaType", mediaType)
+            .put("season", payload.season)
+            .put("episode", payload.episode)
+            .put("title", animeTitle ?: JSONObject.NULL)
+            .put("showTitle", animeTitle ?: JSONObject.NULL)
+            .put("episodeTitle", epTitle ?: JSONObject.NULL)
+            .put("romajiTitle", payload.romajiTitle ?: JSONObject.NULL)
+            .toString()
+        val raw = execute(scraper, "run", args, NextGenStore.settingsJson(scraper.id)) ?: return emptyList()
+        return NextGenStream.parseList(raw)
+    }
+
+    suspend fun getStreams(
+        scraper: NextGenScraper,
+        id: String,
         mediaType: String,
         season: Int?,
         episode: Int?,
     ): List<NextGenStream> {
         val args = JSONObject()
-            .put("tmdbId", tmdbId)
+            .put("anilistId", id.toIntOrNull() ?: JSONObject.NULL)
+            .put("id", id)
+            .put("tmdbId", id)
             .put("mediaType", mediaType)
             .put("season", season ?: JSONObject.NULL)
             .put("episode", episode ?: JSONObject.NULL)
@@ -89,7 +118,7 @@ object NextGenRuntime {
         return currentGate().withPermit {
             val holder = Holder()
             val result = CompletableDeferred<String>()
-            val bridge = Bridge(scraper, code, settingsJson, argsJson, NextGenStore.tmdbKey(), result, holder)
+            val bridge = Bridge(scraper, code, settingsJson, argsJson, result, holder)
             try {
                 withTimeout(TIMEOUT_MS) {
                     val wv = createWebView(bridge, holder)
@@ -182,7 +211,6 @@ object NextGenRuntime {
         private val code: String,
         private val settingsJson: String,
         private val argsJson: String,
-        private val tmdbKey: String,
         private val result: CompletableDeferred<String>,
         private val holder: Holder,
     ) {
@@ -200,7 +228,7 @@ object NextGenRuntime {
         @JavascriptInterface
         fun getCallArgs(): String = argsJson
         @JavascriptInterface
-        fun getTmdbKey(): String = tmdbKey
+        fun getTmdbKey(): String = ""
         @JavascriptInterface
         fun capture(json: String) {
             result.complete(json)

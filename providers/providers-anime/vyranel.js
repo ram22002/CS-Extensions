@@ -1,5 +1,4 @@
 const BASE_URL = "https://animecube.live";
-const TMDB_API = "https://api.themoviedb.org/3";
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0 Safari/537.36";
 
 async function fetchText(url, referer) {
@@ -18,14 +17,16 @@ async function fetchJson(url, referer) {
     try { return JSON.parse(text); } catch { return null; }
 }
 
-async function resolveTmdbTitle(tmdbId, mediaType) {
-    const endpoint = mediaType === "tv" ? "tv" : "movie";
-    const data = await fetchJson(
-        `${TMDB_API}/${endpoint}/${tmdbId}?api_key=${TMDB_API_KEY}`,
-        TMDB_API
-    );
-    if (!data) return null;
-    return (mediaType === "tv" ? data.name : data.title) || null;
+async function resolveAnimeTitle(tmdbId, mediaType) {
+    const bridge = (typeof globalThis !== "undefined" && (globalThis.NextGenNative || globalThis.EclipsiaNative)) || null;
+    const callArgs = bridge ? JSON.parse(bridge.getCallArgs() || "{}") : {};
+    if (callArgs.title) return callArgs.title;
+    if (callArgs.showTitle) return callArgs.showTitle;
+    try {
+        const aniData = await fetchJson(`https://api.ani.zip/mappings?anilist_id=${tmdbId}`, "");
+        if (aniData?.titles) return aniData.titles.en || aniData.titles['x-jat'] || null;
+    } catch { }
+    return null;
 }
 
 function extractRscPayload(html) {
@@ -154,7 +155,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     try {
         if (mediaType === "tv" && (season == null || episode == null)) return [];
 
-        const title = await resolveTmdbTitle(tmdbId, mediaType);
+        const title = await resolveAnimeTitle(tmdbId, mediaType);
         if (!title) return [];
 
         const animeSlug = await resolveAnimeSlug(title);

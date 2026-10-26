@@ -1,7 +1,6 @@
 const BASE_URL = "https://anikage.cc";
 const API_BASE = "https://anikage.cc/api/media/anime";
 const BKY_BASE = "https://og.bakayaro.live";
-const TMDB_API = "https://api.themoviedb.org/3";
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36";
 const SOURCES = ["koto", "kiwi", "wave"];
 const LANGS = ["sub", "dub"];
@@ -29,21 +28,17 @@ async function getJson(url) {
     }
 }
 
-async function getTmdbDetails(tmdbId, mediaType, season) {
-    const endpoint = mediaType === "tv" ? "tv" : "movie";
-    const [showData, seasonData] = await Promise.all([
-        getJson(`${TMDB_API}/${endpoint}/${tmdbId}?api_key=${TMDB_API_KEY}`),
-        mediaType === "tv" && season != null
-            ? getJson(`${TMDB_API}/tv/${tmdbId}/season/${season}?api_key=${TMDB_API_KEY}`)
-            : Promise.resolve(null),
-    ]);
-    if (!showData) return null;
-    const title = mediaType === "tv" ? (showData.name || "") : (showData.title || "");
-    const seasonName = seasonData && seasonData.name
-        && seasonData.name.toLowerCase() !== `season ${season}`
-        ? seasonData.name.trim()
-        : null;
-    return { title, seasonName };
+async function getAnimeDetails(tmdbId, mediaType, season) {
+    const bridge = (typeof globalThis !== "undefined" && (globalThis.NextGenNative || globalThis.EclipsiaNative)) || null;
+    const callArgs = bridge ? JSON.parse(bridge.getCallArgs() || "{}") : {};
+    const title = callArgs.title || callArgs.showTitle || "";
+    if (title) return { title, seasonName: null };
+    try {
+        const aniData = await getJson(`https://api.ani.zip/mappings?anilist_id=${tmdbId}`);
+        const t = aniData?.titles?.en || aniData?.titles?.['x-jat'] || "";
+        return { title: t, seasonName: null };
+    } catch { }
+    return { title: "", seasonName: null };
 }
 
 function pickTitle(t) {
@@ -113,7 +108,7 @@ async function fetchSources(slug, episode, provider, lang) {
 async function getStreams(tmdbId, mediaType, season, episode) {
     try {
         if (mediaType === "tv" && (season == null || episode == null)) return [];
-        const details = await getTmdbDetails(tmdbId, mediaType, season);
+        const details = await getAnimeDetails(tmdbId, mediaType, season);
         if (!details || !details.title) return [];
         const slug = await findSlug(details.title, season, details.seasonName);
         if (!slug) return [];

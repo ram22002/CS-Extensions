@@ -13,3 +13,5 @@ local.properties
 .git_sha256_backup
 /scratch
 *.cs3
+docs
+.superpowers
