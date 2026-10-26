@@ -9,7 +9,7 @@
       "ram22002"
     ],
     "description": "Movies & TV series",
-    "fileSize": 457330,
+    "fileSize": 457062,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -18,23 +18,23 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/cinema.png",
     "apiVersion": 1,
-    "fileHash": "sha256-375ccd594082dce6eee54fa8cc41a8b13d75f3d9a535d791fd878da0076bd3a9",
-    "filesize": 457330,
-    "hash": "375ccd594082dce6eee54fa8cc41a8b13d75f3d9a535d791fd878da0076bd3a9",
-    "sha256": "375ccd594082dce6eee54fa8cc41a8b13d75f3d9a535d791fd878da0076bd3a9",
+    "fileHash": "sha256-f93b011ab79e0f7bdcf913c486b31e96da50ae092f1e80c64232dec25aa93169",
+    "filesize": 457062,
+    "hash": "f93b011ab79e0f7bdcf913c486b31e96da50ae092f1e80c64232dec25aa93169",
+    "sha256": "f93b011ab79e0f7bdcf913c486b31e96da50ae092f1e80c64232dec25aa93169",
     "requiresResources": false
   },
   {
     "url": "https://raw.githubusercontent.com/ram22002/CS-Extensions/builds/nextgenanime.cs3",
     "status": 1,
-    "version": 10005,
+    "version": 20003,
     "name": "NextGen Anime",
     "internalName": "NextGenAnime",
     "authors": [
       "ram22002"
     ],
     "description": "Anime, movies & OVAs",
-    "fileSize": 328701,
+    "fileSize": 273942,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -44,10 +44,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/anime.png",
     "apiVersion": 1,
-    "fileHash": "sha256-e928b4fc094d57d9b10688d59ba7aa9506c4a26f64915c4aae94b5202ac50553",
-    "filesize": 328701,
-    "hash": "e928b4fc094d57d9b10688d59ba7aa9506c4a26f64915c4aae94b5202ac50553",
-    "sha256": "e928b4fc094d57d9b10688d59ba7aa9506c4a26f64915c4aae94b5202ac50553",
+    "fileHash": "sha256-e87377c3dd6909c9cca7a6a4d3da0223a458837f64841dc92276f10fdc2977b3",
+    "filesize": 273942,
+    "hash": "e87377c3dd6909c9cca7a6a4d3da0223a458837f64841dc92276f10fdc2977b3",
+    "sha256": "e87377c3dd6909c9cca7a6a4d3da0223a458837f64841dc92276f10fdc2977b3",
     "requiresResources": false
   },
   {
@@ -60,7 +60,7 @@
       "ram22002"
     ],
     "description": "Regional FTP sources",
-    "fileSize": 238194,
+    "fileSize": 237899,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -69,10 +69,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/bdix.png",
     "apiVersion": 1,
-    "fileHash": "sha256-7a4f674d0a1fa1d0c3361d4751b344a2c7328b471fb511ff38ea4c1fb93a171f",
-    "filesize": 238194,
-    "hash": "7a4f674d0a1fa1d0c3361d4751b344a2c7328b471fb511ff38ea4c1fb93a171f",
-    "sha256": "7a4f674d0a1fa1d0c3361d4751b344a2c7328b471fb511ff38ea4c1fb93a171f",
+    "fileHash": "sha256-779ef0bdcfbdaf8bbb1469c6d8e511f318df3b5c5217744590fae3e7f6c38962",
+    "filesize": 237899,
+    "hash": "779ef0bdcfbdaf8bbb1469c6d8e511f318df3b5c5217744590fae3e7f6c38962",
+    "sha256": "779ef0bdcfbdaf8bbb1469c6d8e511f318df3b5c5217744590fae3e7f6c38962",
     "requiresResources": false
   },
   {
@@ -85,7 +85,7 @@
       "ram22002"
     ],
     "description": "Live sports & sports TV",
-    "fileSize": 2159527,
+    "fileSize": 2159336,
     "repositoryUrl": "https://github.com/ram22002/CS-Extensions",
     "language": "en",
     "tvTypes": [
@@ -93,10 +93,10 @@
     ],
     "iconUrl": "https://raw.githubusercontent.com/ram22002/CS-Extensions/main/icons/arena.png",
     "apiVersion": 1,
-    "fileHash": "sha256-7ceb0aa80a2a92081306f93d8eeb431885d2ffc1e85299af3d10b1369456c840",
-    "filesize": 2159527,
-    "hash": "7ceb0aa80a2a92081306f93d8eeb431885d2ffc1e85299af3d10b1369456c840",
-    "sha256": "7ceb0aa80a2a92081306f93d8eeb431885d2ffc1e85299af3d10b1369456c840",
+    "fileHash": "sha256-c9f6d67781383d09bc4467079d00a2e03b3cd83c42853455c2bebd22323864c4",
+    "filesize": 2159336,
+    "hash": "c9f6d67781383d09bc4467079d00a2e03b3cd83c42853455c2bebd22323864c4",
+    "sha256": "c9f6d67781383d09bc4467079d00a2e03b3cd83c42853455c2bebd22323864c4",
     "requiresResources": false
   },
   {
